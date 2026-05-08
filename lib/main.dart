@@ -9,6 +9,7 @@ import 'package:frontend_ambilin/ui/screens/register_page.dart';
 import 'package:frontend_ambilin/ui/screens/customer/customer_dashboard.dart';
 // import 'package:frontend_ambilin/utils/app_colors.dart';
 import 'package:frontend_ambilin/ui/screens/customer/subscription_page.dart';
+import 'package:frontend_ambilin/ui/screens/splash.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 // import 'package:frontend_ambilin/ui/screens/admin/admin_dashboard.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.splash,
       routes: {
-        AppRoutes.splash: (context) => CustomerDashboard(),
+        AppRoutes.splash: (context) => SplashScreen(),
         AppRoutes.login: (context) => LoginPage(),
         AppRoutes.register: (context) => RegisterPage(),
         AppRoutes.main: (context) => MainPage(),

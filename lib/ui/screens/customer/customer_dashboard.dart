@@ -11,6 +11,7 @@ class CustomerDashboard extends StatefulWidget {
   @override
   State<CustomerDashboard> createState() => _CustomerDashboardState();
 }
+
 class _CustomerDashboardState extends State<CustomerDashboard> {
   int _currentIndex = 0;
 
@@ -40,16 +41,14 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          child: const Icon(
-            Icons.local_shipping,
-            color: AppColor.putih100,
-          ),
+          child: const Icon(Icons.local_shipping, color: AppColor.putih100),
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _buildBottomAppBar(),
     );
   }
+
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.all(16),
@@ -75,6 +74,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       ),
     );
   }
+
   Widget _buildSubscriptionBanner() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -111,7 +111,8 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             ),
             const SizedBox(width: 12),
             ElevatedButton(
-              onPressed: () => Navigator.pushNamed(context, AppRoutes.subscription),
+              onPressed: () =>
+                  Navigator.pushNamed(context, AppRoutes.subscription),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.putih100,
                 foregroundColor: AppColor.base100,
@@ -137,6 +138,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       ),
     );
   }
+
   Widget _buildArticleSection() {
     final articles = Article.getArticles();
     return Padding(
@@ -144,10 +146,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Artikel',
-            style: AppFont.bold().copyWith(fontSize: 18),
-          ),
+          Text('Artikel', style: AppFont.bold().copyWith(fontSize: 18)),
           const SizedBox(height: 12),
           ListView.builder(
             shrinkWrap: true,
@@ -158,8 +157,8 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               return ArticleCard(
                 title: article.title,
                 category: article.category,
-                onTap: () {
-                },
+                image: article.foto_tumbnail,
+                onTap: () {},
               );
             },
           ),
@@ -167,6 +166,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       ),
     );
   }
+
   Widget _buildBottomAppBar() {
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),
@@ -185,6 +185,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       ),
     );
   }
+
   Widget _buildNavItem(IconData icon, String label, int index) {
     final bool isActive = _currentIndex == index;
     final Color color = isActive ? AppColor.base100 : AppColor.font60;
@@ -204,10 +205,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             const SizedBox(height: 2),
             Text(
               label,
-              style: AppFont.medium().copyWith(
-                fontSize: 12,
-                color: color,
-              ),
+              style: AppFont.medium().copyWith(fontSize: 12, color: color),
             ),
           ],
         ),

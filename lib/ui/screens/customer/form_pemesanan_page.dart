@@ -14,14 +14,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
   final TextEditingController _beratController = TextEditingController();
   final TextEditingController _kategoriController = TextEditingController();
 
-  final List<String> _kategoriOptions = [
-    'Plastik',
-    'Organik',
-    'Kertas',
-    'Elektronik',
-    'Logam',
-    'Kaca',
-  ];
+  final List<String> _kategoriOptions = ['anorganik', 'Organik'];
   final List<String> _selectedKategori = [];
 
   @override
@@ -113,8 +106,9 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                           _selectedKategori
                             ..clear()
                             ..addAll(tempSelected);
-                          _kategoriController.text =
-                              _selectedKategori.join(', ');
+                          _kategoriController.text = _selectedKategori.join(
+                            ', ',
+                          );
                         });
                         Navigator.pop(context);
                       },
@@ -227,8 +221,9 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                         onDeleted: () {
                           setState(() {
                             _selectedKategori.remove(k);
-                            _kategoriController.text =
-                                _selectedKategori.join(', ');
+                            _kategoriController.text = _selectedKategori.join(
+                              ', ',
+                            );
                           });
                         },
                         shape: RoundedRectangleBorder(
@@ -266,7 +261,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                 const SizedBox(height: 20),
                 _buildLabel('Lokasi Penjemputan'),
                 const SizedBox(height: 8),
-                
+
                 Container(
                   width: double.infinity,
                   height: 160,
@@ -301,9 +296,11 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   width: double.infinity,
                   height: 48,
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                    },
-                    icon: const Icon(Icons.location_on, color: AppColor.putih100),
+                    onPressed: () {},
+                    icon: const Icon(
+                      Icons.location_on,
+                      color: AppColor.putih100,
+                    ),
                     label: Text(
                       'Pilih Lokasi Penjemputan',
                       style: AppFont.semibold().copyWith(
@@ -354,8 +351,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                         children: [
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () {
-                              },
+                              onPressed: () {},
                               icon: const Icon(
                                 Icons.camera_alt_outlined,
                                 size: 18,
@@ -373,16 +369,16 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
                               ),
                             ),
                           ),
                           const SizedBox(width: 12),
                           Expanded(
                             child: OutlinedButton.icon(
-                              onPressed: () {
-                              },
+                              onPressed: () {},
                               icon: const Icon(
                                 Icons.photo_library_outlined,
                                 size: 18,
@@ -400,8 +396,9 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(10),
                                 ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 12,
+                                ),
                               ),
                             ),
                           ),
@@ -464,16 +461,11 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
   Widget _buildLabel(String text) {
     return Text(
       text,
-      style: AppFont.semibold().copyWith(
-        fontSize: 14,
-        color: AppColor.font100,
-      ),
+      style: AppFont.semibold().copyWith(fontSize: 14, color: AppColor.font100),
     );
   }
-  InputDecoration _inputDecoration({
-    required String hint,
-    Widget? suffixIcon,
-  }) {
+
+  InputDecoration _inputDecoration({required String hint, Widget? suffixIcon}) {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppFont.regular().copyWith(

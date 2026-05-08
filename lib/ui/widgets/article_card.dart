@@ -5,6 +5,7 @@ import 'package:frontend_ambilin/utils/app_font.dart';
 class ArticleCard extends StatelessWidget {
   final String title;
   final String category;
+  final String image;
   final VoidCallback? onTap;
 
   const ArticleCard({
@@ -12,6 +13,7 @@ class ArticleCard extends StatelessWidget {
     required this.title,
     required this.category,
     this.onTap,
+    required this.image,
   });
 
   @override
@@ -37,18 +39,22 @@ class ArticleCard extends StatelessWidget {
             Container(
               height: 160,
               decoration: const BoxDecoration(
-                color: Color(0xFFFF0000),
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(12),
                   topRight: Radius.circular(12),
                 ),
+              ),
+              child: Image(
+                image: AssetImage(image),
+                fit: BoxFit.cover,
+                width: 500,
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(12),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [   
+                children: [
                   Text(
                     title,
                     style: AppFont.semibold().copyWith(
