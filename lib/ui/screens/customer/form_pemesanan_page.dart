@@ -1,6 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:frontend_ambilin/utils/app_color.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
+import 'package:frontend_ambilin/utils/app_color.dart';
+import 'package:frontend_ambilin/ui/widgets/w_text_field_putih.dart';
 
 class FormPemesananPage extends StatefulWidget {
   const FormPemesananPage({super.key});
@@ -13,6 +16,15 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _beratController = TextEditingController();
   final TextEditingController _kategoriController = TextEditingController();
+  File? gambar;
+  Future ambil(ImageSource sumber) async {
+    final gbr = await ImagePicker().pickImage(source: sumber);
+    if (gbr != null){
+      setState(() {
+        gambar = File(gbr.path);
+      });
+    }
+  }
 
   final List<String> _kategoriOptions = [
     'Plastik',
@@ -22,6 +34,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
     'Logam',
     'Kaca',
   ];
+
   final List<String> _selectedKategori = [];
 
   @override
@@ -36,6 +49,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
 
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       backgroundColor: AppColor.putih100,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
@@ -182,28 +196,30 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   ),
                 ),
                 const SizedBox(height: 24),
-                _buildLabel('Kategori Sampah'),
-                const SizedBox(height: 8),
+                
+                
                 GestureDetector(
                   onTap: _showKategoriBottomSheet,
                   child: AbsorbPointer(
-                    child: TextFormField(
+                    child: WTextFieldPutih(
+                      label: 'Kategori Sampah',
+                      hintText: 'Pilih kategori sampah',
                       controller: _kategoriController,
                       readOnly: true,
-                      style: AppFont.regular().copyWith(
-                        fontSize: 14,
-                        color: AppColor.font100,
+                      suffixIcon: const Icon(
+                        Icons.arrow_drop_down,
+                        color: AppColor.font80,
                       ),
-                      decoration: _inputDecoration(
-                        hint: 'Pilih kategori sampah',
-                        suffixIcon: const Icon(
-                          Icons.arrow_drop_down,
-                          color: AppColor.font80,
-                        ),
-                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Kategori sampah wajib dipilih';
+                        }
+                        return null;
+                      },
                     ),
                   ),
                 ),
+                
                 if (_selectedKategori.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Wrap(
@@ -240,38 +256,19 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   ),
                 ],
                 const SizedBox(height: 20),
-                _buildLabel('Estimasi Berat (Kg)'),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _beratController,
-                  keyboardType: TextInputType.number,
-                  style: AppFont.regular().copyWith(
+                Text(
+                  'Lokasi Penjemputan',
+                  style: AppFont.semibold().copyWith(
                     fontSize: 14,
                     color: AppColor.font100,
                   ),
-                  decoration: _inputDecoration(
-                    hint: 'Masukkan estimasi berat',
-                    suffixIcon: Padding(
-                      padding: const EdgeInsets.only(right: 16),
-                      child: Text(
-                        'Kg',
-                        style: AppFont.semibold().copyWith(
-                          fontSize: 14,
-                          color: AppColor.font80,
-                        ),
-                      ),
-                    ),
-                  ),
                 ),
-                const SizedBox(height: 20),
-                _buildLabel('Lokasi Penjemputan'),
                 const SizedBox(height: 8),
-                
                 Container(
                   width: double.infinity,
                   height: 160,
                   decoration: BoxDecoration(
-                    color: AppColor.base20.withOpacity(0.4),
+                    color: AppColor.base20,
                     borderRadius: BorderRadius.circular(12),
                     border: Border.all(color: AppColor.font60),
                   ),
@@ -282,7 +279,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                         Icon(
                           Icons.map_outlined,
                           size: 48,
-                          color: AppColor.font80.withOpacity(0.5),
+                          color: AppColor.font80,
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -301,8 +298,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   width: double.infinity,
                   height: 48,
                   child: OutlinedButton.icon(
-                    onPressed: () {
-                    },
+                    onPressed: () {},
                     icon: const Icon(Icons.location_on, color: AppColor.putih100),
                     label: Text(
                       'Pilih Lokasi Penjemputan',
@@ -321,8 +317,6 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                _buildLabel('Foto Sampah'),
-                const SizedBox(height: 8),
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(24),
@@ -334,107 +328,121 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                       style: BorderStyle.solid,
                     ),
                   ),
-                  child: Column(
-                    children: [
-                      Icon(
-                        Icons.cloud_upload_outlined,
-                        size: 40,
-                        color: AppColor.font80.withOpacity(0.5),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Upload foto sampah anda',
-                        style: AppFont.regular().copyWith(
-                          fontSize: 12,
-                          color: AppColor.font80,
+                  child: gambar != null
+                      ? Stack(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                gambar!,
+                                height: 200,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Positioned(
+                              top: 8,
+                              right: 8,
+                              child: GestureDetector(
+                                onTap: () {
+                                  setState(() {
+                                    gambar = null;
+                                  });
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(4),
+                                  decoration: const BoxDecoration(
+                                    color: Colors.black54,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )
+                      : Column(
+                          children: [
+                            Icon(
+                              Icons.cloud_upload_outlined,
+                              size: 40,
+                              color: AppColor.font80.withOpacity(0.5),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Upload foto sampah anda',
+                              style: AppFont.regular().copyWith(
+                                fontSize: 12,
+                                color: AppColor.font80,
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => ambil(ImageSource.camera),
+                                    icon: const Icon(
+                                      Icons.camera_alt_outlined,
+                                      size: 18,
+                                      color: AppColor.base100,
+                                    ),
+                                    label: Text(
+                                      'Kamera',
+                                      style: AppFont.medium().copyWith(
+                                        fontSize: 13,
+                                        color: AppColor.base100,
+                                      ),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(color: AppColor.base100),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => ambil(ImageSource.gallery),
+                                    icon: const Icon(
+                                      Icons.photo_library_outlined,
+                                      size: 18,
+                                      color: AppColor.base100,
+                                    ),
+                                    label: Text(
+                                      'Galeri',
+                                      style: AppFont.medium().copyWith(
+                                        fontSize: 13,
+                                        color: AppColor.base100,
+                                      ),
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      side: const BorderSide(color: AppColor.base100),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                              },
-                              icon: const Icon(
-                                Icons.camera_alt_outlined,
-                                size: 18,
-                                color: AppColor.base100,
-                              ),
-                              label: Text(
-                                'Kamera',
-                                style: AppFont.medium().copyWith(
-                                  fontSize: 13,
-                                  color: AppColor.base100,
-                                ),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: AppColor.base100),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: OutlinedButton.icon(
-                              onPressed: () {
-                              },
-                              icon: const Icon(
-                                Icons.photo_library_outlined,
-                                size: 18,
-                                color: AppColor.base100,
-                              ),
-                              label: Text(
-                                'Galeri',
-                                style: AppFont.medium().copyWith(
-                                  fontSize: 13,
-                                  color: AppColor.base100,
-                                ),
-                              ),
-                              style: OutlinedButton.styleFrom(
-                                side: const BorderSide(color: AppColor.base100),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                padding:
-                                    const EdgeInsets.symmetric(vertical: 12),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
                 ),
                 const SizedBox(height: 32),
                 SizedBox(
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              'Penjemputan berhasil diajukan!',
-                              style: AppFont.medium().copyWith(
-                                fontSize: 14,
-                                color: AppColor.putih100,
-                              ),
-                            ),
-                            backgroundColor: AppColor.base100,
-                            behavior: SnackBarBehavior.floating,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        );
-                      }
-                    },
+                    onPressed: () { },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.base100,
                       foregroundColor: AppColor.putih100,
@@ -457,49 +465,6 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildLabel(String text) {
-    return Text(
-      text,
-      style: AppFont.semibold().copyWith(
-        fontSize: 14,
-        color: AppColor.font100,
-      ),
-    );
-  }
-  InputDecoration _inputDecoration({
-    required String hint,
-    Widget? suffixIcon,
-  }) {
-    return InputDecoration(
-      hintText: hint,
-      hintStyle: AppFont.regular().copyWith(
-        fontSize: 14,
-        color: AppColor.font80,
-      ),
-      filled: true,
-      fillColor: AppColor.putih100,
-      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      suffixIcon: suffixIcon,
-      suffixIconConstraints: const BoxConstraints(minHeight: 24),
-      enabledBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColor.font60),
-      ),
-      focusedBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: AppColor.base100, width: 2),
-      ),
-      errorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.red),
-      ),
-      focusedErrorBorder: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-        borderSide: const BorderSide(color: Colors.red, width: 2),
       ),
     );
   }

@@ -5,7 +5,7 @@ import 'package:frontend_ambilin/providers/auth_provider.dart';
 import 'package:frontend_ambilin/ui/screens/main_page.dart';
 import 'package:frontend_ambilin/ui/screens/login_page.dart';
 import 'package:frontend_ambilin/ui/screens/register_page.dart';
-// import 'package:frontend_ambilin/ui/screens/splash.dart';
+import 'package:frontend_ambilin/ui/screens/splash.dart';
 import 'package:frontend_ambilin/ui/screens/customer/customer_dashboard.dart';
 // import 'package:frontend_ambilin/utils/app_colors.dart';
 import 'package:frontend_ambilin/ui/screens/customer/subscription_page.dart';
@@ -17,7 +17,7 @@ import 'package:frontend_ambilin/ui/screens/customer/form_pemesanan_page.dart';
 void main() {
   runApp(
     DevicePreview(
-      enabled: !kReleaseMode,
+      enabled: false,
       builder: (context) => MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => AuthProvider()),
@@ -40,7 +40,9 @@ class MyApp extends StatelessWidget {
       builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       initialRoute: AppRoutes.splash,
+      // initialRoute: AppRoutes.register,
       routes: {
+        // AppRoutes.splash: (context) => SplashScreen(),
         AppRoutes.splash: (context) => CustomerDashboard(),
         AppRoutes.login: (context) => LoginPage(),
         AppRoutes.register: (context) => RegisterPage(),
