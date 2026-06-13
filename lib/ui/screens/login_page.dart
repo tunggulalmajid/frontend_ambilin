@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
 import 'package:frontend_ambilin/ui/widgets/w_text.dart';
-import 'package:frontend_ambilin/ui/widgets/w_text_field.dart';
+import 'package:frontend_ambilin/ui/widgets/w_text_fields.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/auth_provider.dart';
 import '../../../models/login_request.dart';
 import '../../../utils/app_routes.dart';
-// import '../../widgets/w_button.dart';
-// import '../../widgets/w_text_field.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -75,9 +73,11 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 50),
 
                 // INPUT EMAIL DENGAN VALIDASI
-                WTextField(
-                  hintText: "Email",
+                WTextFieldPutih(
+                  label: 'Email',
+                  hintText: "Masukkan email Anda",
                   controller: _emailController,
+                  keyboardType: TextInputType.emailAddress,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Email tidak boleh kosong";
@@ -92,10 +92,10 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 20),
 
                 // INPUT PASSWORD DENGAN VALIDASI
-                WTextField(
-                  hintText: "Password",
+                WPasswordField(
+                  label: 'Password',
+                  hintText: "Masukkan password Anda",
                   controller: _passwordController,
-                  isPassword: true,
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return "Password tidak boleh kosong";

@@ -1,277 +1,320 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_ambilin/models/langganan.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
+import 'package:frontend_ambilin/ui/widgets/w_button.dart';
+import 'package:frontend_ambilin/ui/screens/customer/metode_pembayaran_page.dart';
 
-class SubscriptionPage extends StatelessWidget {
+class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({super.key});
+
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColor.putihBackground,
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Stack(
-        children: [
-          Column(
-            children: [
-              Container(
-                height: 320,
-                width: double.infinity,
-                decoration: BoxDecoration(
-                  color: AppColor.base100,
-                  borderRadius: const BorderRadius.vertical(
-                    bottom: Radius.circular(16),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.only(left: 8, top: 12),
-                child: Align(
-                  alignment: Alignment.centerLeft,
-                  child: TextButton.icon(
-                    onPressed: () => Navigator.pop(context),
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: Colors.white,
-                      size: 20,
+  State<SubscriptionPage> createState() => _SubscriptionPageState();
+}
+
+class _SubscriptionPageState extends State<SubscriptionPage> {
+  // Selected plan index: 0 = 1 Bulan, 1 = 3 Bulan, 2 = 6 Bulan
+  int _selectedPlanIndex = 0;
+
+  final List<PaketLangganan> _subscriptionPlans = PaketLangganan.getPlans();
+
+  final List<Map<String, String>> _plans = [
+    {'durasi': '1 Bulan', 'harga': 'Rp. 30.000/Bulan'},
+    {'durasi': '3 Bulan', 'harga': 'Rp. 90.000/Bulan'},
+    {'durasi': '6 Bulan', 'harga': 'Rp. 180.000/Bulan'},
+  ];
+
+  // Keuntungan list
+  final List<Map<String, String>> _keuntungan = [
+    {
+      'title': 'Bonus Poin',
+      'desc': 'Dapatkan poin dari setiap penjemputan',
+    },
+    {
+      'title': 'Akses Fitur Premium',
+      'desc': 'Nikmati semua fitur Ambilin tanpa batasan',
+    },
+    {
+      'title': 'Gratis Ongkir Instan Tanpa Batas',
+      'desc': 'Jadikan pesananmu selalu Gratis Ongkir',
+    },
+    {
+      'title': 'Redeem poin',
+      'desc': 'test',
+    },
+  ];
+
+  void _showPaketLanggananSheet() {
+    int tempSelected = _selectedPlanIndex;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setModalState) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Pilih Paket Langganan',
+                    style: AppFont.bold().copyWith(
+                      fontSize: 18,
+                      color: AppColor.font100,
                     ),
-                    label: Text(
-                      'Kembali',
-                      style: AppFont.medium().copyWith(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
                   ),
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Icon(
-                Icons.workspace_premium,
-                color: Colors.amberAccent,
-                size: 48,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Customer+',
-                style: AppFont.bold().copyWith(
-                  fontSize: 28,
-                  color: Colors.white,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Text(
-                  'Tingkatkan pengalaman Anda dengan\nfitur eksklusif dan keuntungan spesial!',
-                  textAlign: TextAlign.center,
-                  style: AppFont.regular().copyWith(
-                    fontSize: 14,
-                    color: Colors.white.withOpacity(0.9),
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 28),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    children: [
-                      Text(
-                        'Langganan Bulanan',
-                        style: AppFont.semibold().copyWith(
-                          fontSize: 16,
-                          color: AppColor.font100,
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.baseline,
-                        textBaseline: TextBaseline.alphabetic,
-                        children: [
-                          Text(
-                            '49K',
-                            style: AppFont.bold().copyWith(
-                              fontSize: 40,
-                              color: AppColor.base100,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Text(
-                            '/bulan',
-                            style: AppFont.regular().copyWith(
-                              fontSize: 16,
-                              color: AppColor.font80,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Container(
+                  const SizedBox(height: 20),
+                  ...List.generate(_plans.length, (index) {
+                    final plan = _plans[index];
+                    final isSelected = tempSelected == index;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setModalState(() {
+                          tempSelected = index;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(bottom: 12),
                         padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
+                          horizontal: 20,
+                          vertical: 16,
                         ),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFFFF8E1),
-                          borderRadius: BorderRadius.circular(8),
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isSelected ? AppColor.base100 : AppColor.font60,
+                            width: isSelected ? 2 : 1,
+                          ),
                         ),
                         child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            const Icon(
-                              Icons.local_offer,
-                              size: 16,
-                              color: AppColor.base100,
-                            ),
-                            const SizedBox(width: 6),
                             Text(
-                              'Promo: Gratis 7 hari pertama!',
+                              plan['durasi']!,
+                              style: AppFont.semibold().copyWith(
+                                fontSize: 14,
+                                color: AppColor.font100,
+                              ),
+                            ),
+                            Text(
+                              plan['harga']!,
                               style: AppFont.medium().copyWith(
-                                fontSize: 12,
-                                color: AppColor.base100,
+                                fontSize: 14,
+                                color: AppColor.font100,
                               ),
                             ),
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      SizedBox(
-                        width: double.infinity,
-                        height: 48,
-                        child: ElevatedButton(
-                          onPressed: () {
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: AppColor.base100,
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            'Mulai Berlangganan',
-                            style: AppFont.semibold().copyWith(
-                              fontSize: 16,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                    );
+                  }),
+                  const SizedBox(height: 8),
+                  WButton(
+                    text: 'Konfirmasi',
+                    textSize: 16,
+                    onPressed: () {
+                      setState(() {
+                        _selectedPlanIndex = tempSelected;
+                      });
+                      Navigator.pop(context);
+                    },
                   ),
-                ),
+                ],
               ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(24),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
-                        blurRadius: 12,
-                        offset: const Offset(0, 4),
-                      ),
-                    ],
-                  ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      // Background dasar scaffold diubah menjadi hijau utama agar status bar atas otomatis berwarna hijau
+      backgroundColor: AppColor.base100, 
+      body: SafeArea(
+        bottom: false,
+        child: Container(
+          // Gunakan warna putih untuk area body di bawah SafeArea (di luar area scroll)
+          color: Colors.white, 
+          child: Column(
+            children: [
+              // Header & Scrollable Content
+              Expanded(
+                child: SingleChildScrollView(
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        'Keuntungan Member Customer+',
-                        style: AppFont.semibold().copyWith(
-                          fontSize: 16,
-                          color: AppColor.font100,
+                      // Sisi background hijau dipasang khusus di area header ini saja
+                      Container(
+                        color: AppColor.base100, // Warna hijau utama tetap di sini
+                        child: Column(
+                          children: [
+                            Container(
+                              height: 70, 
+                              width: double.infinity,
+                              child: Stack(
+                                children: [
+                                  // Tombol Back
+                                  Positioned(
+                                    left: 8,
+                                    top: 0,
+                                    bottom: 0,
+                                    child: Center(
+                                      child: IconButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        icon: const Icon(
+                                          Icons.arrow_back,
+                                          color: Colors.white,
+                                          size: 28,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  // Image Logo Ambilin+
+                                  Center(
+                                    child: Image.asset(
+                                      'assets/ambilin.png',
+                                      height: 32,
+                                      fit: BoxFit.contain,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // Berikan sedikit jarak bawah berlatar hijau sebelum masuk ke radius putih
+                            const SizedBox(height: 16),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      _buildFeatureRow(
-                        icon: Icons.trending_up,
-                        title: 'Akses Fitur Premium',
-                        description:
-                            'Buka fitur eksklusif yang hanya tersedia untuk member.',
-                      ),
-                      const SizedBox(height: 16),
-                      _buildFeatureRow(
-                        icon: Icons.monetization_on_rounded,
-                        title: 'Bonus Poin',
-                        description:
-                            'Dapatkan poin untuk setiap transaksi yang Anda lakukan.',
-                      ),
+
+                      // Konten utama latar putih
+                      transformContentCard(),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 32),
+
+              // Bottom subscription bar
+              _buildBottomBar(),
             ],
           ),
-        ]),
+        ),
       ),
-    ));
+    );
   }
-  Widget _buildFeatureRow({
-    required IconData icon,
+
+  Widget transformContentCard() {
+    return Container(
+      width: double.infinity,
+      // Menggunakan tumpukan margin negatif agar lengkungan putih memotong pas di area hijau header atas
+      transform: Matrix4.translationValues(0.0, -16.0, 0.0),
+      decoration: const BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      child: Padding(
+        // Tambahkan padding atas sedikit (dari 24 ke 32) untuk mengonpensasi pergeseran transform di atas
+        padding: const EdgeInsets.fromLTRB(24, 32, 24, 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Row memuat dua asset gambar secara langsung
+            Row(
+              children: [
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/bonus.png', 
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.asset(
+                      'assets/Free.png', 
+                      fit: BoxFit.contain,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+
+            const SizedBox(height: 28),
+
+            // Judul Keuntungan
+            Text(
+              'Keuntungan:',
+              style: AppFont.bold().copyWith(
+                fontSize: 16,
+                color: AppColor.font100,
+              ),
+            ),
+            const SizedBox(height: 16),
+
+            // List item keuntungan
+            ...List.generate(_keuntungan.length, (index) {
+              final item = _keuntungan[index];
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 20),
+                child: _buildKeuntunganRow(
+                  title: item['title']!,
+                  description: item['desc']!,
+                ),
+              );
+            }),
+            const SizedBox(height: 20), 
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildKeuntunganRow({
     required String title,
     required String description,
   }) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Bulatan hijau muda soft transparan tanpa icon bintang di dalamnya sesuai SVG
         Container(
           width: 40,
           height: 40,
-          decoration: BoxDecoration(
-            color: AppColor.base20,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Icon(
-            icon,
-            size: 20,
-            color: AppColor.base100,
+          decoration: const BoxDecoration(
+            color: Color(0xFFE8FFF0), 
+            shape: BoxShape.circle,
           ),
         ),
-        const SizedBox(width: 12),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 title,
-                style: AppFont.semibold().copyWith(
-                  fontSize: 14,
+                style: AppFont.bold().copyWith(
+                  fontSize: 15,
                   color: AppColor.font100,
                 ),
               ),
-              const SizedBox(height: 2),
+              const SizedBox(height: 4),
               Text(
                 description,
                 style: AppFont.regular().copyWith(
-                  fontSize: 12,
+                  fontSize: 13,
                   color: AppColor.font80,
                 ),
               ),
@@ -279,6 +322,115 @@ class SubscriptionPage extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildBottomBar() {
+    return Container(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 10,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              // Area Informasi Paket Durasi & Panah Atas (Dapat di-tap di seluruh area)
+              Expanded(
+                child: GestureDetector(
+                  onTap: _showPaketLanggananSheet,
+                  behavior: HitTestBehavior.opaque,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            _plans[_selectedPlanIndex]['durasi']!,
+                            style: AppFont.bold().copyWith(
+                              fontSize: 18,
+                              color: AppColor.font100,
+                            ),
+                          ),
+                          const SizedBox(width: 2),
+                          const Icon(
+                            Icons.keyboard_arrow_up,
+                            size: 22,
+                            color: AppColor.font100,
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        _plans[_selectedPlanIndex]['harga']!,
+                        style: AppFont.regular().copyWith(
+                          fontSize: 13,
+                          color: AppColor.font60,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              // Tombol Langganan Hijau
+              SizedBox(
+                width: 180,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MetodePembayaranPage(
+                          subscriptionId: _subscriptionPlans[_selectedPlanIndex].id,
+                        ),
+                      ),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.base100,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: Text(
+                    'Langganan',
+                    textAlign: TextAlign.center,
+                    style: AppFont.bold().copyWith(
+                      fontSize: 14,
+                      color: Colors.white,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(
+              'deskripsi pembayaran',
+              style: AppFont.regular().copyWith(
+                fontSize: 12,
+                color: AppColor.font60,
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

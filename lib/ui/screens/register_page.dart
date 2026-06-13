@@ -3,7 +3,7 @@ import 'package:frontend_ambilin/models/register_request.dart';
 import 'package:frontend_ambilin/providers/auth_provider.dart';
 
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
-import 'package:frontend_ambilin/ui/widgets/w_text_field.dart';
+import 'package:frontend_ambilin/ui/widgets/w_text_fields.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -22,6 +22,16 @@ class _RegisterPageState extends State<RegisterPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _konfirmasiController = TextEditingController();
+
+  @override
+  void dispose() {
+    _namaController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _konfirmasiController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
@@ -29,7 +39,7 @@ class _RegisterPageState extends State<RegisterPage> {
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
         child: Center(
-          child: Padding(
+          child: SingleChildScrollView(
             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 5),
             child: Form(
               key: _formKey,
@@ -42,7 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
                         "Register",
                         style: GoogleFonts.poppins(
                           color: AppColor.base100,
-                          fontWeight: .bold,
+                          fontWeight: FontWeight.bold,
                           fontSize: 36,
                         ),
                       ),
@@ -50,15 +60,16 @@ class _RegisterPageState extends State<RegisterPage> {
                         "Buat akun untuk melanjutkan",
                         style: GoogleFonts.poppins(
                           color: AppColor.font100,
-                          fontWeight: .w500,
+                          fontWeight: FontWeight.w500,
                           fontSize: 18,
                         ),
                       ),
                     ],
                   ),
                   SizedBox(height: 60),
-                  WTextField(
-                    hintText: "Nama lengkap",
+                  WTextFieldPutih(
+                    label: 'Nama Lengkap',
+                    hintText: "Masukkan nama lengkap",
                     controller: _namaController,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
@@ -71,9 +82,11 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   SizedBox(height: 22),
-                  WTextField(
-                    hintText: "Email",
+                  WTextFieldPutih(
+                    label: 'Email',
+                    hintText: "Masukkan email Anda",
                     controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Email tidak boleh kosong";
@@ -85,10 +98,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   SizedBox(height: 22),
-                  WTextField(
-                    hintText: "Password",
+                  WPasswordField(
+                    label: 'Password',
+                    hintText: "Masukkan password",
                     controller: _passwordController,
-                    isPassword: true,
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return "Password tidak boleh kosong";
@@ -100,10 +113,10 @@ class _RegisterPageState extends State<RegisterPage> {
                     },
                   ),
                   SizedBox(height: 22),
-                  WTextField(
-                    hintText: "Konfirmasi Password",
+                  WPasswordField(
+                    label: 'Konfirmasi Password',
+                    hintText: "Masukkan ulang password",
                     controller: _konfirmasiController,
-                    isPassword: true,
                     validator: (value) {
                       if (value != _passwordController.text) {
                         return "Password Tidak Sama";
@@ -167,7 +180,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                   SizedBox(height: 10),
                   Row(
-                    mainAxisAlignment: .end,
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       GestureDetector(
                         onTap: () {
@@ -177,7 +190,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           "Sign In",
                           style: GoogleFonts.poppins(
                             fontSize: 15,
-                            fontWeight: .w600,
+                            fontWeight: FontWeight.w600,
                           ),
                         ),
                       ),
