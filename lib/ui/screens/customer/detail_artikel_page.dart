@@ -1,4 +1,4 @@
-// ----- FILE: detail_artikel_page.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../models/artikel.dart';
 import '../../../utils/app_color.dart';
@@ -14,7 +14,7 @@ class DetailArtikelPage extends StatelessWidget {
       backgroundColor: AppColor.putihBackground,
       body: Stack(
         children: [
-          // Banner Gambar Full Atas
+
           Positioned(
             top: 0, left: 0, right: 0,
             height: MediaQuery.of(context).size.height * 0.40,
@@ -27,7 +27,7 @@ class DetailArtikelPage extends StatelessWidget {
               ),
             ),
           ),
-          // Gradient overlay
+
           Positioned(
             top: 0, left: 0, right: 0,
             height: MediaQuery.of(context).size.height * 0.40,
@@ -40,7 +40,7 @@ class DetailArtikelPage extends StatelessWidget {
               ),
             ),
           ),
-          // Konten Artikel dari Bawah
+
           DraggableScrollableSheet(
             initialChildSize: 0.62, minChildSize: 0.55, maxChildSize: 0.92,
             builder: (context, scrollController) {
@@ -80,7 +80,7 @@ class DetailArtikelPage extends StatelessWidget {
               );
             },
           ),
-          // Tombol Back Floating
+
           Positioned(
             top: MediaQuery.of(context).padding.top + 8, left: 16,
             child: GestureDetector(

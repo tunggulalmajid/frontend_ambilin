@@ -1,6 +1,4 @@
-// ----- FILE: petugas_lihat_map_page.dart -----
-// Halaman Map Full Screen untuk petugas melacak lokasi sampah pelanggan.
-// Menggunakan placeholder tile OSM statis sebagai simulasi flutter_map.
+
 
 import 'package:flutter/material.dart';
 import '../../../models/setor_sampah.dart';
@@ -19,14 +17,12 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
   bool _isLoadingLokasi = false;
   String _statusTeks = '';
 
-  // ---------- Simulasi Async GPS ----------
   Future<void> _refreshLokasi() async {
     setState(() {
       _isLoadingLokasi = true;
       _statusTeks = '';
     });
 
-    // Simulasi loading 1.5 detik mengambil koordinat GPS
     await Future.delayed(const Duration(milliseconds: 1500));
 
     setState(() {
@@ -56,7 +52,7 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
       ),
       body: Stack(
         children: [
-          // ========== Map Full Screen (Placeholder OSM Tile) ==========
+
           Positioned.fill(
             child: Image.network(
               'https://tile.openstreetmap.org/15/26601/17094.png',
@@ -82,7 +78,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
             ),
           ),
 
-          // Pin Lokasi Sampah statis di tengah layar
           const Center(
             child: Icon(
               Icons.location_on,
@@ -91,7 +86,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
             ),
           ),
 
-          // ========== FAB Refresh Lokasi ==========
           Positioned(
             bottom: 90,
             right: 20,
@@ -111,7 +105,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
             ),
           ),
 
-          // ========== Info Bar Bawah ==========
           if (_statusTeks.isNotEmpty)
             Positioned(
               bottom: 20,

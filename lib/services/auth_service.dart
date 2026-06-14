@@ -21,4 +21,15 @@ class AuthService extends ApiService {
       throw Exception("Gagal terhubung ke server");
     }
   }
+
+  Future<Map<String, dynamic>> loginWithGoogle(String idToken) async {
+    try {
+      final response = await dio.post('/auth/google', data: {
+        'idToken': idToken,
+      });
+      return response.data;
+    } catch (e) {
+      throw Exception("Gagal terhubung ke server");
+    }
+  }
 }

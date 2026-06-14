@@ -88,6 +88,49 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  // --- FUNGSI LOGIN DENGAN GOOGLE ---
+  Future<bool> loginWithGoogle(String idToken) async {
+    _isLoading = true;
+    _errorMessage = "";
+    notifyListeners();
+
+    try {
+      final response = await _authService.loginWithGoogle(idToken);
+      _isLoading = false;
+
+      if (response['status'] == "success") {
+        // Ambil data dari key 'data'
+        final payload = response['data'];
+
+        // Simpan token ke storage
+        await _storage.write(key: "accessToken", value: payload['accessToken']);
+        await _storage.write(
+          key: "refreshToken",
+          value: payload['refreshToken'],
+        );
+
+        // Simpan user ke memory provider (mendukung response reguler maupun google auth nested structure)
+        final userPayload = payload['user'] ?? (payload['data'] != null ? payload['data']['user'] : null);
+        if (userPayload != null) {
+          _user = UserModel.fromJson(userPayload);
+        }
+
+        notifyListeners();
+        return true;
+      } else {
+        _errorMessage = response['message'] ?? "Login Google gagal";
+        notifyListeners();
+        return false;
+      }
+    } catch (e) {
+      log("Login Google Error: $e");
+      _isLoading = false;
+      _errorMessage = "Terjadi kesalahan jaringan atau server";
+      notifyListeners();
+      return false;
+    }
+  }
+
   // --- FUNGSI LOGOUT ---
   void logout() async {
     await _storage.deleteAll();

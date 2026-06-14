@@ -26,11 +26,9 @@ class EditArtikelPage extends StatefulWidget {
 class _EditArtikelPageState extends State<EditArtikelPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   late final TextEditingController _judulController;
   late final TextEditingController _isiController;
 
-  // Dropdown value
   String? _selectedKategori;
   final List<String> _kategoriList = [
     'Tips',
@@ -40,7 +38,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     'Pengelolaan',
   ];
 
-  // Image
   File? _selectedImage;
   String _existingImageUrl = '';
   final ImagePicker _picker = ImagePicker();
@@ -48,7 +45,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill data dari artikel yang dipilih
+
     _judulController = TextEditingController(text: widget.article.judul);
     _isiController = TextEditingController(text: widget.article.isi);
     _selectedKategori = widget.article.kategori;
@@ -67,7 +64,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     if (image != null) {
       setState(() {
         _selectedImage = File(image.path);
-        _existingImageUrl = ''; // Hapus URL lama jika gambar baru dipilih
+        _existingImageUrl = '';
       });
     }
   }
@@ -110,7 +107,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Header: Back + Judul ---
+
                 Stack(
                   alignment: Alignment.centerLeft,
                   children: [
@@ -135,7 +132,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // --- Judul Artikel (Pre-filled) ---
                 WTextFieldPutih(
                   label: 'Judul Artikel',
                   hintText: 'Masukkan Judul',
@@ -149,7 +145,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Kategori Dropdown (Pre-selected) ---
                 WDropdownField(
                   label: 'Kategori',
                   hintText: 'Pilih Kategori Artikel',
@@ -169,7 +164,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Foto Artikel (Menampilkan gambar yang ada) ---
                 Text(
                   'Foto Sampah',
                   style: AppFont.semibold().copyWith(
@@ -181,7 +175,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                 _buildImagePicker(),
                 const SizedBox(height: 16),
 
-                // --- Isi Artikel (Pre-filled) ---
                 Text(
                   'Isi Artikel',
                   style: AppFont.semibold().copyWith(
@@ -241,7 +234,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // --- Simpan Button ---
                 WButton(
                   text: 'Simpan',
                   onPressed: _handleSimpan,
@@ -255,9 +247,8 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     );
   }
 
-  /// Widget area gambar — menampilkan gambar yang sudah ada atau picker
   Widget _buildImagePicker() {
-    // Cek apakah ada gambar baru yang dipilih
+
     if (_selectedImage != null) {
       return _buildImagePreview(
         child: Image.file(
@@ -269,7 +260,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       );
     }
 
-    // Cek apakah ada gambar dari URL (data existing)
     if (_existingImageUrl.isNotEmpty) {
       return _buildImagePreview(
         child: Image.network(
@@ -294,7 +284,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       );
     }
 
-    // Tampilan kosong — picker
     return GestureDetector(
       onTap: _pickImage,
       child: Container(
@@ -352,7 +341,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     );
   }
 
-  /// Wrapper gambar dengan tombol hapus (X) di pojok kanan atas
   Widget _buildImagePreview({required Widget child}) {
     return Container(
       width: double.infinity,
@@ -366,7 +354,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
             borderRadius: BorderRadius.circular(11),
             child: child,
           ),
-          // Tombol hapus gambar
+
           Positioned(
             top: 8,
             right: 8,

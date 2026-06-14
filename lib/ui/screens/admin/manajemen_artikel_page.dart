@@ -71,7 +71,6 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
               ),
               const SizedBox(height: 16),
 
-              // --- Article List dari Provider ---
               if (articleProvider.isLoading)
                 const Center(
                   child: Padding(
@@ -108,7 +107,7 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
                   },
                 ),
 
-              const SizedBox(height: 80), 
+              const SizedBox(height: 80),
             ],
           ),
         ),
@@ -136,9 +135,6 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
     );
   }
 
-  // --------------------------------------------------
-  // Article menu popup
-  // --------------------------------------------------
   void _showArticleMenu(BuildContext context, Artikel article, int index) {
     showModalBottomSheet(
       context: context,

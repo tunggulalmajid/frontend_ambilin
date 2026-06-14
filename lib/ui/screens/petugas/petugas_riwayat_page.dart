@@ -1,14 +1,11 @@
-// ----- FILE: petugas_riwayat_page.dart -----
-// Halaman Riwayat / Aktivitas Pesanan Petugas.
-// Menampilkan daftar penjemputan yang sedang diproses dan yang sudah selesai.
+
 
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/loading_overlay.dart';
 import '../../widgets/navbar.dart';
-import 'petugas_proses_penjemputan_page.dart';
-import 'petugas_detail_selesai_page.dart';
 
 class PetugasRiwayatPage extends StatefulWidget {
   const PetugasRiwayatPage({super.key});
@@ -18,9 +15,7 @@ class PetugasRiwayatPage extends StatefulWidget {
 }
 
 class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
-  // ========== Data Dummy (Mock) ==========
 
-  /// Model data internal per-card riwayat.
   late List<Map<String, dynamic>> _dataSedangProses;
   late List<Map<String, dynamic>> _dataSelesai;
 
@@ -30,7 +25,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
   void initState() {
     super.initState();
 
-    // Data dummy — Sedang Proses
     _dataSedangProses = [
       {
         'tanggal': '12 Mei, 15:22',
@@ -42,7 +36,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
       },
     ];
 
-    // Data dummy — Selesai
     _dataSelesai = [
       {
         'tanggal': '12 Mei, 15:22',
@@ -65,39 +58,31 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     ];
   }
 
-  // ---------- Navigasi Async ke Halaman Proses ----------
   Future<void> _navigasiKeProses(Map<String, dynamic> data) async {
     setState(() => _isNavigating = true);
 
-    // Simulasi async loading sebelum navigasi
     await Future.delayed(const Duration(milliseconds: 800));
 
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => const PetugasProsesPenjemputanPage(),
-      ),
+      AppRoutes.petugasProsesPenjemputan,
     );
   }
 
-  // ---------- Navigasi Async ke Halaman Detail Selesai ----------
   Future<void> _navigasiKeSelesai(Map<String, dynamic> data) async {
     setState(() => _isNavigating = true);
 
-    // Simulasi async loading sebelum navigasi
     await Future.delayed(const Duration(milliseconds: 800));
 
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => const PetugasDetailSelesaiPage(),
-      ),
+      AppRoutes.petugasDetailSelesai,
     );
   }
 
@@ -113,7 +98,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ========== Judul Halaman ==========
+
                   Text(
                     'Aktivitas Pesanan',
                     style: AppFont.bold().copyWith(
@@ -123,7 +108,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ========== Seksi: Sedang Proses ==========
                   Text(
                     'Sedang Proses',
                     style: AppFont.bold().copyWith(
@@ -134,7 +118,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                   const Divider(color: AppColor.font60),
                   const SizedBox(height: 8),
 
-                  // List card "Sedang Proses"
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -150,7 +133,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                   ),
                   const SizedBox(height: 20),
 
-                  // ========== Seksi: Selesai ==========
                   Text(
                     'Selesai',
                     style: AppFont.bold().copyWith(
@@ -161,7 +143,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                   const Divider(color: AppColor.font60),
                   const SizedBox(height: 8),
 
-                  // List card "Selesai"
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -181,17 +162,14 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
             ),
           ),
 
-          // Overlay loading saat navigasi
           LoadingOverlay(isLoading: _isNavigating),
         ],
       ),
 
-      // ========== Bottom Navigation Bar ==========
       bottomNavigationBar: const PetugasNavBar(currentIndex: 1),
     );
   }
 
-  // ---------- Widget Pembantu: Card Riwayat ----------
   Widget _buildCardRiwayat({
     required Map<String, dynamic> data,
     required bool isSelesai,
@@ -208,7 +186,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Baris tanggal
+
           Text(
             data['tanggal'] ?? '',
             style: AppFont.regular().copyWith(
@@ -218,11 +196,10 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
           ),
           const SizedBox(height: 10),
 
-          // Baris foto + detail info
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Foto kondisi sampah
+
               ClipRRect(
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
@@ -241,7 +218,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
               ),
               const SizedBox(width: 12),
 
-              // Deskripsi teks
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -269,7 +245,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                         color: AppColor.font100,
                       ),
                     ),
-                    // Tambahan baris "Berat" untuk card selesai
+
                     if (isSelesai) ...[
                       const SizedBox(height: 2),
                       Text(
@@ -287,7 +263,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
           ),
           const SizedBox(height: 12),
 
-          // Tombol "Lihat"
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

@@ -1,13 +1,11 @@
-// ----- FILE: pelanggan_artikel_page.dart -----
-// Halaman Daftar Artikel untuk pelanggan (Customer).
-// Menampilkan daftar artikel dengan filter kategori horizontal.
+
 
 import 'package:flutter/material.dart';
 import '../../../models/artikel.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/loading_overlay.dart';
-import 'detail_artikel_page.dart';
 
 class PelangganArtikelPage extends StatefulWidget {
   const PelangganArtikelPage({super.key});
@@ -17,7 +15,7 @@ class PelangganArtikelPage extends StatefulWidget {
 }
 
 class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
-  // ---------- Data Dummy ----------
+
   late List<Artikel> _semuaArtikel;
   List<Artikel> _artikelTampil = [];
   String _kategoriAktif = 'Semua';
@@ -33,13 +31,12 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
   @override
   void initState() {
     super.initState();
-    // Ambil data dummy dari model, hanya tampilkan yang aktif (isDelete == false)
+
     _semuaArtikel =
         Artikel.getMockList().where((a) => !a.isDelete).toList();
     _artikelTampil = List.from(_semuaArtikel);
   }
 
-  // ---------- Filter Kategori ----------
   void _filterKategori(String kategori) {
     setState(() {
       _kategoriAktif = kategori;
@@ -52,21 +49,18 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
     });
   }
 
-  // ---------- Navigasi Async ke Detail ----------
   Future<void> _bukaDetailArtikel(Artikel artikel) async {
     setState(() => _isNavigating = true);
 
-    // Simulasi loading async sebelum navigasi
     await Future.delayed(const Duration(milliseconds: 500));
 
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => DetailArtikelPage(artikel: artikel),
-      ),
+      AppRoutes.detailArtikel,
+      arguments: artikel,
     );
   }
 
@@ -80,7 +74,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // ========== Header Judul ==========
+
                 Padding(
                   padding:
                       const EdgeInsets.only(left: 20, right: 20, top: 20),
@@ -108,7 +102,6 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // ========== Baris Kategori Filter ==========
                 SizedBox(
                   height: 40,
                   child: ListView.separated(
@@ -150,7 +143,6 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // ========== Daftar Card Artikel ==========
                 Expanded(
                   child: _artikelTampil.isEmpty
                       ? Center(
@@ -173,14 +165,12 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
             ),
           ),
 
-          // Overlay loading saat navigasi
           LoadingOverlay(isLoading: _isNavigating),
         ],
       ),
 
-      // ========== Bottom Navigation Bar ==========
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2, // Menu "Artikel" aktif
+        currentIndex: 2,
         selectedItemColor: AppColor.base100,
         unselectedItemColor: AppColor.font80,
         showUnselectedLabels: true,
@@ -194,7 +184,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
         onTap: (index) {
-          // Navigasi antar tab — stub
+
         },
       ),
       floatingActionButton: FloatingActionButton(
@@ -206,9 +196,8 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
     );
   }
 
-  // ---------- Widget Card Artikel ----------
   Widget _buildCardArtikel(Artikel artikel) {
-    // Dummy jumlah views acak berdasarkan id
+
     final jumlahViews = (artikel.idArtikel * 37 + 15) % 200;
 
     return GestureDetector(
@@ -229,7 +218,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Banner Foto Artikel
+
             ClipRRect(
               borderRadius:
                   const BorderRadius.vertical(top: Radius.circular(16)),
@@ -248,7 +237,6 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
               ),
             ),
 
-            // Konten Teks
             Padding(
               padding: const EdgeInsets.all(14),
               child: Column(
@@ -265,7 +253,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      // Tag Kategori
+
                       Text(
                         artikel.kategori,
                         style: AppFont.regular().copyWith(
@@ -273,7 +261,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                           color: AppColor.font80,
                         ),
                       ),
-                      // Indikator Views
+
                       Row(
                         children: [
                           const Icon(Icons.remove_red_eye_outlined,
