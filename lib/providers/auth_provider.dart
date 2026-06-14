@@ -50,6 +50,7 @@ class AuthProvider extends ChangeNotifier {
           final payload = response['data'];
           _user = UserModel.fromJson(payload);
 
+          // Memetakan role dengan aman menggunakan pertahanan tipe data ganda
           final String role = _mapIdRoleToString(_user!.idRole);
           await _storage.write(key: "role", value: role);
 
@@ -88,10 +89,18 @@ class AuthProvider extends ChangeNotifier {
 
         _user = UserModel.fromJson(payload['user']);
 
-        final String namaRole =
+        String role =
             (payload['user']['nama_role'] ?? '').toString().toLowerCase();
-        final String role =
-            namaRole.isNotEmpty ? namaRole : _mapIdRoleToString(_user!.idRole);
+        
+        if (role.isEmpty) {
+          role = _mapIdRoleToString(_user!.idRole);
+        }
+
+        // Antisipasi berlapis untuk mendeteksi role petugas (idRole == 2)
+        if (_user!.idRole.toString() == '2') {
+          role = 'petugas';
+        }
+
         await _storage.write(key: "role", value: role);
 
         _isLoggedIn = true;
@@ -123,20 +132,23 @@ class AuthProvider extends ChangeNotifier {
       if (response['status'] == "success") {
         final payload = response['data'];
 
-        // Simpan token ke secure storage
         await _storage.write(
             key: "accessToken", value: payload['accessToken']);
         await _storage.write(
             key: "refreshToken", value: payload['refreshToken']);
 
-        // Parse user data dari response
         _user = UserModel.fromJson(payload['user']);
 
-        // Simpan role ke secure storage
         final String namaRole =
             (payload['user']['nama_role'] ?? '').toString().toLowerCase();
-        final String role =
+        
+        String role =
             namaRole.isNotEmpty ? namaRole : _mapIdRoleToString(_user!.idRole);
+            
+        if (_user!.idRole.toString() == '2') {
+          role = 'petugas';
+        }
+
         await _storage.write(key: "role", value: role);
 
         _isLoggedIn = true;
@@ -237,7 +249,6 @@ class AuthProvider extends ChangeNotifier {
       );
       _isLoading = false;
       if (response['status'] == "success") {
-        // Refresh data user dari server setelah update sukses
         final token = await _storage.read(key: "accessToken");
         if (token != null) {
           final responseProfile = await _authService.getProfile(token);
@@ -269,7 +280,6 @@ class AuthProvider extends ChangeNotifier {
       final response = await _authService.updatePhoto(imagePath);
       _isLoading = false;
       if (response['status'] == "success") {
-        // Refresh data user dari server setelah upload foto sukses
         final token = await _storage.read(key: "accessToken");
         if (token != null) {
           final responseProfile = await _authService.getProfile(token);
@@ -310,7 +320,6 @@ class AuthProvider extends ChangeNotifier {
           final payload = response['data'];
           _user = UserModel.fromJson(payload);
 
-          // Perbarui role di storage
           final String role = _mapIdRoleToString(_user!.idRole);
           await _storage.write(key: "role", value: role);
 
@@ -422,13 +431,15 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  String _mapIdRoleToString(int idRole) {
-    switch (idRole) {
-      case 1:
+  // MODIFIKASI KRUSIAL: Pengecekan berbasis konversi String untuk menangani ketidakcocokan tipe data (int vs string)
+  String _mapIdRoleToString(dynamic idRole) {
+    final String roleIdStr = idRole.toString();
+    switch (roleIdStr) {
+      case '1':
         return 'admin';
-      case 2:
+      case '2':
         return 'petugas';
-      case 3:
+      case '3':
         return 'customer';
       default:
         return 'customer';

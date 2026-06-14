@@ -35,6 +35,19 @@ class _MainPageState extends State<MainPage> {
 
       if (!mounted) return;
 
+      if (role == 'petugas') {
+        setState(() {
+          _role = role;
+          _isChecking = false;
+        });
+        Navigator.pushNamedAndRemoveUntil(
+          context,
+          AppRoutes.petugasHome,
+          (route) => false,
+        );
+        return;
+      }
+
       setState(() {
         _role = role;
         _isChecking = false;
