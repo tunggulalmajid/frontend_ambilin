@@ -10,7 +10,6 @@ class AppRoutes {
   static const String manajemenArtikel = '/manajemenartikel';
   static const String manajemenKategori = '/manajemenkategori';
   static const String metodePembayaran = '/metodepembayaran';
-  static const String pilihPromo = '/pilihpromo'; // perlu dihapus
   static const String pembayaran = '/pembayaran';
   static const String transaksiBerhasil = '/transaksiberhasil';
 
@@ -42,6 +41,5 @@ class AppRoutes {
   static const String adminKonfirmasiPembayaran = '/admin/konfirmasi-pembayaran';
   static const String adminManajemenKonfirmasi = '/admin/manajemen-konfirmasi';
   static const String adminDetailKonfirmasi = '/admin/detail-konfirmasi';
-  static const String purchaseSubscription = '/subscription';
-  static const String createOrder = '/pemesanan';
+
 }

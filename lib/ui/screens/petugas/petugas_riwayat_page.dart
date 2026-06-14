@@ -3,10 +3,9 @@
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/loading_overlay.dart';
 import '../../widgets/navbar.dart';
-import 'petugas_proses_penjemputan_page.dart';
-import 'petugas_detail_selesai_page.dart';
 
 class PetugasRiwayatPage extends StatefulWidget {
   const PetugasRiwayatPage({super.key});
@@ -67,11 +66,9 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => const PetugasProsesPenjemputanPage(),
-      ),
+      AppRoutes.petugasProsesPenjemputan,
     );
   }
 
@@ -83,11 +80,9 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => const PetugasDetailSelesaiPage(),
-      ),
+      AppRoutes.petugasDetailSelesai,
     );
   }
 

@@ -192,7 +192,7 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
               child: Text(
                 'Batal',
                 style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.medium,
+                  fontWeight: FontWeight.w500,
                   fontSize: 14,
                   color: AppColor.font80,
                 ),
@@ -317,7 +317,7 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
               child: Text(
                 'Batal',
                 style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.medium,
+                  fontWeight: FontWeight.w500,
                   fontSize: 14,
                   color: AppColor.font80,
                 ),
@@ -391,7 +391,7 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
               child: Text(
                 'Batal',
                 style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.medium,
+                  fontWeight: FontWeight.w500,
                   fontSize: 14,
                   color: AppColor.font80,
                 ),

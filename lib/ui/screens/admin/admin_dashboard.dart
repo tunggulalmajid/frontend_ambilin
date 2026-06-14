@@ -4,7 +4,6 @@ import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
 import 'package:frontend_ambilin/ui/widgets/navbar.dart';
-import 'package:frontend_ambilin/ui/screens/admin/profile_admin_page.dart';
 
 class AdminDashboard extends StatefulWidget {
   const AdminDashboard({super.key});
@@ -52,11 +51,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const ProfileAdminPage(),
-                        ),
+                        AppRoutes.adminProfil,
                       );
                     },
                     child: Container(

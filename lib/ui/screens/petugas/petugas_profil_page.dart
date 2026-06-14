@@ -4,10 +4,9 @@ import '../../../models/user_model.dart';
 import '../../../models/petugas.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/navbar.dart';
-import 'petugas_edit_profil_page.dart';
-import 'petugas_ubah_password_page.dart';
 
 class PetugasProfilPage extends StatefulWidget {
   const PetugasProfilPage({super.key});
@@ -57,11 +56,10 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
               email: _user.email,
               onBackPressed: () => Navigator.pop(context),
               onEditPressed: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => PetugasEditProfilPage(user: _user),
-                  ),
+                  AppRoutes.petugasEditProfil,
+                  arguments: _user,
                 );
               },
             ),
@@ -135,11 +133,9 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                         color: AppColor.font80,
                       ),
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const PetugasUbahPasswordPage(),
-                          ),
+                          AppRoutes.petugasUbahPassword,
                         );
                       },
                     ),

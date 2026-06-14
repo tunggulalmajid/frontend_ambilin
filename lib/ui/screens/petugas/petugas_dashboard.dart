@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../models/setor_sampah.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/navbar.dart';
-import 'petugas_detail_tugas_page.dart';
 
 class PetugasDashboard extends StatefulWidget {
   const PetugasDashboard({super.key});
@@ -74,11 +74,10 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => PetugasDetailTugasPage(data: tugas),
-      ),
+      AppRoutes.petugasDetailTugas,
+      arguments: tugas,
     );
   }
 

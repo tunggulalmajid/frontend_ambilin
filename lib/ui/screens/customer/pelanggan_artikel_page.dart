@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import '../../../models/artikel.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/loading_overlay.dart';
-import 'detail_artikel_page.dart';
 
 class PelangganArtikelPage extends StatefulWidget {
   const PelangganArtikelPage({super.key});
@@ -57,11 +57,10 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.push(
+    Navigator.pushNamed(
       context,
-      MaterialPageRoute(
-        builder: (_) => DetailArtikelPage(artikel: artikel),
-      ),
+      AppRoutes.detailArtikel,
+      arguments: artikel,
     );
   }
 

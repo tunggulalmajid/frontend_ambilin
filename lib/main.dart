@@ -116,13 +116,11 @@ class MyApp extends StatelessWidget {
           }
         },
         AppRoutes.pemesanan: (context) => const FormPemesanan(),
-        AppRoutes.createOrder: (context) => const FormPemesanan(),
         AppRoutes.adminDashboard: (context) => const AdminDashboard(),
         AppRoutes.manajemenUser: (context) => const ManajemenAkunPage(),
         AppRoutes.manajemenArtikel: (context) => const ManajemenArtikelPage(),
         AppRoutes.manajemenKategori: (context) => const ManajemenKategoriPage(),
         AppRoutes.metodePembayaran: (context) => const FormPembelianLangganan(),
-        AppRoutes.purchaseSubscription: (context) => const FormPembelianLangganan(),
         AppRoutes.pembayaran: (context) => const PembayaranPage(
           subscriptionId: '',
           metodePembayaran: '',

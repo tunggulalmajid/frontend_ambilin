@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import '../../../models/setor_sampah.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/detail_card_wrapper.dart';
 import '../../widgets/async_button.dart';
-import 'petugas_lihat_map_page.dart';
 
 class PetugasDetailTugasPage extends StatefulWidget {
   final SetorSampah data;
@@ -76,11 +76,10 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
 
                   GestureDetector(
                     onTap: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(
-                          builder: (_) => PetugasLihatMapPage(data: data),
-                        ),
+                        AppRoutes.petugasLihatMap,
+                        arguments: data,
                       );
                     },
                     child: ClipRRect(

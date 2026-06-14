@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../../models/setor_sampah.dart';
 import '../../widgets/loading_overlay.dart';
-import 'pelanggan_proses_penjemputan.dart';
-import 'pelanggan_selesai_penjemputan.dart';
 
 class PesananPelangganPage extends StatefulWidget {
   const PesananPelangganPage({super.key});
@@ -33,18 +32,16 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
     if (!context.mounted) return;
 
     if (data.status == 'selesai') {
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => PelangganSelesaiPenjemputanPage(data: data),
-        ),
+        AppRoutes.pelangganDetailSelesai,
+        arguments: data,
       );
     } else {
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => PelangganProsesPenjemputanPage(data: data),
-        ),
+        AppRoutes.pelangganProsesPenjemputan,
+        arguments: data,
       );
     }
   }

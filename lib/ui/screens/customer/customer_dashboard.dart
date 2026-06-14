@@ -137,7 +137,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                             ),
                             ElevatedButton(
                               onPressed: () {
-                                Navigator.pushNamed(context, AppRoutes.purchaseSubscription);
+                                Navigator.pushNamed(context, AppRoutes.subscription);
                               },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.white,
@@ -324,7 +324,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
         child: FloatingActionButton(
           onPressed: () {
             if (_subscriptionState == CustomerSubscriptionState.memberPlus) {
-              Navigator.pushNamed(context, AppRoutes.createOrder);
+              Navigator.pushNamed(context, AppRoutes.pemesanan);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(

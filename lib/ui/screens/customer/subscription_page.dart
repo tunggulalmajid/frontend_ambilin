@@ -3,7 +3,7 @@ import 'package:frontend_ambilin/models/langganan.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
-import 'package:frontend_ambilin/ui/screens/customer/form_pembelian_langganan.dart';
+import 'package:frontend_ambilin/utils/app_routes.dart';
 
 class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({super.key});
@@ -381,11 +381,9 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 width: 180,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const FormPembelianLangganan(),
-                      ),
+                      AppRoutes.metodePembayaran,
                     );
                   },
                   style: ElevatedButton.styleFrom(
