@@ -25,7 +25,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
     super.initState();
     // Fetch data dari provider saat pertama kali masuk
     Future.microtask(() {
-      context.read<PickupHistoryProvider>().fetchPickupHistory();
+      context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 1);
     });
   }
 
@@ -116,9 +116,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                 const Center(
                   child: Padding(
                     padding: EdgeInsets.symmetric(vertical: 32),
-                    child: CircularProgressIndicator(
-                      color: AppColor.base100,
-                    ),
+                    child: CircularProgressIndicator(color: AppColor.base100),
                   ),
                 )
               else
