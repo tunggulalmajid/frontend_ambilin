@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:frontend_ambilin/models/article.dart';
+import 'package:frontend_ambilin/models/artikel.dart';
+import 'package:frontend_ambilin/models/customer.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
-import 'package:frontend_ambilin/ui/widgets/article_card.dart';
+import 'package:frontend_ambilin/ui/widgets/home_header.dart';
+import 'package:frontend_ambilin/ui/widgets/home_subscription_banner.dart';
+import 'package:frontend_ambilin/ui/widgets/home_article_section.dart';
+import 'package:frontend_ambilin/ui/screens/detail_artikel_page.dart';
 
 class CustomerDashboard extends StatefulWidget {
   const CustomerDashboard({super.key});
@@ -12,8 +16,20 @@ class CustomerDashboard extends StatefulWidget {
   State<CustomerDashboard> createState() => _CustomerDashboardState();
 }
 
+
 class _CustomerDashboardState extends State<CustomerDashboard> {
   int _currentIndex = 0;
+
+  // ========== STATE MOCK CONTROL ==========
+  // Ubah variabel ini secara manual untuk menguji 3 kondisi:
+  // Kondisi 1: isMember = false, statusTransaksi = 'none'
+  // Kondisi 2: isMember = false, statusTransaksi = 'pending'
+  // Kondisi 3: isMember = true, statusTransaksi = 'success'
+  bool isMember = false;
+  String statusTransaksi = 'none'; // 'none', 'pending', 'success'
+
+  // Dummy data customer untuk binding di Kondisi 3
+  final Customer _customer = Customer.getDummyCustomer();
 
   @override
   Widget build(BuildContext context) {
@@ -24,149 +40,113 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildHeader(),
-              _buildSubscriptionBanner(),
-              _buildArticleSection(),
+              const HomeHeader(),
+              HomeSubscriptionBanner(
+                isMember: isMember,
+                statusTransaksi: statusTransaksi,
+                customer: _customer,
+                onLanggananTap: () async {
+                  try {
+                    await Navigator.pushNamed(
+                        context, AppRoutes.subscription);
+                  } catch (e) {
+                    debugPrint('Navigasi subscription error: $e');
+                  }
+                },
+                onTukarPoinTap: () async {
+                  try {
+                    if (!mounted) return;
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          'Halaman Tukar Poin segera hadir!',
+                          style: AppFont.regular().copyWith(
+                            fontSize: 13,
+                            color: AppColor.putih100,
+                          ),
+                        ),
+                        backgroundColor: AppColor.base100,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                    );
+                  } catch (e) {
+                    debugPrint('Tukar poin error: $e');
+                  }
+                },
+              ),
+              HomeArticleSection(
+                articles: Artikel.getMockList(),
+                onArticleTap: (article) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailArtikelPage(article: article),
+                    ),
+                  );
+                },
+              ),
             ],
           ),
         ),
       ),
-      floatingActionButton: SizedBox(
-        width: 56,
-        height: 56,
-        child: FloatingActionButton(
-          onPressed: () => Navigator.pushNamed(context, AppRoutes.pemesanan),
-          backgroundColor: AppColor.base100,
-          elevation: 4,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Icon(Icons.local_shipping, color: AppColor.putih100),
-        ),
-      ),
+      floatingActionButton: _buildFAB(),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _buildBottomAppBar(),
     );
   }
 
-  Widget _buildHeader() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Halo, User',
-            style: AppFont.bold().copyWith(
-              fontSize: 24,
-              color: AppColor.font100,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            'Halo, User',
-            style: AppFont.medium().copyWith(
-              fontSize: 14,
-              color: AppColor.font80,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSubscriptionBanner() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: AppColor.base100,
+  // ========== FAB KURIR DINAMIS ==========
+  Widget _buildFAB() {
+    return SizedBox(
+      width: 56,
+      height: 56,
+      child: FloatingActionButton(
+        onPressed: () async {
+          try {
+            if (isMember) {
+              await Navigator.pushNamed(context, AppRoutes.pemesanan);
+            } else {
+              if (!mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    'Silakan aktifkan langganan Customer+ Anda terlebih dahulu untuk mulai melakukan pemesanan kurir!',
+                    style: AppFont.regular().copyWith(
+                      fontSize: 13,
+                      color: AppColor.putih100,
+                    ),
+                  ),
+                  backgroundColor: AppColor.font100,
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  margin: const EdgeInsets.fromLTRB(16, 0, 16, 80),
+                  duration: const Duration(seconds: 3),
+                ),
+              );
+            }
+          } catch (e) {
+            debugPrint('FAB error: $e');
+          }
+        },
+        backgroundColor: isMember ? AppColor.base100 : AppColor.font60,
+        elevation: 4,
+        shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Berlangganan Customer+',
-                    style: AppFont.bold().copyWith(
-                      fontSize: 16,
-                      color: AppColor.putih100,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Nikmati layanan premium dan diskon khusus',
-                    style: AppFont.regular().copyWith(
-                      fontSize: 12,
-                      color: AppColor.putih100,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const SizedBox(width: 12),
-            ElevatedButton(
-              onPressed: () =>
-                  Navigator.pushNamed(context, AppRoutes.subscription),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColor.putih100,
-                foregroundColor: AppColor.base100,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 8,
-                ),
-              ),
-              child: Text(
-                'Langganan',
-                style: AppFont.semibold().copyWith(
-                  fontSize: 12,
-                  color: AppColor.base100,
-                ),
-              ),
-            ),
-          ],
+        child: const Icon(
+          Icons.local_shipping,
+          color: AppColor.putih100,
         ),
       ),
     );
   }
 
-  Widget _buildArticleSection() {
-    final articles = Article.getArticles();
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Artikel', style: AppFont.bold().copyWith(fontSize: 18)),
-          const SizedBox(height: 12),
-          ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: articles.length,
-            itemBuilder: (context, index) {
-              final article = articles[index];
-              return ArticleCard(
-                title: article.title,
-                category: article.category,
-                image: article.foto_tumbnail,
-                onTap: () {},
-              );
-            },
-          ),
-        ],
-      ),
-    );
-  }
-
+  // ========== BOTTOM APP BAR ==========
   Widget _buildBottomAppBar() {
     return BottomAppBar(
       shape: const CircularNotchedRectangle(),

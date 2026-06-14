@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import '../../providers/auth_provider.dart';
 import 'login_page.dart';
 
@@ -15,17 +14,18 @@ class MainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Pantau AuthProvider untuk mendapatkan data user
-    final auth = context.watch<AuthProvider>();
-    final user = auth.user;
+    // final auth = context.watch<AuthProvider>();
+    // final user = auth.user;
+    final int dummyIdRole = 2;
 
     // Fallback: Jika user null (misal karena token hilang/belum login)
     // Kembalikan ke LoginPage
-    if (user == null) {
-      return const LoginPage();
-    }
+    // if (user == null) {
+    //   return const LoginPage();
+    // }
 
     // Arahkan ke dashboard yang sesuai dengan id_role
-    switch (user.idRole) {
+    switch (dummyIdRole) {
       case 1:
         return const AdminDashboard();
       case 2:
