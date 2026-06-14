@@ -6,6 +6,7 @@ import 'package:frontend_ambilin/providers/user_account_provider.dart';
 import 'package:frontend_ambilin/providers/article_provider.dart';
 import 'package:frontend_ambilin/providers/waste_category_provider.dart';
 import 'package:frontend_ambilin/providers/subscription_provider.dart';
+import 'package:frontend_ambilin/providers/petugas_provider.dart';
 import 'package:frontend_ambilin/ui/screens/main_page.dart';
 import 'package:frontend_ambilin/ui/screens/login_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_detail_selesai_page.dart';
@@ -59,6 +60,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => ArticleProvider()),
         ChangeNotifierProvider(create: (_) => WasteCategoryProvider()),
         ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+        ChangeNotifierProvider(create: (_) => PetugasProvider()),
       ],
       child: const MyApp(),
     ),
