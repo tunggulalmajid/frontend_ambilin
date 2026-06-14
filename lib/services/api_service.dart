@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 
 class ApiService {
-
   // Gunakan domain hosting untuk development dengan device langsung
   final String _baseUrl = "https://ambilin.kodetalma.my.id/api";
   // Instance Dio yang bisa dipakai oleh class turunannya (child class)
