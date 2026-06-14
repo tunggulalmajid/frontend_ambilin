@@ -8,21 +8,17 @@ class JenisArtikel {
     required this.nama,
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static JenisArtikel getMockData() {
-    return const JenisArtikel(
-      idJenisArtikel: 1,
-      nama: 'Tips',
+  factory JenisArtikel.fromJson(Map<String, dynamic> json) {
+    return JenisArtikel(
+      idJenisArtikel: json['id_jenis_artikel'] ?? 0,
+      nama: json['nama'] ?? '',
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
-  static List<JenisArtikel> getMockList() {
-    return const [
-      JenisArtikel(idJenisArtikel: 1, nama: 'Tips'),
-      JenisArtikel(idJenisArtikel: 2, nama: 'Edukasi'),
-      JenisArtikel(idJenisArtikel: 3, nama: 'Inspirasi'),
-      JenisArtikel(idJenisArtikel: 4, nama: 'Berita'),
-    ];
+  Map<String, dynamic> toJson() {
+    return {
+      'id_jenis_artikel': idJenisArtikel,
+      'nama': nama,
+    };
   }
 }

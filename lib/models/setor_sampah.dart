@@ -2,16 +2,19 @@
 /// Kolom `pesan_customer` ditambahkan sebagai field tambahan (String).
 class SetorSampah {
   final int idSetorSampah;
-  final int idPetugas;
+  final int? idPetugas;
   final int idCustomer;
-  final String status; // enum: 'menunggu', 'dijemput', 'diproses', 'selesai', 'ditolak'
+  final int? idJenisSampah;
+  final String status; // enum: 'menunggu', 'proses', 'selesai', 'dibatalkan'
   final String? alamat;
   final double? latitude;
   final double? longitude;
+  final double? beratSampah;
   final String? foto;
+  final String? fotoBuktiPenjemputan;
   final DateTime? createdAt;
   final DateTime? pickupAt;
-  final String pesanCustomer; // Kolom tambahan sesuai permintaan
+  final String pesanCustomer; // mapped from 'catatan'
 
   // Field tambahan dari relasi (untuk kemudahan binding di UI)
   final String customerName;
@@ -19,13 +22,16 @@ class SetorSampah {
 
   const SetorSampah({
     required this.idSetorSampah,
-    required this.idPetugas,
+    this.idPetugas,
     required this.idCustomer,
+    this.idJenisSampah,
     required this.status,
     this.alamat,
     this.latitude,
     this.longitude,
+    this.beratSampah,
     this.foto,
+    this.fotoBuktiPenjemputan,
     this.createdAt,
     this.pickupAt,
     this.pesanCustomer = '',
@@ -33,66 +39,54 @@ class SetorSampah {
     this.petugasName = '',
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static SetorSampah getMockData() {
+  factory SetorSampah.fromJson(Map<String, dynamic> json) {
     return SetorSampah(
-      idSetorSampah: 1,
-      idPetugas: 1,
-      idCustomer: 1,
-      status: 'selesai',
-      alamat: 'Jl. Sudirman No. 10, Padang',
-      latitude: -0.9471,
-      longitude: 100.4172,
-      createdAt: DateTime(2026, 6, 2),
-      pickupAt: DateTime(2026, 6, 2, 10, 30),
-      pesanCustomer: 'Tolong jemput di depan pagar ya, terima kasih.',
-      customerName: 'Fahri Ananta',
-      petugasName: 'Hadianto',
+      idSetorSampah: json['id_setor_sampah'] ?? 0,
+      idPetugas: json['id_petugas'],
+      idCustomer: json['id_customer'] ?? 0,
+      idJenisSampah: json['id_jenis_sampah'],
+      status: json['status'] ?? 'menunggu',
+      alamat: json['alamat'],
+      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
+      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
+      beratSampah: json['berat_sampah'] != null ? double.tryParse(json['berat_sampah'].toString()) : null,
+      foto: json['foto'],
+      fotoBuktiPenjemputan: json['foto_bukti_penjemputan'],
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
+      pickupAt: json['pickup_at'] != null ? DateTime.tryParse(json['pickup_at']) : null,
+      pesanCustomer: json['catatan'] ?? '',
+      customerName: json['customer_name'] ?? json['Customer']?['nama'] ?? json['Customer']?['User']?['nama'] ?? '',
+      petugasName: json['petugas_name'] ?? json['Petugas']?['nama'] ?? json['Petugas']?['User']?['nama'] ?? '',
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_setor_sampah': idSetorSampah,
+      'id_petugas': idPetugas,
+      'id_customer': idCustomer,
+      'id_jenis_sampah': idJenisSampah,
+      'status': status,
+      'alamat': alamat,
+      'latitude': latitude,
+      'longitude': longitude,
+      'berat_sampah': beratSampah,
+      'foto': foto,
+      'foto_bukti_penjemputan': fotoBuktiPenjemputan,
+      'catatan': pesanCustomer,
+    };
   }
 
   /// Data dummy list untuk keperluan data binding.
   static List<SetorSampah> getMockList() {
-    return [
+    return const [
       SetorSampah(
-        idSetorSampah: 1,
-        idPetugas: 1,
-        idCustomer: 1,
+        idSetorSampah: 0,
+        idCustomer: 0,
         status: 'selesai',
-        alamat: 'Jl. Sudirman No. 10, Padang',
-        latitude: -0.9471,
-        longitude: 100.4172,
-        createdAt: DateTime(2026, 6, 2),
-        pickupAt: DateTime(2026, 6, 2, 10, 30),
-        pesanCustomer: 'Tolong jemput di depan pagar.',
-        customerName: 'Fahri Ananta',
-        petugasName: 'Hadianto',
-      ),
-      SetorSampah(
-        idSetorSampah: 2,
-        idPetugas: 1,
-        idCustomer: 2,
-        status: 'diproses',
-        alamat: 'Jl. Rasuna Said No. 5, Padang',
-        latitude: -0.9500,
-        longitude: 100.4200,
-        createdAt: DateTime(2026, 6, 2),
-        pesanCustomer: 'Sampah sudah ditaruh di samping rumah.',
-        customerName: 'Naufal Hakim',
-        petugasName: 'Hadianto',
-      ),
-      SetorSampah(
-        idSetorSampah: 3,
-        idPetugas: 1,
-        idCustomer: 3,
-        status: 'dijemput',
-        alamat: 'Jl. Ahmad Yani No. 15, Padang',
-        latitude: -0.9480,
-        longitude: 100.4180,
-        createdAt: DateTime(2026, 6, 2),
         pesanCustomer: '',
-        customerName: 'Tangga Panjili',
-        petugasName: 'Hadianto',
+        customerName: '',
+        petugasName: '',
       ),
     ];
   }

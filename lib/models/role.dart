@@ -8,20 +8,17 @@ class Role {
     required this.namaRole,
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static Role getMockData() {
-    return const Role(
-      id: 1,
-      namaRole: 'admin',
+  factory Role.fromJson(Map<String, dynamic> json) {
+    return Role(
+      id: json['id'] ?? 0,
+      namaRole: json['nama_role'] ?? '',
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
-  static List<Role> getMockList() {
-    return const [
-      Role(id: 1, namaRole: 'admin'),
-      Role(id: 2, namaRole: 'petugas'),
-      Role(id: 3, namaRole: 'customer'),
-    ];
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'nama_role': namaRole,
+    };
   }
 }

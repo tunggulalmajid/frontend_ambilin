@@ -3,6 +3,7 @@ class JenisSampah {
   final int idJenisSampah;
   final String nama;
   final int poinPerKg;
+  final bool isDelete;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
@@ -10,59 +11,32 @@ class JenisSampah {
     required this.idJenisSampah,
     required this.nama,
     required this.poinPerKg,
+    this.isDelete = false,
     this.createdAt,
     this.updatedAt,
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static JenisSampah getMockData() {
+  factory JenisSampah.fromJson(Map<String, dynamic> json) {
     return JenisSampah(
-      idJenisSampah: 1,
-      nama: 'Plastik',
-      poinPerKg: 50,
-      createdAt: DateTime(2026, 1, 1),
-      updatedAt: DateTime(2026, 6, 12),
+      idJenisSampah: json['id_jenis_sampah'] ?? 0,
+      nama: json['nama'] ?? '',
+      poinPerKg: json['poin_per_kg'] ?? 0,
+      isDelete: json['is_delete'] == true || json['is_delete'] == 1 || json['is_delete'] == '1',
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
-  static List<JenisSampah> getMockList() {
-    return [
-      JenisSampah(
-        idJenisSampah: 1,
-        nama: 'Plastik',
-        poinPerKg: 50,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-      JenisSampah(
-        idJenisSampah: 2,
-        nama: 'Kertas',
-        poinPerKg: 100,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-      JenisSampah(
-        idJenisSampah: 3,
-        nama: 'Kardus',
-        poinPerKg: 100,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-      JenisSampah(
-        idJenisSampah: 4,
-        nama: 'Kaca',
-        poinPerKg: 50,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-      JenisSampah(
-        idJenisSampah: 5,
-        nama: 'Elektronik',
-        poinPerKg: 75,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-    ];
+  Map<String, dynamic> toJson() {
+    return {
+      'id_jenis_sampah': idJenisSampah,
+      'nama': nama,
+      'poin_per_kg': poinPerKg,
+      'is_delete': isDelete ? 1 : 0,
+    };
   }
 }

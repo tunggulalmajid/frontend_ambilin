@@ -28,6 +28,35 @@ class Artikel {
     this.status = 'Aktif',
   });
 
+  factory Artikel.fromJson(Map<String, dynamic> json) {
+    final isDel = json['is_delete'] == true || json['is_delete'] == 1 || json['is_delete'] == '1';
+    return Artikel(
+      idArtikel: json['id_artikel'] ?? 0,
+      idAdmin: json['id_admin'] ?? 0,
+      idJenisArtikel: json['id_jenis_artikel'] ?? 0,
+      judul: json['judul'] ?? '',
+      fotoThumbnail: json['foto_thumbnail'],
+      isi: json['isi'] ?? '',
+      isDelete: isDel,
+      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
+      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
+      kategori: json['kategori_nama'] ?? json['JenisArtikel']?['nama'] ?? '',
+      status: isDel ? 'Nonaktif' : 'Aktif',
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id_artikel': idArtikel,
+      'id_admin': idAdmin,
+      'id_jenis_artikel': idJenisArtikel,
+      'judul': judul,
+      'foto_thumbnail': fotoThumbnail,
+      'isi': isi,
+      'is_delete': isDelete ? 1 : 0,
+    };
+  }
+
   /// Format tanggal menjadi teks yang mudah dibaca.
   String get tanggalFormatted {
     if (createdAt == null) return '';
@@ -39,86 +68,17 @@ class Artikel {
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static Artikel getMockData() {
-    return Artikel(
-      idArtikel: 1,
-      idAdmin: 1,
-      idJenisArtikel: 1,
-      judul: '5 Tips Hemat Sampah',
-      fotoThumbnail: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=200',
-      isi: 'Meminimalkan produksi sampah harian sebenarnya bisa dimulai dari langkah-langkah kecil di dalam rumah.',
-      isDelete: false,
-      createdAt: DateTime(2026, 6, 12),
-      updatedAt: DateTime(2026, 6, 12),
-      kategori: 'Tips',
-      status: 'Aktif',
-    );
-  }
-
   /// Data dummy list untuk keperluan data binding.
   static List<Artikel> getMockList() {
-    return [
+    return const [
       Artikel(
-        idArtikel: 1,
-        idAdmin: 1,
-        idJenisArtikel: 1,
-        judul: '5 Tips Hemat Sampah',
-        fotoThumbnail: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=200',
-        isi: 'Meminimalkan produksi sampah harian sebenarnya bisa dimulai dari langkah-langkah kecil di dalam rumah. Langkah pertama yang paling efektif adalah selalu membawa tas belanja kain dan botol minum sendiri.',
-        createdAt: DateTime(2026, 6, 12),
-        updatedAt: DateTime(2026, 6, 12),
-        kategori: 'Tips',
+        idArtikel: 0,
+        idAdmin: 0,
+        idJenisArtikel: 0,
+        judul: '',
+        isi: '',
+        kategori: '',
         status: 'Aktif',
-      ),
-      Artikel(
-        idArtikel: 2,
-        idAdmin: 1,
-        idJenisArtikel: 2,
-        judul: 'Mengenal Recycle Plastik',
-        fotoThumbnail: 'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?w=200',
-        isi: 'Plastik merupakan salah satu material yang paling sulit terurai secara alami. Proses daur ulang plastik membantu mengurangi pencemaran lingkungan.',
-        createdAt: DateTime(2026, 6, 12),
-        updatedAt: DateTime(2026, 6, 12),
-        kategori: 'Edukasi',
-        status: 'Aktif',
-      ),
-      Artikel(
-        idArtikel: 3,
-        idAdmin: 1,
-        idJenisArtikel: 3,
-        judul: 'Kisah Inspiratif Pemuda...',
-        fotoThumbnail: 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=200',
-        isi: 'Seorang pemuda dari kota kecil berhasil mengubah desanya menjadi contoh pengelolaan sampah terbaik di Indonesia.',
-        createdAt: DateTime(2026, 6, 12),
-        updatedAt: DateTime(2026, 6, 12),
-        kategori: 'Inspirasi',
-        status: 'Aktif',
-      ),
-      Artikel(
-        idArtikel: 4,
-        idAdmin: 1,
-        idJenisArtikel: 4,
-        judul: 'Pemerintah Dorong Progr...',
-        fotoThumbnail: 'https://images.unsplash.com/photo-1604187351574-c75ca79f5807?w=200',
-        isi: 'Pemerintah Indonesia telah mencanangkan program nasional pengurangan sampah plastik hingga 70% pada tahun 2030.',
-        createdAt: DateTime(2026, 6, 12),
-        updatedAt: DateTime(2026, 6, 12),
-        kategori: 'Berita',
-        status: 'Aktif',
-      ),
-      Artikel(
-        idArtikel: 5,
-        idAdmin: 1,
-        idJenisArtikel: 4,
-        judul: 'Bank Sampah Penuh!',
-        fotoThumbnail: 'https://images.unsplash.com/photo-1526951521990-620dc14c0b58?w=200',
-        isi: 'Beberapa bank sampah di wilayah perkotaan mengalami kelebihan kapasitas akibat meningkatnya kesadaran masyarakat.',
-        isDelete: true,
-        createdAt: DateTime(2026, 6, 12),
-        updatedAt: DateTime(2026, 6, 12),
-        kategori: 'Berita',
-        status: 'Nonaktif',
       ),
     ];
   }

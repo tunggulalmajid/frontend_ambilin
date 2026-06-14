@@ -20,40 +20,29 @@ class Petugas {
     this.email = '',
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static Petugas getMockData() {
+  factory Petugas.fromJson(Map<String, dynamic> json) {
     return Petugas(
-      idPetugas: 1,
-      idUser: 2,
-      isAktif: true,
-      createdAt: DateTime(2026, 2, 15),
-      updatedAt: DateTime(2026, 6, 12),
-      nama: 'Hadianto',
-      email: 'hadianto@gmail.com',
+      idPetugas: json['id_petugas'] ?? 0,
+      idUser: json['id_user'] ?? 0,
+      isAktif: json['is_aktif'] == true || json['is_aktif'] == 1,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+      nama: json['nama'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
-  static List<Petugas> getMockList() {
-    return [
-      Petugas(
-        idPetugas: 1,
-        idUser: 2,
-        isAktif: true,
-        createdAt: DateTime(2026, 2, 15),
-        updatedAt: DateTime(2026, 6, 12),
-        nama: 'Hadianto',
-        email: 'hadianto@gmail.com',
-      ),
-      Petugas(
-        idPetugas: 2,
-        idUser: 5,
-        isAktif: false,
-        createdAt: DateTime(2026, 3, 1),
-        updatedAt: DateTime(2026, 6, 12),
-        nama: 'Roihan Abdul',
-        email: 'roihan@gmail.com',
-      ),
-    ];
+  Map<String, dynamic> toJson() {
+    return {
+      'id_petugas': idPetugas,
+      'id_user': idUser,
+      'is_aktif': isAktif ? 1 : 0,
+      'nama': nama,
+      'email': email,
+    };
   }
 }

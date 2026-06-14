@@ -14,6 +14,15 @@ class AdminDashboard extends StatefulWidget {
 
 class _AdminDashboardState extends State<AdminDashboard> {
   @override
+  void initState() {
+    super.initState();
+    // Fetch data dari provider saat pertama kali masuk
+    Future.microtask(() {
+      context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 1);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -247,30 +256,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
             ),
             const SizedBox(height: 12),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  'Rp. $price',
-                  style: GoogleFonts.poppins(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: AppColor.base100,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.pushNamed(context, AppRoutes.adminManajemenKonfirmasi);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.base100,
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-                    minimumSize: Size.zero,
-                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    elevation: 0,
+              // Pickup history cards dari Provider
+              if (pickupProvider.isLoading)
+                const Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(vertical: 32),
+                    child: CircularProgressIndicator(color: AppColor.base100),
                   ),
                   child: Text(
                     'Konfirmasi',

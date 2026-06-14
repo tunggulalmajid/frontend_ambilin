@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'user_model.dart';
 
 class AkunPengguna {
+  final int? idUser;
   final String nama;
   final String email;
   final String peran; // 'Petugas' or 'Pelanggan'
@@ -8,6 +10,7 @@ class AkunPengguna {
   final Color warnaAvatar;
 
   const AkunPengguna({
+    this.idUser,
     required this.nama,
     required this.email,
     required this.peran,
@@ -15,40 +18,20 @@ class AkunPengguna {
     required this.warnaAvatar,
   });
 
+  factory AkunPengguna.fromUserModel(UserModel user, {bool? active}) {
+    final roleName = user.idRole == 2 ? 'Petugas' : (user.idRole == 3 ? 'Pelanggan' : 'Admin');
+    final activeStatus = active == false ? 'Nonaktif' : 'Aktif';
+    final avatarColor = user.idRole == 2 ? const Color(0xFF4CAF50) : const Color(0xFFFFC107);
+    return AkunPengguna(
+      idUser: user.idUser,
+      nama: user.nama,
+      email: user.email,
+      peran: roleName,
+      status: activeStatus,
+      warnaAvatar: avatarColor,
+    );
+  }
+
   /// Initial letter for avatar
   String get inisial => nama.isNotEmpty ? nama[0].toUpperCase() : '?';
-
-  /// Dummy data matching the design
-  static List<AkunPengguna> getDummyData() {
-    return const [
-      AkunPengguna(
-        nama: 'Hadianto',
-        email: 'Hadianto@gmail.com',
-        peran: 'Petugas',
-        status: 'Aktif',
-        warnaAvatar: Color(0xFF4CAF50), // green
-      ),
-      AkunPengguna(
-        nama: 'Roihan Abdul',
-        email: 'Roihan@gmail.com',
-        peran: 'Petugas',
-        status: 'Nonaktif',
-        warnaAvatar: Color(0xFFF44336), // red
-      ),
-      AkunPengguna(
-        nama: 'Tunggul Nadzif',
-        email: 'Tunggul@gmail.com',
-        peran: 'Pelanggan',
-        status: 'Aktif',
-        warnaAvatar: Color(0xFFFFC107), // amber/yellow
-      ),
-      AkunPengguna(
-        nama: 'Rafi Ananta',
-        email: 'Rafi@gmail.com',
-        peran: 'Pelanggan',
-        status: 'Nonaktif',
-        warnaAvatar: Color(0xFF9C27B0), // purple
-      ),
-    ];
-  }
 }
