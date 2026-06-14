@@ -30,14 +30,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   late final TextEditingController _isiController;
 
   String? _selectedKategori;
-  final List<String> _kategoriList = [
-    'Tips',
-    'Edukasi',
-    'Inspirasi',
-    'Berita',
-    'Pengelolaan',
-  ];
-
   File? _selectedImage;
   String _existingImageUrl = '';
   final ImagePicker _picker = ImagePicker();
@@ -50,6 +42,12 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     _isiController = TextEditingController(text: widget.article.isi);
     _selectedKategori = widget.article.kategori;
     _existingImageUrl = widget.article.fotoThumbnail ?? '';
+
+    Future.microtask(() {
+      if (mounted) {
+        context.read<ArticleProvider>().fetchCategories();
+      }
+    });
   }
 
   @override
@@ -69,7 +67,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     }
   }
 
-  void _handleSimpan() {
+  void _handleSimpan() async {
     if (_formKey.currentState!.validate()) {
       final updatedArticle = Artikel(
         idArtikel: widget.article.idArtikel,
@@ -84,19 +82,39 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
         isi: _isiController.text,
       );
 
-      context
-          .read<ArticleProvider>()
-          .editArticle(widget.articleIndex, updatedArticle);
+      final success = await context.read<ArticleProvider>().editArticle(
+            widget.articleIndex,
+            updatedArticle,
+            imagePath: _selectedImage?.path,
+          );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Artikel berhasil diperbarui')),
-      );
-      Navigator.pop(context);
+      if (!mounted) return;
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Artikel berhasil diperbarui')),
+        );
+        Navigator.pop(context);
+      } else {
+        final error = context.read<ArticleProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error.isNotEmpty ? error : 'Gagal memperbarui artikel',
+            ),
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final articleProvider = context.watch<ArticleProvider>();
+    final List<String> kategoriList = articleProvider.categories
+        .map((c) => c['nama']?.toString() ?? '')
+        .where((n) => n.isNotEmpty)
+        .toList();
+
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
@@ -148,8 +166,10 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                 WDropdownField(
                   label: 'Kategori',
                   hintText: 'Pilih Kategori Artikel',
-                  value: _selectedKategori,
-                  items: _kategoriList,
+                  value: kategoriList.contains(_selectedKategori)
+                      ? _selectedKategori
+                      : null,
+                  items: kategoriList,
                   onChanged: (value) {
                     setState(() {
                       _selectedKategori = value;

@@ -40,7 +40,7 @@ class Artikel {
       isDelete: isDel,
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
       updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
-      kategori: json['kategori_nama'] ?? json['JenisArtikel']?['nama'] ?? '',
+      kategori: json['nama_kategori'] ?? json['kategori_nama'] ?? json['JenisArtikel']?['nama'] ?? '',
       status: isDel ? 'Nonaktif' : 'Aktif',
     );
   }

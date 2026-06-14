@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import '../../../models/artikel.dart';
 import '../../../utils/app_color.dart';
@@ -8,18 +7,24 @@ class DetailArtikelPage extends StatelessWidget {
   final Artikel artikel;
   const DetailArtikelPage({super.key, required this.artikel});
 
+  String _getImageUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    if (path.startsWith('http')) return path;
+    final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    return 'https://ambilin.kodetalma.my.id/$cleanPath';
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: Stack(
         children: [
-
           Positioned(
             top: 0, left: 0, right: 0,
             height: MediaQuery.of(context).size.height * 0.40,
             child: Image.network(
-              artikel.fotoThumbnail ?? '',
+              _getImageUrl(artikel.fotoThumbnail),
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(
                 color: AppColor.font100,
@@ -69,7 +74,7 @@ class DetailArtikelPage extends StatelessWidget {
                       const Divider(color: AppColor.font60),
                       const SizedBox(height: 12),
                       Text(
-                        _getIsiPanjang(),
+                        artikel.isi,
                         style: AppFont.regular().copyWith(fontSize: 15, color: AppColor.font100, height: 1.7),
                         textAlign: TextAlign.justify,
                       ),
@@ -97,9 +102,4 @@ class DetailArtikelPage extends StatelessWidget {
     );
   }
 
-  String _getIsiPanjang() {
-    final isi = artikel.isi;
-    if (isi.length > 200) return isi;
-    return '$isi\n\nMeminimalkan produksi sampah harian sebenarnya bisa dimulai dari langkah-langkah kecil di dalam rumah. Langkah pertama yang paling efektif adalah selalu membawa tas belanja kain dan botol minum sendiri saat bepergian demi mengurangi plastik sekali pakai. Selanjutnya, Anda bisa beralih dari penggunaan tisu sekali pakai ke kain lap atau sapu tangan yang dapat dicuci ulang.\n\nUntuk sampah dapur, cobalah memisahkan sisa makanan organik untuk diolah menjadi pupuk kompos tanaman yang kaya nutrisi. Selain itu, belilah produk dalam kemasan besar atau curah (bulk) untuk mengurangi akumulasi limbah pembungkus plastik di tempat sampah. Terakhir, dukung gerakan sirkular dengan memanfaatkan kembali wadah bekas layak pakai atau menyalurkan barang tak terpakai ke bank sampah terdekat.\n\nDengan konsisten menerapkan kelima kebiasaan ini, kita tidak hanya menghemat pengeluaran tetapi juga berkontribusi nyata dalam menjaga kelestarian bumi.';
-  }
 }

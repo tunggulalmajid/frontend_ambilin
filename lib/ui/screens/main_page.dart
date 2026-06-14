@@ -55,7 +55,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
 
-    if (_isChecking || auth.isLoading) {
+    if (_isChecking) {
       return const Scaffold(
         backgroundColor: AppColor.putihBackground,
         body: Center(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../models/user_model.dart';
 import '../../../models/petugas.dart';
 import '../../../providers/auth_provider.dart';
@@ -27,6 +28,54 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
         context.read<DashboardProvider>().fetchPetugasDashboard();
       }
     });
+  }
+
+  Future<void> _changeProfilePhoto() async {
+    final ImagePicker picker = ImagePicker();
+    try {
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 800,
+      );
+      if (image == null) return;
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Mengunggah foto profil...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      final success = await context.read<AuthProvider>().updateProfilePhoto(image.path);
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Foto profil berhasil diperbarui!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        final errMsg = context.read<AuthProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil'),
+            backgroundColor: AppColor.redAllert,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal memilih gambar: $e'),
+          backgroundColor: AppColor.redAllert,
+        ),
+      );
+    }
   }
 
   @override
@@ -113,6 +162,11 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
               inisial: inisial,
               nama: user.nama,
               email: user.email,
+              fotoUrl: user.foto != null && user.foto!.isNotEmpty
+                  ? (user.foto!.startsWith('http')
+                      ? user.foto
+                      : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
+                  : null,
               onBackPressed: () => Navigator.pop(context),
               onEditPressed: () {
                 Navigator.pushNamed(
@@ -121,6 +175,7 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                   arguments: user,
                 );
               },
+              onAvatarEditPressed: _changeProfilePhoto,
             ),
             const SizedBox(height: 80),
 

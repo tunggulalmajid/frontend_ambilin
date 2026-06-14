@@ -23,16 +23,18 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
   final _isiController = TextEditingController();
 
   String? _selectedKategori;
-  final List<String> _kategoriList = [
-    'Tips',
-    'Edukasi',
-    'Inspirasi',
-    'Berita',
-    'Pengelolaan',
-  ];
-
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<ArticleProvider>().fetchCategories();
+      }
+    });
+  }
 
   @override
   void dispose() {
@@ -50,7 +52,7 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
     }
   }
 
-  void _handleSimpan() {
+  void _handleSimpan() async {
     if (_formKey.currentState!.validate()) {
       final newArticle = Artikel(
         idArtikel: 0,
@@ -64,12 +66,27 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
         isi: _isiController.text,
       );
 
-      context.read<ArticleProvider>().addArticle(newArticle);
+      final success = await context.read<ArticleProvider>().addArticle(
+            newArticle,
+            imagePath: _selectedImage?.path,
+          );
 
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Artikel berhasil ditambahkan')),
-      );
-      Navigator.pop(context);
+      if (!mounted) return;
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Artikel berhasil ditambahkan')),
+        );
+        Navigator.pop(context);
+      } else {
+        final error = context.read<ArticleProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              error.isNotEmpty ? error : 'Gagal menambahkan artikel',
+            ),
+          ),
+        );
+      }
     }
   }
 
@@ -84,6 +101,12 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
 
   @override
   Widget build(BuildContext context) {
+    final articleProvider = context.watch<ArticleProvider>();
+    final List<String> kategoriList = articleProvider.categories
+        .map((c) => c['nama']?.toString() ?? '')
+        .where((n) => n.isNotEmpty)
+        .toList();
+
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
@@ -135,8 +158,10 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                 WDropdownField(
                   label: 'Kategori',
                   hintText: 'Pilih Kategori Artikel',
-                  value: _selectedKategori,
-                  items: _kategoriList,
+                  value: kategoriList.contains(_selectedKategori)
+                      ? _selectedKategori
+                      : null,
+                  items: kategoriList,
                   onChanged: (value) {
                     setState(() {
                       _selectedKategori = value;

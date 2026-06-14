@@ -7,15 +7,27 @@ class ArticleProvider extends ChangeNotifier {
   final _articleService = ArticleService();
 
   List<Artikel> _allArticles = [];
+  List<dynamic> _categories = [];
   bool _isLoading = false;
   String _errorMessage = '';
 
   List<Artikel> get allArticles => _allArticles;
+  List<dynamic> get categories => _categories;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
   int _categoryIdFromName(String name) {
-    switch (name) {
+    final cat = _categories.firstWhere(
+      (c) => c['nama']?.toString().trim().toLowerCase() == name.trim().toLowerCase(),
+      orElse: () => null,
+    );
+    if (cat != null) {
+      final id = cat['id_jenis_artikel'];
+      if (id != null) {
+        return int.tryParse(id.toString()) ?? 1;
+      }
+    }
+    switch (name.trim()) {
       case 'Tips': return 1;
       case 'Edukasi': return 2;
       case 'Inspirasi': return 3;
@@ -29,29 +41,49 @@ class ArticleProvider extends ChangeNotifier {
     return _allArticles.where((a) => a.status == filter).toList();
   }
 
+  Future<void> fetchCategories() async {
+    try {
+      final response = await _articleService.getCategories();
+      if (response['status'] == 'success') {
+        _categories = response['data'] ?? [];
+        notifyListeners();
+      }
+    } catch (e) {
+      log("Fetch Categories Error: $e");
+    }
+  }
+
   Future<void> fetchArticles() async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
 
     try {
-      final response = await _articleService.getAllArticles();
-      _isLoading = false;
+      final results = await Future.wait([
+        _articleService.getCategories(),
+        _articleService.getAllArticles(),
+      ]);
 
-      if (response['status'] == "success") {
-        final List<dynamic> data = response['data'] ?? [];
+      final catRes = results[0];
+      final artRes = results[1];
+
+      if (catRes['status'] == 'success') {
+        _categories = catRes['data'] ?? [];
+      }
+
+      if (artRes['status'] == "success") {
+        final List<dynamic> data = artRes['data'] ?? [];
         _allArticles = data.map((json) => Artikel.fromJson(json)).toList();
-        notifyListeners();
       } else {
-        _errorMessage = response['message'] ?? "Gagal memuat artikel";
+        _errorMessage = artRes['message'] ?? "Gagal memuat artikel";
         _allArticles = [];
-        notifyListeners();
       }
     } catch (e) {
       log("Fetch Articles Error: $e");
-      _isLoading = false;
       _errorMessage = 'Gagal memuat data artikel';
       _allArticles = [];
+    } finally {
+      _isLoading = false;
       notifyListeners();
     }
   }

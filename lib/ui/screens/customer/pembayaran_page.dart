@@ -1,5 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend_ambilin/providers/subscription_provider.dart';
+import 'package:frontend_ambilin/providers/dashboard_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
@@ -10,16 +13,22 @@ import 'package:intl/intl.dart';
 
 class PembayaranPage extends StatefulWidget {
   final String subscriptionId;
-  final String? promoId;
+  final int idMetodePembayaran;
   final String metodePembayaran;
+  final String namaPaket;
+  final String keterangan;
   final int totalBayar;
+  final int poinUsed;
 
   const PembayaranPage({
     super.key,
     required this.subscriptionId,
-    this.promoId,
+    required this.idMetodePembayaran,
     required this.metodePembayaran,
+    required this.namaPaket,
+    required this.keterangan,
     required this.totalBayar,
+    required this.poinUsed,
   });
 
   @override
@@ -92,10 +101,45 @@ class _PembayaranPageState extends State<PembayaranPage> {
     });
 
     try {
-      await Future.delayed(const Duration(seconds: 2));
+      final subProvider = context.read<SubscriptionProvider>();
+      final int subId = int.tryParse(widget.subscriptionId) ?? 0;
+
+      final result = await subProvider.purchaseSubscription(
+        idSub: subId,
+        idPayMethod: widget.idMetodePembayaran,
+        poinUsed: widget.poinUsed,
+        proofPath: _buktiTransfer!.path,
+      );
 
       if (!mounted) return;
-      Navigator.of(context).pushReplacementNamed(AppRoutes.transaksiBerhasil);
+
+      if (result['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Center(child: Text('Pembayaran Berhasil Dikirim untuk Verifikasi!')),
+            backgroundColor: AppColor.base100,
+          ),
+        );
+        // Refresh dashboard customer
+        context.read<DashboardProvider>().fetchCustomerDashboard();
+        Navigator.of(context).pushReplacementNamed(
+          AppRoutes.transaksiBerhasil,
+          arguments: {
+            'id_transaksi': result['data']?['id_transaksi'],
+            'id_subscription': subId,
+            'metode_pembayaran': widget.metodePembayaran,
+            'nama_paket': widget.namaPaket,
+            'harga': widget.totalBayar,
+          },
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(result['message'] ?? 'Gagal mengirim pembayaran.'),
+            backgroundColor: AppColor.redAllert,
+          ),
+        );
+      }
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -173,9 +217,9 @@ class _PembayaranPageState extends State<PembayaranPage> {
                           ),
                         ),
                         const SizedBox(height: 24),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 24),
-                          child: InstruksiPembayaranCard(),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: InstruksiPembayaranCard(keterangan: widget.keterangan),
                         ),
                         const SizedBox(height: 20),
                         Padding(
@@ -309,16 +353,20 @@ class _PembayaranPageState extends State<PembayaranPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  _buildPickerButton(
-                                    icon: Icons.camera_alt,
-                                    label: 'Kamera',
-                                    onTap: _ambilDariKamera,
+                                  Expanded(
+                                    child: _buildPickerButton(
+                                      icon: Icons.camera_alt,
+                                      label: 'Kamera',
+                                      onTap: _ambilDariKamera,
+                                    ),
                                   ),
                                   const SizedBox(width: 12),
-                                  _buildPickerButton(
-                                    icon: Icons.photo_library,
-                                    label: 'Galeri',
-                                    onTap: _ambilDariGaleri,
+                                  Expanded(
+                                    child: _buildPickerButton(
+                                      icon: Icons.photo_library,
+                                      label: 'Galeri',
+                                      onTap: _ambilDariGaleri,
+                                    ),
                                   ),
                                 ],
                               ),
@@ -409,7 +457,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
       ),
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColor.base100,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
         ),

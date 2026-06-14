@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../../models/customer.dart';
 import '../../../models/user_model.dart';
 import '../../../providers/auth_provider.dart';
@@ -29,6 +30,54 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
         context.read<DashboardProvider>().fetchCustomerDashboard();
       }
     });
+  }
+
+  Future<void> _changeProfilePhoto() async {
+    final ImagePicker picker = ImagePicker();
+    try {
+      final XFile? image = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+        maxWidth: 800,
+      );
+      if (image == null) return;
+
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Mengunggah foto profil...'),
+          duration: Duration(seconds: 2),
+        ),
+      );
+
+      final success = await context.read<AuthProvider>().updateProfilePhoto(image.path);
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Foto profil berhasil diperbarui!'),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        final errMsg = context.read<AuthProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil'),
+            backgroundColor: AppColor.redAllert,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal memilih gambar: $e'),
+          backgroundColor: AppColor.redAllert,
+        ),
+      );
+    }
   }
 
   @override
@@ -115,12 +164,18 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
               inisial: inisial,
               nama: user.nama,
               email: user.email,
+              fotoUrl: user.foto != null && user.foto!.isNotEmpty
+                  ? (user.foto!.startsWith('http')
+                      ? user.foto
+                      : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
+                  : null,
               onBackPressed: () => Navigator.pop(context),
               onEditPressed: () {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (_) => PelangganEditProfilPage(user: user),
                 ));
               },
+              onAvatarEditPressed: _changeProfilePhoto,
             ),
             const SizedBox(height: 80),
 
@@ -229,26 +284,6 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
           ],
         ),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3,
-        selectedItemColor: AppColor.base100,
-        unselectedItemColor: AppColor.font80,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Pesanan'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Artikel'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
-        onTap: (index) {},
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColor.base100,
-        child: const Icon(Icons.local_shipping, color: AppColor.putih100),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

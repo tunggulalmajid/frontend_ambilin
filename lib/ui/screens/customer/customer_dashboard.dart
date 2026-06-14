@@ -39,318 +39,28 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
 
   @override
   Widget build(BuildContext context) {
-    // Navigasi antar tab bottom nav
+    final dashProvider = context.watch<DashboardProvider>();
+    final bool isMember = dashProvider.isMember;
+
+    Widget content;
     switch (_currentIndex) {
       case 1:
-        return PesananPelangganPage();
+        content = const PesananPelangganPage();
+        break;
       case 2:
-        return const PelangganArtikelPage();
+        content = const PelangganArtikelPage();
+        break;
       case 3:
-        return const PelangganProfilPage();
+        content = const PelangganProfilPage();
+        break;
       default:
-        return _buildDashboardBody(context);
+        content = _buildHomeContent(context);
+        break;
     }
-  }
-
-  Widget _buildDashboardBody(BuildContext context) {
-    final authProvider = context.watch<AuthProvider>();
-    final dashProvider = context.watch<DashboardProvider>();
-
-    final String userName = authProvider.user?.nama ?? 'User';
-    final bool isMember = dashProvider.isMember;
-    final String poinText = '${dashProvider.formattedPoin} poin';
-    final String expiredText = dashProvider.formattedExpiredDate;
-    final List<Artikel> articles = dashProvider.recentArticles;
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
-      body: SafeArea(
-        child: dashProvider.isLoading
-            ? const Center(
-                child: CircularProgressIndicator(color: AppColor.base100),
-              )
-            : RefreshIndicator(
-                color: AppColor.base100,
-                onRefresh: () => dashProvider.fetchCustomerDashboard(),
-                child: SingleChildScrollView(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const SizedBox(height: 24),
-
-                      // ============================================
-                      // HEADER: Greeting
-                      // ============================================
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Halo, $userName',
-                              style: GoogleFonts.poppins(
-                                fontSize: 28,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.base100,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              'Selamat datang di aplikasi penjemputan sampah',
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: AppColor.font80,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-
-                      // ============================================
-                      // CARD: Member & Poin Info
-                      // ============================================
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(18),
-                          decoration: BoxDecoration(
-                            color: AppColor.base100,
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Container(
-                                    width: 40,
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: AppColor.yellow,
-                                      borderRadius: BorderRadius.circular(8),
-                                    ),
-                                    child: const Icon(
-                                      Icons.star_rounded,
-                                      color: Colors.white,
-                                      size: 22,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 14),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          isMember
-                                              ? 'Member Customer+'
-                                              : 'Member Customer',
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 16,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          isMember
-                                              ? 'Masa Berlaku hingga $expiredText'
-                                              : 'Nikmati layanan premium dan diskon khusus',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 11,
-                                            color:
-                                                Colors.white.withOpacity(0.85),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 16),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 10),
-                                decoration: BoxDecoration(
-                                  color: Colors.white.withOpacity(0.15),
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          'Poin Anda',
-                                          style: GoogleFonts.poppins(
-                                            fontSize: 12,
-                                            color:
-                                                Colors.white.withOpacity(0.9),
-                                          ),
-                                        ),
-                                        Text(
-                                          poinText,
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 14,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.pushNamed(
-                                            context, AppRoutes.subscription);
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: Colors.white,
-                                        foregroundColor: AppColor.base100,
-                                        shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
-                                        ),
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 8),
-                                        minimumSize: Size.zero,
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        elevation: 0,
-                                      ),
-                                      child: Text(
-                                        'Beli',
-                                        style: GoogleFonts.poppins(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 12,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-
-                      // ============================================
-                      // BANNER: Info status membership
-                      // ============================================
-                      if (!isMember) ...[
-                        const SizedBox(height: 12),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 14, vertical: 10),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFFFF8E1),
-                              borderRadius: BorderRadius.circular(10),
-                              border: Border.all(
-                                  color:
-                                      AppColor.yellowAllert.withOpacity(0.6)),
-                            ),
-                            child: Text(
-                              'Silakan aktifkan langganan Anda untuk mulai melakukan pemesanan.',
-                              style: GoogleFonts.poppins(
-                                fontSize: 11,
-                                color: const Color(0xFFE65100),
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                      const SizedBox(height: 24),
-
-                      // ============================================
-                      // SECTION: Artikel Terbaru dari API
-                      // ============================================
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Artikel',
-                              style: GoogleFonts.poppins(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: AppColor.font100,
-                              ),
-                            ),
-                            GestureDetector(
-                              onTap: () {
-                                setState(() => _currentIndex = 2);
-                              },
-                              child: Text(
-                                'Lihat lebih banyak',
-                                style: GoogleFonts.poppins(
-                                  fontSize: 12,
-                                  color: AppColor.font80,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-
-                      // Error state
-                      if (dashProvider.errorMessage.isNotEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppColor.redLight,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              dashProvider.errorMessage,
-                              style: GoogleFonts.poppins(
-                                fontSize: 12,
-                                color: AppColor.redAllert,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      // Artikel cards
-                      if (articles.isNotEmpty)
-                        ...articles.map((artikel) => Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  horizontal: 20, vertical: 6),
-                              child: _buildArtikelCard(artikel),
-                            ))
-                      else if (!dashProvider.isLoading &&
-                          dashProvider.errorMessage.isEmpty)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: Center(
-                            child: Text(
-                              'Belum ada artikel terbaru.',
-                              style: GoogleFonts.poppins(
-                                fontSize: 13,
-                                color: AppColor.font80,
-                              ),
-                            ),
-                          ),
-                        ),
-
-                      const SizedBox(height: 80),
-                    ],
-                  ),
-                ),
-              ),
-      ),
+      body: content,
       floatingActionButton: SizedBox(
         width: 56,
         height: 56,
@@ -399,9 +109,315 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
     );
   }
 
+  Widget _buildHomeContent(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final dashProvider = context.watch<DashboardProvider>();
+
+    final String userName = authProvider.user?.nama ?? 'User';
+    final bool isMember = dashProvider.isMember;
+    final String poinText = '${dashProvider.formattedPoin} poin';
+    final String expiredText = dashProvider.formattedExpiredDate;
+    final List<Artikel> articles = dashProvider.recentArticles;
+
+    return SafeArea(
+      child: dashProvider.isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppColor.base100),
+            )
+          : RefreshIndicator(
+              color: AppColor.base100,
+              onRefresh: () => dashProvider.fetchCustomerDashboard(),
+              child: SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 24),
+
+                    // ============================================
+                    // HEADER: Greeting
+                    // ============================================
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Halo, $userName',
+                            style: GoogleFonts.poppins(
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.base100,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            'Selamat datang di aplikasi penjemputan sampah',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: AppColor.font80,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // ============================================
+                    // CARD: Member & Poin Info
+                    // ============================================
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.all(18),
+                        decoration: BoxDecoration(
+                          color: AppColor.base100,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: AppColor.yellow,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: const Icon(
+                                    Icons.star_rounded,
+                                    color: Colors.white,
+                                    size: 22,
+                                  ),
+                                ),
+                                const SizedBox(width: 14),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        isMember
+                                            ? 'Member Customer+'
+                                            : 'Member Customer',
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        isMember
+                                            ? 'Masa Berlaku hingga $expiredText'
+                                            : 'Nikmati layanan premium dan diskon khusus',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 11,
+                                          color:
+                                              Colors.white.withOpacity(0.85),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 14, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.15),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        'Poin Anda',
+                                        style: GoogleFonts.poppins(
+                                          fontSize: 12,
+                                          color:
+                                              Colors.white.withOpacity(0.9),
+                                        ),
+                                      ),
+                                      Text(
+                                        poinText,
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  ElevatedButton(
+                                    onPressed: () {
+                                      Navigator.pushNamed(
+                                          context, AppRoutes.subscription);
+                                    },
+                                    style: ElevatedButton.styleFrom(
+                                      backgroundColor: Colors.white,
+                                      foregroundColor: AppColor.base100,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(8),
+                                      ),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20, vertical: 8),
+                                      minimumSize: Size.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      elevation: 0,
+                                    ),
+                                    child: Text(
+                                      'Beli',
+                                      style: GoogleFonts.poppins(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+
+                    // ============================================
+                    // BANNER: Info status membership
+                    // ============================================
+                    if (!isMember) ...[
+                      const SizedBox(height: 12),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 14, vertical: 10),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFFFF8E1),
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                                color:
+                                    AppColor.yellowAllert.withOpacity(0.6)),
+                          ),
+                          child: Text(
+                            'Silakan aktifkan langganan Anda untuk mulai melakukan pemesanan.',
+                            style: GoogleFonts.poppins(
+                              fontSize: 11,
+                              color: const Color(0xFFE65100),
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+
+                    // ============================================
+                    // SECTION: Artikel Terbaru dari API
+                    // ============================================
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Artikel',
+                            style: GoogleFonts.poppins(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.font100,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() => _currentIndex = 2);
+                            },
+                            child: Text(
+                              'Lihat lebih banyak',
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: AppColor.font80,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Error state
+                    if (dashProvider.errorMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: AppColor.redLight,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Text(
+                            dashProvider.errorMessage,
+                            style: GoogleFonts.poppins(
+                              fontSize: 12,
+                              color: AppColor.redAllert,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    // Artikel cards
+                    if (articles.isNotEmpty)
+                      ...articles.map((artikel) => Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 6),
+                            child: _buildArtikelCard(artikel),
+                          ))
+                    else if (!dashProvider.isLoading &&
+                        dashProvider.errorMessage.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Center(
+                          child: Text(
+                            'Belum ada artikel terbaru.',
+                            style: GoogleFonts.poppins(
+                              fontSize: 13,
+                              color: AppColor.font80,
+                            ),
+                          ),
+                        ),
+                      ),
+
+                    const SizedBox(height: 80),
+                  ],
+                ),
+              ),
+            ),
+    );
+  }
+
   // ================================================================
   // WIDGET BUILDER: Artikel Card
   // ================================================================
+
+  String _getImageUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    if (path.startsWith('http')) return path;
+    final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    return 'https://ambilin.kodetalma.my.id/$cleanPath';
+  }
 
   Widget _buildArtikelCard(Artikel artikel) {
     return GestureDetector(
@@ -431,7 +447,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                 height: 180,
                 color: const Color(0xFFE0E0E0),
                 child: Image.network(
-                  artikel.fotoThumbnail ?? '',
+                  _getImageUrl(artikel.fotoThumbnail),
                   fit: BoxFit.cover,
                   errorBuilder: (context, error, stackTrace) {
                     return const Center(

@@ -35,14 +35,6 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
 
     final auth = context.watch<AuthProvider>();
-    if (auth.user != null) {
-      Future.microtask(() {
-        if (context.mounted) {
-          Navigator.pushReplacementNamed(context, AppRoutes.main);
-        }
-      });
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(

@@ -42,11 +42,19 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.pushNamed(
-      context,
-      AppRoutes.petugasDetailTugas,
-      arguments: tugas,
-    );
+    if (tugas.status == 'selesai') {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.petugasDetailSelesai,
+        arguments: tugas,
+      );
+    } else {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.petugasDetailTugas,
+        arguments: tugas,
+      );
+    }
   }
 
   Future<void> _refreshData() async {
@@ -65,11 +73,16 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     final dataSedangProses = history.where((e) => e.status == 'proses').toList();
     final dataSelesai = history.where((e) => e.status == 'selesai' || e.status == 'dibatalkan').toList();
 
-    String getJenisSampahName(int? id) {
-      if (id == null) return '-';
+    String getJenisSampahName(SetorSampah tugas) {
+      final id = tugas.idJenisSampah;
+      if (id == null) return tugas.namaJenisSampah.isNotEmpty ? tugas.namaJenisSampah : '-';
       final cat = categoryProvider.categories.firstWhere(
         (element) => element.idJenisSampah == id,
-        orElse: () => JenisSampah(idJenisSampah: id, nama: 'Jenis Sampah #$id', poinPerKg: 0),
+        orElse: () => JenisSampah(
+          idJenisSampah: id,
+          nama: tugas.namaJenisSampah.isNotEmpty ? tugas.namaJenisSampah : 'Jenis Sampah #$id',
+          poinPerKg: tugas.poinPerKg ?? 0,
+        ),
       );
       return cat.nama;
     }
@@ -139,7 +152,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                           final tugas = dataSedangProses[index];
                           return _buildCardRiwayat(
                             tugas: tugas,
-                            jenisSampahName: getJenisSampahName(tugas.idJenisSampah),
+                            jenisSampahName: getJenisSampahName(tugas),
                             isSelesai: false,
                             onTapLihat: () => _navigasiKeDetail(tugas),
                           );
@@ -189,7 +202,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                           final tugas = dataSelesai[index];
                           return _buildCardRiwayat(
                             tugas: tugas,
-                            jenisSampahName: getJenisSampahName(tugas.idJenisSampah),
+                            jenisSampahName: getJenisSampahName(tugas),
                             isSelesai: true,
                             onTapLihat: () => _navigasiKeDetail(tugas),
                           );
@@ -343,6 +356,14 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                     const SizedBox(height: 2),
                     Text(
                       'Jenis Sampah : $jenisSampahName',
+                      style: AppFont.regular().copyWith(
+                        fontSize: 12,
+                        color: AppColor.font100,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Driver : ${tugas.petugasName.isNotEmpty ? tugas.petugasName : "-"}',
                       style: AppFont.regular().copyWith(
                         fontSize: 12,
                         color: AppColor.font100,

@@ -1,7 +1,7 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../models/artikel.dart';
+import '../../../providers/article_provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
 import '../../../utils/app_routes.dart';
@@ -15,57 +15,53 @@ class PelangganArtikelPage extends StatefulWidget {
 }
 
 class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
-
-  late List<Artikel> _semuaArtikel;
-  List<Artikel> _artikelTampil = [];
   String _kategoriAktif = 'Semua';
   bool _isNavigating = false;
-
-  final List<String> _daftarKategori = [
-    'Semua',
-    'Tips',
-    'Edukasi',
-    'Berita',
-  ];
 
   @override
   void initState() {
     super.initState();
-
-    _semuaArtikel =
-        Artikel.getMockList().where((a) => !a.isDelete).toList();
-    _artikelTampil = List.from(_semuaArtikel);
-  }
-
-  void _filterKategori(String kategori) {
-    setState(() {
-      _kategoriAktif = kategori;
-      if (kategori == 'Semua') {
-        _artikelTampil = List.from(_semuaArtikel);
-      } else {
-        _artikelTampil =
-            _semuaArtikel.where((a) => a.kategori == kategori).toList();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<ArticleProvider>().fetchArticles();
       }
     });
   }
 
   Future<void> _bukaDetailArtikel(Artikel artikel) async {
     setState(() => _isNavigating = true);
-
     await Future.delayed(const Duration(milliseconds: 500));
-
     setState(() => _isNavigating = false);
 
     if (!mounted) return;
-    Navigator.pushNamed(
-      context,
-      AppRoutes.detailArtikel,
-      arguments: artikel,
-    );
+    Navigator.pushNamed(context, AppRoutes.detailArtikel, arguments: artikel);
+  }
+
+  String _getImageUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    if (path.startsWith('http')) return path;
+    final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    return 'https://ambilin.kodetalma.my.id/$cleanPath';
   }
 
   @override
   Widget build(BuildContext context) {
+    final articleProvider = context.watch<ArticleProvider>();
+    
+    final List<String> daftarKategori = [
+      'Semua',
+      ...articleProvider.categories
+          .map((c) => c['nama']?.toString() ?? '')
+          .where((name) => name.isNotEmpty),
+    ];
+
+    final semuaArtikel = articleProvider.allArticles
+        .where((a) => !a.isDelete)
+        .toList();
+    final artikelTampil = _kategoriAktif == 'Semua'
+        ? semuaArtikel
+        : semuaArtikel.where((a) => a.kategori == _kategoriAktif).toList();
+
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: Stack(
@@ -74,10 +70,8 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Padding(
-                  padding:
-                      const EdgeInsets.only(left: 20, right: 20, top: 20),
+                  padding: const EdgeInsets.only(left: 20, right: 20, top: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -85,8 +79,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                         'Jelajahi Informasi Terbaru',
                         style: AppFont.bold().copyWith(
                           fontSize: 24,
-                          color: AppColor.font100,
-                          fontStyle: FontStyle.italic,
+                          color: AppColor.base100,
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -107,19 +100,26 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: const EdgeInsets.symmetric(horizontal: 20),
-                    itemCount: _daftarKategori.length,
+                    itemCount: daftarKategori.length,
                     separatorBuilder: (_, __) => const SizedBox(width: 10),
                     itemBuilder: (context, index) {
-                      final kategori = _daftarKategori[index];
+                      final kategori = daftarKategori[index];
                       final isAktif = kategori == _kategoriAktif;
                       return GestureDetector(
-                        onTap: () => _filterKategori(kategori),
+                        onTap: () {
+                          setState(() {
+                            _kategoriAktif = kategori;
+                          });
+                        },
                         child: Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 18, vertical: 8),
+                            horizontal: 18,
+                            vertical: 8,
+                          ),
                           decoration: BoxDecoration(
-                            color:
-                                isAktif ? AppColor.base100 : AppColor.putih100,
+                            color: isAktif
+                                ? AppColor.base100
+                                : AppColor.putih100,
                             borderRadius: BorderRadius.circular(20),
                             border: Border.all(
                               color: isAktif
@@ -144,19 +144,26 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                 const SizedBox(height: 16),
 
                 Expanded(
-                  child: _artikelTampil.isEmpty
+                  child: articleProvider.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(
+                            color: AppColor.base100,
+                          ),
+                        )
+                      : artikelTampil.isEmpty
                       ? Center(
                           child: Text(
                             'Belum ada artikel di kategori ini.',
-                            style: AppFont.regular()
-                                .copyWith(color: AppColor.font80),
+                            style: AppFont.regular().copyWith(
+                              color: AppColor.font80,
+                            ),
                           ),
                         )
                       : ListView.builder(
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          itemCount: _artikelTampil.length,
+                          itemCount: artikelTampil.length,
                           itemBuilder: (context, index) {
-                            final artikel = _artikelTampil[index];
+                            final artikel = artikelTampil[index];
                             return _buildCardArtikel(artikel);
                           },
                         ),
@@ -168,38 +175,10 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
           LoadingOverlay(isLoading: _isNavigating),
         ],
       ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 2,
-        selectedItemColor: AppColor.base100,
-        unselectedItemColor: AppColor.font80,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.receipt_long), label: 'Pesanan'),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.article), label: 'Artikel'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
-        onTap: (index) {
-
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColor.base100,
-        child: const Icon(Icons.local_shipping, color: AppColor.putih100),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   Widget _buildCardArtikel(Artikel artikel) {
-
-    final jumlahViews = (artikel.idArtikel * 37 + 15) % 200;
-
     return GestureDetector(
       onTap: () => _bukaDetailArtikel(artikel),
       child: Container(
@@ -218,12 +197,12 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             ClipRRect(
-              borderRadius:
-                  const BorderRadius.vertical(top: Radius.circular(16)),
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(16),
+              ),
               child: Image.network(
-                artikel.fotoThumbnail ?? '',
+                _getImageUrl(artikel.fotoThumbnail),
                 width: double.infinity,
                 height: 180,
                 fit: BoxFit.cover,
@@ -231,8 +210,11 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                   width: double.infinity,
                   height: 180,
                   color: AppColor.base20,
-                  child: const Icon(Icons.image,
-                      size: 48, color: AppColor.font60),
+                  child: const Icon(
+                    Icons.image,
+                    size: 48,
+                    color: AppColor.font60,
+                  ),
                 ),
               ),
             ),
@@ -244,39 +226,20 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                 children: [
                   Text(
                     artikel.judul,
-                    style: AppFont.bold()
-                        .copyWith(fontSize: 16, color: AppColor.font100),
+                    style: AppFont.bold().copyWith(
+                      fontSize: 16,
+                      color: AppColor.font100,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 8),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-
-                      Text(
-                        artikel.kategori,
-                        style: AppFont.regular().copyWith(
-                          fontSize: 12,
-                          color: AppColor.font80,
-                        ),
-                      ),
-
-                      Row(
-                        children: [
-                          const Icon(Icons.remove_red_eye_outlined,
-                              size: 16, color: AppColor.base100),
-                          const SizedBox(width: 4),
-                          Text(
-                            '$jumlahViews',
-                            style: AppFont.medium().copyWith(
-                              fontSize: 12,
-                              color: AppColor.base100,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                  Text(
+                    artikel.kategori,
+                    style: AppFont.regular().copyWith(
+                      fontSize: 12,
+                      color: AppColor.font80,
+                    ),
                   ),
                 ],
               ),

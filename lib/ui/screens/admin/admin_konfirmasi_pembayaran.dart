@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
+import 'package:frontend_ambilin/providers/auth_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 
@@ -13,51 +16,161 @@ class AdminKonfirmasiPembayaran extends StatefulWidget {
 class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
   bool _isApproving = false;
   bool _isRejecting = false;
+  Map<String, dynamic>? _item;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _item ??= ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+  }
+
+  String _formatDateTime(String? dateStr) {
+    if (dateStr == null || dateStr.isEmpty) return '-';
+    try {
+      final dt = DateTime.parse(dateStr).toLocal();
+      return DateFormat('dd MMMM yyyy, HH:mm', 'id_ID').format(dt);
+    } catch (e) {
+      try {
+        final dt = DateTime.parse(dateStr).toLocal();
+        return '${dt.day}-${dt.month}-${dt.year} ${dt.hour.toString().padLeft(2, '0')}:${dt.minute.toString().padLeft(2, '0')}';
+      } catch (_) {
+        return dateStr;
+      }
+    }
+  }
+
+  String _getImageUrl(String? path) {
+    if (path == null || path.isEmpty) return '';
+    if (path.startsWith('http')) return path;
+    final cleanPath = path.startsWith('/') ? path.substring(1) : path;
+    return 'https://ambilin.kodetalma.my.id/$cleanPath';
+  }
 
   void _handleSetujui() async {
+    if (_item == null) return;
+    final id = _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
+
     setState(() {
       _isApproving = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.confirmTransaction(id, 'berhasil');
 
-    if (mounted) {
       setState(() {
         _isApproving = false;
       });
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Center(child: Text('Pembayaran Berhasil Disetujui')),
+            backgroundColor: AppColor.base100,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text(authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal menyetujui pembayaran')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isApproving = false;
+      });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Center(child: Text('Pembayaran Berhasil Disetujui')),
-          backgroundColor: AppColor.base100,
+        SnackBar(
+          content: Center(child: Text('Terjadi kesalahan: $e')),
+          backgroundColor: Colors.red,
         ),
       );
-      Navigator.pop(context);
     }
   }
 
   void _handleTolak() async {
+    if (_item == null) return;
+    final id = _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
+
     setState(() {
       _isRejecting = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.confirmTransaction(id, 'gagal');
 
-    if (mounted) {
       setState(() {
         _isRejecting = false;
       });
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Center(child: Text('Pembayaran Telah Ditolak')),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Center(child: Text(authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal menolak pembayaran')),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() {
+        _isRejecting = false;
+      });
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Center(child: Text('Pembayaran Telah Ditolak')),
+        SnackBar(
+          content: Center(child: Text('Terjadi kesalahan: $e')),
           backgroundColor: Colors.red,
         ),
       );
-      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final item = _item;
+    if (item == null) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Detail Konfirmasi')),
+        body: const Center(child: Text('Data transaksi tidak ditemukan')),
+      );
+    }
+
+    final userName = item['user']?['nama'] ?? item['nama_user'] ?? item['nama'] ?? 'User';
+    final inisial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
+    final transId = item['id_riwayat_subscribtion'] ?? item['id'] ?? 0;
+    final subNama = item['subscribtion']?['nama'] ?? item['nama_subscribtion'] ?? '';
+    
+    final int harga = item['subscribtion']?['harga'] as int? ?? item['harga'] as int? ?? 0;
+    final int poinDigunakan = item['poin_digunakan'] as int? ?? 0;
+    final int totalBayar = harga - poinDigunakan;
+
+    final formattedTotal = 'Rp. ${totalBayar.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
+    
+    final paymentMethodName = item['metode_pembayaran']?['nama'] ?? item['nama_metode_pembayaran'] ?? '';
+    final paymentMethodRek = item['metode_pembayaran']?['nomor_rekening'] ?? item['nomor_rekening'] ?? '';
+    final paymentMethod = paymentMethodRek.isNotEmpty ? '$paymentMethodName - $paymentMethodRek' : paymentMethodName;
+
+    final rawDate = item['created_at']?.toString() ?? '';
+    final formattedDate = _formatDateTime(rawDate);
+    final buktiUrl = _getImageUrl(item['bukti_pembayaran']?.toString());
+
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       appBar: AppBar(
@@ -111,7 +224,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                         radius: 26,
                         backgroundColor: const Color(0xFFE3F2FD),
                         child: Text(
-                          'T',
+                          inisial,
                           style: GoogleFonts.poppins(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
@@ -121,7 +234,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                       ),
                       const SizedBox(width: 14),
                       Text(
-                        'Tunggul Nadzif',
+                        userName,
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 16,
@@ -133,15 +246,15 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                   const SizedBox(height: 12),
                   const Divider(color: AppColor.font60),
 
-                  _buildInfoRow('ID Transaksi', '1'),
+                  _buildInfoRow('ID Transaksi', transId.toString()),
                   const Divider(color: AppColor.font60),
-                  _buildInfoRow('Paket Langganan', '1 Bulan'),
+                  _buildInfoRow('Paket Langganan', subNama),
                   const Divider(color: AppColor.font60),
-                  _buildInfoRow('Harga Total', 'Rp. 30.000'),
+                  _buildInfoRow('Harga Total', formattedTotal),
                   const Divider(color: AppColor.font60),
-                  _buildInfoRow('Metode Pembayaran', 'BCA - 192920930'),
+                  _buildInfoRow('Metode Pembayaran', paymentMethod),
                   const Divider(color: AppColor.font60),
-                  _buildInfoRow('Tanggal dan Waktu', '13 Juni 2026, 14:00'),
+                  _buildInfoRow('Tanggal dan Waktu', formattedDate),
                 ],
               ),
             ),
@@ -173,19 +286,27 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                       width: double.infinity,
                       height: 180,
                       color: const Color(0xFFE0E0E0),
-                      child: Image.network(
-                        'https://images.unsplash.com/photo-1554415707-6e8cfc93fe23?w=800&auto=format&fit=crop',
-                        fit: BoxFit.cover,
-                        errorBuilder: (context, error, stackTrace) {
-                          return const Center(
-                            child: Icon(
-                              Icons.receipt_long,
-                              color: AppColor.font80,
-                              size: 48,
+                      child: buktiUrl.isNotEmpty
+                          ? Image.network(
+                              buktiUrl,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return const Center(
+                                  child: Icon(
+                                    Icons.receipt_long,
+                                    color: AppColor.font80,
+                                    size: 48,
+                                  ),
+                                );
+                              },
+                            )
+                          : const Center(
+                              child: Icon(
+                                Icons.receipt_long,
+                                color: AppColor.font80,
+                                size: 48,
+                              ),
                             ),
-                          );
-                        },
-                      ),
                     ),
                   ),
                 ],

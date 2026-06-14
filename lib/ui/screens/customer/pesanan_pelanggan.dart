@@ -223,6 +223,11 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
+                      'Pelanggan : ${data.customerName.isNotEmpty ? data.customerName : "-"}',
+                      style: AppFont.medium().copyWith(fontSize: 12, color: AppColor.font100),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
                       'Alamat : ${data.alamat ?? "-"}',
                       style: AppFont.regular().copyWith(fontSize: 12),
                       maxLines: 2,

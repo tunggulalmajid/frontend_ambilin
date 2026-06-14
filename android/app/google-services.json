@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "96061274554",
+    "project_id": "mobile-ambilin",
+    "storage_bucket": "mobile-ambilin.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:96061274554:android:596f6e92d209844ffd4583",
+        "android_client_info": {
+          "package_name": "com.example.frontend_ambilin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "96061274554-dmbof6lmubuqq7kkmmn4gv21gujf05dt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.frontend_ambilin",
+            "certificate_hash": "9f2fc2641448c35b451fe5dc6383fda38b8237f6"
+          }
+        },
+        {
+          "client_id": "96061274554-74gre4m33vbpu3mj64phh9j50ci6g4v1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCw4tjmD13zymz8zoXft0Cj3qTPUjTU7ko"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "96061274554-74gre4m33vbpu3mj64phh9j50ci6g4v1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

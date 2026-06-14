@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:device_preview/device_preview.dart';
 import 'package:frontend_ambilin/providers/auth_provider.dart';
 import 'package:frontend_ambilin/providers/dashboard_provider.dart';
 import 'package:frontend_ambilin/providers/pickup_history_provider.dart';
 import 'package:frontend_ambilin/providers/user_account_provider.dart';
 import 'package:frontend_ambilin/providers/article_provider.dart';
 import 'package:frontend_ambilin/providers/waste_category_provider.dart';
+import 'package:frontend_ambilin/providers/subscription_provider.dart';
 import 'package:frontend_ambilin/ui/screens/main_page.dart';
 import 'package:frontend_ambilin/ui/screens/login_page.dart';
+import 'package:frontend_ambilin/ui/screens/petugas/petugas_detail_selesai_page.dart';
 import 'package:frontend_ambilin/ui/screens/register_page.dart';
 import 'package:frontend_ambilin/ui/screens/splash.dart';
 import 'package:frontend_ambilin/ui/screens/customer/subscription_page.dart';
@@ -49,19 +50,17 @@ import 'package:frontend_ambilin/models/user_model.dart';
 
 void main() {
   runApp(
-    DevicePreview(
-      enabled: true,
-      builder: (context) => MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => AuthProvider()),
-          ChangeNotifierProvider(create: (_) => DashboardProvider()),
-          ChangeNotifierProvider(create: (_) => PickupHistoryProvider()),
-          ChangeNotifierProvider(create: (_) => UserAccountProvider()),
-          ChangeNotifierProvider(create: (_) => ArticleProvider()),
-          ChangeNotifierProvider(create: (_) => WasteCategoryProvider()),
-        ],
-        child: MyApp(),
-      ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => AuthProvider()),
+        ChangeNotifierProvider(create: (_) => DashboardProvider()),
+        ChangeNotifierProvider(create: (_) => PickupHistoryProvider()),
+        ChangeNotifierProvider(create: (_) => UserAccountProvider()),
+        ChangeNotifierProvider(create: (_) => ArticleProvider()),
+        ChangeNotifierProvider(create: (_) => WasteCategoryProvider()),
+        ChangeNotifierProvider(create: (_) => SubscriptionProvider()),
+      ],
+      child: const MyApp(),
     ),
   );
 }
@@ -88,8 +87,6 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Ambilin',
-      locale: DevicePreview.locale(context),
-      builder: DevicePreview.appBuilder,
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         pageTransitionsTheme: const PageTransitionsTheme(
@@ -102,14 +99,17 @@ class MyApp extends StatelessWidget {
           },
         ),
       ),
-      initialRoute: AppRoutes.main,
+      initialRoute: AppRoutes.splash,
       routes: {
         AppRoutes.splash: (context) => SplashScreen(),
         AppRoutes.login: (context) => LoginPage(),
         AppRoutes.register: (context) => RegisterPage(),
         AppRoutes.main: (context) => MainPage(),
         AppRoutes.subscription: (context) {
-          final authProvider = Provider.of<AuthProvider>(context, listen: false);
+          final authProvider = Provider.of<AuthProvider>(
+            context,
+            listen: false,
+          );
           if (authProvider.user?.idRole == 1) {
             return const ManajemenSubscriptionPage();
           } else {
@@ -122,21 +122,34 @@ class MyApp extends StatelessWidget {
         AppRoutes.manajemenArtikel: (context) => const ManajemenArtikelPage(),
         AppRoutes.manajemenKategori: (context) => const ManajemenKategoriPage(),
         AppRoutes.metodePembayaran: (context) => const FormPembelianLangganan(),
-        AppRoutes.pembayaran: (context) => const PembayaranPage(
-          subscriptionId: '',
-          metodePembayaran: '',
-          totalBayar: 0,
-        ),
+        AppRoutes.pembayaran: (context) {
+          final args =
+              ModalRoute.of(context)?.settings.arguments
+                  as Map<String, dynamic>?;
+          return PembayaranPage(
+            subscriptionId: args?['subscriptionId']?.toString() ?? '',
+            idMetodePembayaran: args?['idMetodePembayaran'] as int? ?? 0,
+            metodePembayaran: args?['metodePembayaran']?.toString() ?? '',
+            namaPaket: args?['namaPaket']?.toString() ?? '',
+            keterangan: args?['keterangan']?.toString() ?? '',
+            totalBayar: args?['totalBayar'] as int? ?? 0,
+            poinUsed: args?['poinUsed'] as int? ?? 0,
+          );
+        },
         AppRoutes.transaksiBerhasil: (context) => const TransaksiBerhasilPage(),
         AppRoutes.pelangganPilihMap: (context) => const PilihMapPage(),
         AppRoutes.pelangganProsesPenjemputan: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
+          final data = args is SetorSampah
+              ? args
+              : SetorSampah.getMockList().first;
           return PelangganProsesPenjemputanPage(data: data);
         },
         AppRoutes.pelangganDetailSelesai: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
+          final data = args is SetorSampah
+              ? args
+              : SetorSampah.getMockList().first;
           return PelangganSelesaiPenjemputanPage(data: data);
         },
         AppRoutes.detailArtikel: (context) {
@@ -146,50 +159,74 @@ class MyApp extends StatelessWidget {
         },
         AppRoutes.pelangganEditProfil: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final user = args is UserModel ? args : UserModel(
-            idUser: 1, nama: 'Rafi Customer', email: 'customer@gmail.com', idRole: 3,
-          );
+          final user = args is UserModel
+              ? args
+              : UserModel(
+                  idUser: 1,
+                  nama: 'Rafi Customer',
+                  email: 'customer@gmail.com',
+                  idRole: 3,
+                );
           return PelangganEditProfilPage(user: user);
         },
-        AppRoutes.pelangganUbahPassword: (context) => const PelangganUbahPasswordPage(),
+        AppRoutes.pelangganUbahPassword: (context) =>
+            const PelangganUbahPasswordPage(),
         AppRoutes.petugasHome: (context) => const PetugasDashboard(),
         AppRoutes.petugasRiwayat: (context) => const PetugasRiwayatPage(),
         AppRoutes.petugasDetailTugas: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
+          final data = args is SetorSampah
+              ? args
+              : SetorSampah.getMockList().first;
           return PetugasDetailTugasPage(data: data);
         },
         AppRoutes.petugasLihatMap: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
+          final data = args is SetorSampah
+              ? args
+              : SetorSampah.getMockList().first;
           return PetugasLihatMapPage(data: data);
         },
         AppRoutes.petugasProsesPenjemputan: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
+          final data = args is SetorSampah
+              ? args
+              : SetorSampah.getMockList().first;
           return PetugasProsesPenjemputanPage(data: data);
         },
         AppRoutes.petugasDetailSelesai: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
-          return PetugasDetailTugasPage(data: data);
+          final data = args is SetorSampah
+              ? args
+              : SetorSampah.getMockList().first;
+          return PetugasDetailSelesaiPage(data: data);
         },
         AppRoutes.petugasEditProfil: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
-          final user = args is UserModel ? args : UserModel(
-            idUser: 2, nama: 'Rafi Petugas', email: 'driver@gmail.com', idRole: 2,
-          );
+          final user = args is UserModel
+              ? args
+              : UserModel(
+                  idUser: 2,
+                  nama: 'Rafi Petugas',
+                  email: 'driver@gmail.com',
+                  idRole: 2,
+                );
           return PetugasEditProfilPage(user: user);
         },
-        AppRoutes.petugasUbahPassword: (context) => const PetugasUbahPasswordPage(),
+        AppRoutes.petugasUbahPassword: (context) =>
+            const PetugasUbahPasswordPage(),
         AppRoutes.petugasProfil: (context) => const PetugasProfilPage(),
         AppRoutes.adminProfil: (context) => const ProfileAdminPage(),
         AppRoutes.adminEditProfil: (context) => const EditProfileAdminPage(),
         AppRoutes.adminUbahPassword: (context) => const EditPasswordAdminPage(),
-        AppRoutes.adminDetailPelanggan: (context) => const AdminDetailPelangganPage(),
-        AppRoutes.adminDetailPetugas: (context) => const AdminDetailPetugasPage(),
-        AppRoutes.adminManajemenKonfirmasi: (context) => const AdminManajemenKonfirmasi(),
-        AppRoutes.adminDetailKonfirmasi: (context) => const AdminKonfirmasiPembayaran(),
+        AppRoutes.adminDetailPelanggan: (context) =>
+            const AdminDetailPelangganPage(),
+        AppRoutes.adminDetailPetugas: (context) =>
+            const AdminDetailPetugasPage(),
+        AppRoutes.adminManajemenKonfirmasi: (context) =>
+            const AdminManajemenKonfirmasi(),
+        AppRoutes.adminDetailKonfirmasi: (context) =>
+            const AdminKonfirmasiPembayaran(),
       },
     );
   }

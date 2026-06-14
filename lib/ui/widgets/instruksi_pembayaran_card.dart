@@ -3,7 +3,8 @@ import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 
 class InstruksiPembayaranCard extends StatelessWidget {
-  const InstruksiPembayaranCard({super.key});
+  final String keterangan;
+  const InstruksiPembayaranCard({super.key, required this.keterangan});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +34,7 @@ class InstruksiPembayaranCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 20),
             child: Text(
-              '8220341982 - BCA Yanto',
+              keterangan.isNotEmpty ? keterangan : '8220341982 - BCA Yanto',
               style: AppFont.bold().copyWith(
                 fontSize: 14,
                 color: AppColor.base100,

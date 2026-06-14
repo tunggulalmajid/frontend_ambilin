@@ -21,8 +21,14 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
-    final transaction = Transaksi.getMockData();
+    final int idTransaksi = args?['id_transaksi'] as int? ?? 1;
+    final String metodePembayaran = args?['metode_pembayaran']?.toString() ?? 'BCA';
+    final String namaPaket = args?['nama_paket']?.toString() ?? 'Gold Membership 30 Hari';
+    final int harga = args?['harga'] as int? ?? 15000;
+
+    final formattedHarga = 'Rp ${harga.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
 
     return Scaffold(
       backgroundColor: AppColor.base100,
@@ -58,7 +64,7 @@ class TransaksiBerhasilPage extends StatelessWidget {
                 const SizedBox(height: 24),
 
                 Text(
-                  'Terimakasih telah membeli\nPaket Langganan 1 Bulan Ambilin+',
+                  'Terimakasih telah membeli\n$namaPaket',
                   textAlign: TextAlign.center,
                   style: AppFont.bold().copyWith(
                     fontSize: 20,
@@ -99,22 +105,17 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
                       _buildDetailRow(
                         'ID Transaksi',
-                        transaction.idTransaksi.toString(),
-                      ),
-                      const SizedBox(height: 12),
-                      _buildDetailRow(
-                        'ID Langganan',
-                        transaction.idSubscription.toString(),
+                        idTransaksi.toString(),
                       ),
                       const SizedBox(height: 12),
                       _buildDetailRow(
                         'Metode Pembayaran',
-                        transaction.metodePembayaran.toString(),
+                        metodePembayaran,
                       ),
                       const SizedBox(height: 12),
                       _buildDetailRow(
                         'Harga',
-                        transaction.harga.toString(),
+                        formattedHarga,
                       ),
                     ],
                   ),
@@ -157,13 +158,16 @@ class TransaksiBerhasilPage extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text(
-          label,
-          style: AppFont.regular().copyWith(
-            fontSize: 13,
-            color: AppColor.font80,
+        Expanded(
+          child: Text(
+            label,
+            style: AppFont.regular().copyWith(
+              fontSize: 13,
+              color: AppColor.font80,
+            ),
           ),
         ),
+        const SizedBox(width: 8),
         Text(
           value,
           style: AppFont.semibold().copyWith(

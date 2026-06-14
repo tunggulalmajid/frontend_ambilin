@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
 import '../../widgets/w_text_fields.dart';
@@ -35,23 +36,58 @@ class _PetugasUbahPasswordPageState extends State<PetugasUbahPasswordPage> {
 
     setState(() => _isLoading = true);
 
-    await Future.delayed(const Duration(milliseconds: 1200));
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.updatePassword(
+        passwordLama: _passwordLamaController.text,
+        passwordBaru: _passwordBaruController.text,
+        konfirmasiPassword: _konfirmasiPasswordController.text,
+      );
 
-    setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Kata sandi petugas berhasil diubah',
-          style: AppFont.medium().copyWith(color: AppColor.putih100),
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Kata sandi petugas berhasil diubah',
+              style: AppFont.medium().copyWith(color: AppColor.putih100),
+            ),
+            backgroundColor: AppColor.base100,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authProvider.errorMessage.isNotEmpty
+                  ? authProvider.errorMessage
+                  : 'Gagal memperbarui password',
+              style: AppFont.medium().copyWith(color: AppColor.putih100),
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Terjadi kesalahan: $e',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
         ),
-        backgroundColor: AppColor.base100,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-    Navigator.pop(context);
+      );
+    }
   }
 
   @override
@@ -61,9 +97,9 @@ class _PetugasUbahPasswordPageState extends State<PetugasUbahPasswordPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             ProfileHeaderSimple(
-              backgroundUrl: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
+              backgroundUrl:
+                  'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
               onBackPressed: () => Navigator.pop(context),
             ),
             const SizedBox(height: 30),

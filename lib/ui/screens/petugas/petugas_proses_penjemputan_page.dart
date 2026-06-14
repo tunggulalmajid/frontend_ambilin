@@ -191,10 +191,14 @@ class _PetugasProsesPenjemputanPageState
     final categoryProvider = context.watch<WasteCategoryProvider>();
 
     String getJenisSampahName(int? id) {
-      if (id == null) return '-';
+      if (id == null) return data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : '-';
       final cat = categoryProvider.categories.firstWhere(
         (element) => element.idJenisSampah == id,
-        orElse: () => JenisSampah(idJenisSampah: id, nama: 'Jenis Sampah #$id', poinPerKg: 0),
+        orElse: () => JenisSampah(
+          idJenisSampah: id,
+          nama: data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : 'Jenis Sampah #$id',
+          poinPerKg: data.poinPerKg ?? 0,
+        ),
       );
       return cat.nama;
     }

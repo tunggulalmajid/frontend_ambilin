@@ -36,25 +36,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     });
   }
 
-  Future<void> _lihatDetail(SetorSampah tugas) async {
-    setState(() => _isNavigating = true);
-    await Future.delayed(const Duration(milliseconds: 300));
-    setState(() => _isNavigating = false);
-
-    if (!mounted) return;
-    Navigator.pushNamed(
-      context,
-      AppRoutes.petugasDetailTugas,
-      arguments: tugas,
-    );
-  }
-
-  Future<void> _refreshData() async {
-    await context.read<DashboardProvider>().fetchPetugasDashboard();
-    if (!mounted) return;
-    await context.read<PickupHistoryProvider>().fetchActiveOrders();
-  }
-
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
@@ -294,6 +275,32 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
   // ================================================================
   // WIDGET BUILDER: Card Tugas (Order Aktif)
   // ================================================================
+  Future<void> _lihatDetail(SetorSampah tugas) async {
+    setState(() => _isNavigating = true);
+    await Future.delayed(const Duration(milliseconds: 300));
+    setState(() => _isNavigating = false);
+
+    if (!mounted) return;
+    if (tugas.status == 'selesai') {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.petugasDetailSelesai,
+        arguments: tugas,
+      );
+    } else {
+      Navigator.pushNamed(
+        context,
+        AppRoutes.petugasDetailTugas,
+        arguments: tugas,
+      );
+    }
+  }
+
+  Future<void> _refreshData() async {
+    await context.read<DashboardProvider>().fetchPetugasDashboard();
+    if (!mounted) return;
+    await context.read<PickupHistoryProvider>().fetchActiveOrders();
+  }
 
   Widget _buildCardTugas(SetorSampah tugas) {
     // Format tanggal dari API
@@ -392,6 +399,12 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                           fontSize: 12, color: AppColor.font80),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Driver : ${tugas.petugasName.isNotEmpty ? tugas.petugasName : '-'}',
+                      style: AppFont.regular().copyWith(
+                          fontSize: 12, color: AppColor.font80),
                     ),
                   ],
                 ),

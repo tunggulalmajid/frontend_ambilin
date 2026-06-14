@@ -7,8 +7,10 @@ class ProfileHeaderFull extends StatelessWidget {
   final String inisial;
   final String nama;
   final String email;
+  final String? fotoUrl;
   final VoidCallback onBackPressed;
   final VoidCallback? onEditPressed;
+  final VoidCallback? onAvatarEditPressed;
 
   const ProfileHeaderFull({
     super.key,
@@ -18,6 +20,8 @@ class ProfileHeaderFull extends StatelessWidget {
     required this.email,
     required this.onBackPressed,
     this.onEditPressed,
+    this.fotoUrl,
+    this.onAvatarEditPressed,
   });
 
   @override
@@ -87,37 +91,45 @@ class ProfileHeaderFull extends StatelessWidget {
           child: Column(
             children: [
               // Avatar lingkaran
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: const Color(0xFFFFCDD2),
-                    child: Text(
-                      inisial,
-                      style: AppFont.bold().copyWith(
-                        fontSize: 36,
-                        color: AppColor.redAllert,
+              GestureDetector(
+                onTap: onAvatarEditPressed,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: const Color(0xFFFFCDD2),
+                      backgroundImage: (fotoUrl != null && fotoUrl!.isNotEmpty)
+                          ? NetworkImage(fotoUrl!)
+                          : null,
+                      child: (fotoUrl == null || fotoUrl!.isEmpty)
+                          ? Text(
+                              inisial,
+                              style: AppFont.bold().copyWith(
+                                fontSize: 36,
+                                color: AppColor.redAllert,
+                              ),
+                            )
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        width: 26,
+                        height: 26,
+                        decoration: const BoxDecoration(
+                          color: AppColor.putih100,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          size: 14,
+                          color: AppColor.redAllert,
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Container(
-                      width: 26,
-                      height: 26,
-                      decoration: const BoxDecoration(
-                        color: AppColor.putih100,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.edit,
-                        size: 14,
-                        color: AppColor.redAllert,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               // Nama
@@ -153,13 +165,17 @@ class ProfileHeaderFull extends StatelessWidget {
 class ProfileHeaderEdit extends StatelessWidget {
   final String backgroundUrl;
   final String inisial;
+  final String? fotoUrl;
   final VoidCallback onBackPressed;
+  final VoidCallback? onAvatarEditPressed;
 
   const ProfileHeaderEdit({
     super.key,
     required this.backgroundUrl,
     required this.inisial,
     required this.onBackPressed,
+    this.fotoUrl,
+    this.onAvatarEditPressed,
   });
 
   @override
@@ -206,37 +222,45 @@ class ProfileHeaderEdit extends StatelessWidget {
         // Avatar
         Positioned(
           bottom: -45,
-          child: Stack(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: const Color(0xFFFFCDD2),
-                child: Text(
-                  inisial,
-                  style: AppFont.bold().copyWith(
-                    fontSize: 36,
-                    color: AppColor.redAllert,
+          child: GestureDetector(
+            onTap: onAvatarEditPressed,
+            child: Stack(
+              children: [
+                CircleAvatar(
+                  radius: 50,
+                  backgroundColor: const Color(0xFFFFCDD2),
+                  backgroundImage: (fotoUrl != null && fotoUrl!.isNotEmpty)
+                      ? NetworkImage(fotoUrl!)
+                      : null,
+                  child: (fotoUrl == null || fotoUrl!.isEmpty)
+                      ? Text(
+                          inisial,
+                          style: AppFont.bold().copyWith(
+                            fontSize: 36,
+                            color: AppColor.redAllert,
+                          ),
+                        )
+                      : null,
+                ),
+                Positioned(
+                  bottom: 4,
+                  right: 4,
+                  child: Container(
+                    width: 28,
+                    height: 28,
+                    decoration: const BoxDecoration(
+                      color: AppColor.putih100,
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(
+                      Icons.edit,
+                      size: 15,
+                      color: AppColor.redAllert,
+                    ),
                   ),
                 ),
-              ),
-              Positioned(
-                bottom: 4,
-                right: 4,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: const BoxDecoration(
-                    color: AppColor.putih100,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.edit,
-                    size: 15,
-                    color: AppColor.redAllert,
-                  ),
-                ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ],

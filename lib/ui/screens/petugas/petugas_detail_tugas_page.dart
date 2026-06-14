@@ -6,6 +6,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
 import '../../../models/setor_sampah.dart';
 import '../../../models/jenis_sampah.dart';
 import '../../../providers/pickup_history_provider.dart';
@@ -86,12 +88,18 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
   Widget build(BuildContext context) {
     final data = widget.data;
     final categoryProvider = context.watch<WasteCategoryProvider>();
+    final double lat = data.latitude ?? -8.1724;
+    final double lng = data.longitude ?? 113.7005;
 
     String getJenisSampahName(int? id) {
-      if (id == null) return '-';
+      if (id == null) return data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : '-';
       final cat = categoryProvider.categories.firstWhere(
         (element) => element.idJenisSampah == id,
-        orElse: () => JenisSampah(idJenisSampah: id, nama: 'Jenis Sampah #$id', poinPerKg: 0),
+        orElse: () => JenisSampah(
+          idJenisSampah: id,
+          nama: data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : 'Jenis Sampah #$id',
+          poinPerKg: data.poinPerKg ?? 0,
+        ),
       );
       return cat.nama;
     }
@@ -151,57 +159,43 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                         arguments: data,
                       );
                     },
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: Stack(
-                        children: [
-                          Image.network(
-                            'https://tile.openstreetmap.org/14/13300/8547.png',
-                            width: double.infinity,
-                            height: 160,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
-                              width: double.infinity,
-                              height: 160,
-                              color: AppColor.base20,
-                              child: const Center(
-                                child: Text('Map Preview'),
-                              ),
-                            ),
+                    child: SizedBox(
+                      height: 160,
+                      width: double.infinity,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(12),
+                        child: FlutterMap(
+                          options: MapOptions(
+                            initialCenter: LatLng(lat, lng),
+                            initialZoom: 14.0,
+                            interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
                           ),
-                          Positioned(
-                            bottom: 40,
-                            left: 30,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppColor.yellowAllert,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.navigation,
-                                color: AppColor.putih100,
-                                size: 18,
-                              ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                              additionalOptions: const {
+                                'User-Agent':
+                                    'SeladakuApp_ByTunggulAbdulMajid_ClassOf2024_UNEJ',
+                              },
+                              userAgentPackageName: 'com.tunggul.seladaku',
                             ),
-                          ),
-                          Positioned(
-                            top: 30,
-                            right: 60,
-                            child: Container(
-                              padding: const EdgeInsets.all(4),
-                              decoration: const BoxDecoration(
-                                color: AppColor.base100,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.location_on,
-                                color: AppColor.putih100,
-                                size: 18,
-                              ),
+                            MarkerLayer(
+                              markers: [
+                                Marker(
+                                  point: LatLng(lat, lng),
+                                  width: 40,
+                                  height: 40,
+                                  child: const Icon(
+                                    Icons.location_on,
+                                    color: AppColor.redAllert,
+                                    size: 30,
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),

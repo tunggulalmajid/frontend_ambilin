@@ -1,5 +1,12 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_map/flutter_map.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:frontend_ambilin/providers/pickup_history_provider.dart';
+import 'package:frontend_ambilin/providers/waste_category_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
@@ -12,15 +19,81 @@ class FormPemesanan extends StatefulWidget {
 }
 
 class _FormPemesananState extends State<FormPemesanan> {
-  String? _selectedCategory;
+  int? _selectedCategoryId;
+  String? _selectedAddress;
+  double? _latitude;
+  double? _longitude;
+  File? _fotoSampah;
+  final ImagePicker _picker = ImagePicker();
+  
   final TextEditingController _notesController = TextEditingController();
   bool _isLoading = false;
 
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<WasteCategoryProvider>().fetchCategories();
+      }
+    });
+  }
+
+  Future<void> _ambilDariKamera() async {
+    try {
+      final XFile? photo = await _picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+      if (photo != null) {
+        setState(() {
+          _fotoSampah = File(photo.path);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: AppColor.redAllert),
+      );
+    }
+  }
+
+  Future<void> _ambilDariGaleri() async {
+    try {
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+      if (image != null) {
+        setState(() {
+          _fotoSampah = File(image.path);
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e'), backgroundColor: AppColor.redAllert),
+      );
+    }
+  }
+
   void _handleSubmit() async {
-    if (_selectedCategory == null) {
+    if (_selectedCategoryId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Center(child: Text('Pilih kategori sampah terlebih dahulu')),
+          backgroundColor: AppColor.redAllert,
+        ),
+      );
+      return;
+    }
+
+    if (_selectedAddress == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(child: Text('Pilih lokasi penjemputan terlebih dahulu')),
+          backgroundColor: AppColor.redAllert,
+        ),
+      );
+      return;
+    }
+
+    if (_fotoSampah == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Center(child: Text('Unggah foto sampah terlebih dahulu')),
           backgroundColor: AppColor.redAllert,
         ),
       );
@@ -31,13 +104,23 @@ class _FormPemesananState extends State<FormPemesanan> {
       _isLoading = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
+    final pickupProvider = context.read<PickupHistoryProvider>();
+    final success = await pickupProvider.addPickup(
+      idJenisSampah: _selectedCategoryId!,
+      alamat: _selectedAddress!,
+      latitude: _latitude ?? 0.0,
+      longitude: _longitude ?? 0.0,
+      catatan: _notesController.text.trim(),
+      imagePath: _fotoSampah!.path,
+    );
 
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
+    setState(() {
+      _isLoading = false;
+    });
 
+    if (!mounted) return;
+
+    if (success) {
       showDialog(
         context: context,
         barrierDismissible: false,
@@ -57,8 +140,8 @@ class _FormPemesananState extends State<FormPemesanan> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context);
-                  Navigator.pop(context);
+                  Navigator.pop(context); // close dialog
+                  Navigator.pop(context); // back to dashboard
                 },
                 child: Text(
                   'OK',
@@ -68,6 +151,13 @@ class _FormPemesananState extends State<FormPemesanan> {
             ],
           );
         },
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Center(child: Text(pickupProvider.errorMessage.isNotEmpty ? pickupProvider.errorMessage : 'Gagal mengajukan penjemputan sampah')),
+          backgroundColor: AppColor.redAllert,
+        ),
       );
     }
   }
@@ -80,6 +170,8 @@ class _FormPemesananState extends State<FormPemesanan> {
 
   @override
   Widget build(BuildContext context) {
+    final categoryProvider = context.watch<WasteCategoryProvider>();
+
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
@@ -133,8 +225,9 @@ class _FormPemesananState extends State<FormPemesanan> {
                 ),
               ),
               const SizedBox(height: 8),
-              DropdownButtonFormField<String>(
-                value: _selectedCategory,
+              DropdownButtonFormField<int>(
+                value: _selectedCategoryId,
+                isDense: true,
                 hint: Text(
                   'Masukkan kategori sampah',
                   style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font80),
@@ -142,7 +235,7 @@ class _FormPemesananState extends State<FormPemesanan> {
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide(color: AppColor.font60.withOpacity(0.5)),
@@ -156,15 +249,18 @@ class _FormPemesananState extends State<FormPemesanan> {
                     borderSide: const BorderSide(color: AppColor.base100),
                   ),
                 ),
-                items: const [
-                  DropdownMenuItem(value: 'Organik', child: Text('Sampah Organik')),
-                  DropdownMenuItem(value: 'Anorganik', child: Text('Sampah Anorganik')),
-                  DropdownMenuItem(value: 'Kertas', child: Text('Sampah Kertas')),
-                  DropdownMenuItem(value: 'Plastik', child: Text('Sampah Plastik')),
-                ],
+                items: categoryProvider.categories.map((cat) {
+                  return DropdownMenuItem<int>(
+                    value: cat.idJenisSampah,
+                    child: Text(
+                      cat.nama,
+                      style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font100),
+                    ),
+                  );
+                }).toList(),
                 onChanged: (value) {
                   setState(() {
-                    _selectedCategory = value;
+                    _selectedCategoryId = value;
                   });
                 },
               ),
@@ -194,27 +290,71 @@ class _FormPemesananState extends State<FormPemesanan> {
                         width: double.infinity,
                         height: 160,
                         color: const Color(0xFFF5F5F5),
-                        child: Image.network(
-                          'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=800&auto=format&fit=crop',
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return const Center(
-                              child: Icon(
-                                Icons.map,
-                                color: AppColor.font80,
-                                size: 48,
+                        child: FlutterMap(
+                          key: ValueKey('${_latitude}_${_longitude}'),
+                          options: MapOptions(
+                            initialCenter: LatLng(_latitude ?? -8.1724, _longitude ?? 113.7005),
+                            initialZoom: _latitude != null ? 15.0 : 12.0,
+                            interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
+                          ),
+                          children: [
+                            TileLayer(
+                              urlTemplate:
+                                  'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                              additionalOptions: const {
+                                'User-Agent':
+                                    'SeladakuApp_ByTunggulAbdulMajid_ClassOf2024_UNEJ',
+                              },
+                              userAgentPackageName: 'com.tunggul.seladaku',
+                            ),
+                            if (_latitude != null && _longitude != null)
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    point: LatLng(_latitude!, _longitude!),
+                                    width: 40,
+                                    height: 40,
+                                    child: const Icon(
+                                      Icons.location_on,
+                                      color: AppColor.redAllert,
+                                      size: 30,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            );
-                          },
+                          ],
                         ),
                       ),
                     ),
+                    if (_selectedAddress != null) ...[
+                      const SizedBox(height: 12),
+                      Text(
+                        _selectedAddress!,
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: AppColor.font100,
+                          fontWeight: FontWeight.w500,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                     const SizedBox(height: 12),
                     SizedBox(
                       width: double.infinity,
                       child: ElevatedButton.icon(
-                        onPressed: () {
-                          Navigator.pushNamed(context, AppRoutes.pelangganPilihMap);
+                        onPressed: () async {
+                          final result = await Navigator.pushNamed(
+                            context,
+                            AppRoutes.pelangganPilihMap,
+                          ) as Map<String, dynamic>?;
+
+                          if (result != null) {
+                            setState(() {
+                              _selectedAddress = result['alamat'] as String?;
+                              _latitude = result['latitude'] as double?;
+                              _longitude = result['longitude'] as double?;
+                            });
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColor.base100,
@@ -293,14 +433,26 @@ class _FormPemesananState extends State<FormPemesanan> {
                 ),
                 child: Column(
                   children: [
-                    const Icon(
-                      Icons.image_outlined,
-                      size: 48,
-                      color: AppColor.font80,
-                    ),
+                    _fotoSampah != null
+                        ? ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.file(
+                              _fotoSampah!,
+                              width: 120,
+                              height: 120,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const Icon(
+                            Icons.image_outlined,
+                            size: 48,
+                            color: AppColor.font80,
+                          ),
                     const SizedBox(height: 8),
                     Text(
-                      'Upload foto sampah Anda',
+                      _fotoSampah != null
+                          ? 'Foto Sampah Sudah Dipilih'
+                          : 'Upload foto sampah Anda',
                       style: GoogleFonts.poppins(
                         fontSize: 12,
                         color: AppColor.font80,
@@ -311,7 +463,7 @@ class _FormPemesananState extends State<FormPemesanan> {
                       children: [
                         Expanded(
                           child: ElevatedButton.icon(
-                            onPressed: () {},
+                            onPressed: _ambilDariKamera,
                             style: ElevatedButton.styleFrom(
                               backgroundColor: AppColor.base100,
                               padding: const EdgeInsets.symmetric(vertical: 10),
@@ -334,7 +486,7 @@ class _FormPemesananState extends State<FormPemesanan> {
                         const SizedBox(width: 12),
                         Expanded(
                           child: OutlinedButton.icon(
-                            onPressed: () {},
+                            onPressed: _ambilDariGaleri,
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: AppColor.base100, width: 1.5),
                               padding: const EdgeInsets.symmetric(vertical: 10),

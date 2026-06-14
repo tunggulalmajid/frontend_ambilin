@@ -19,7 +19,7 @@ class JenisSampah {
   factory JenisSampah.fromJson(Map<String, dynamic> json) {
     return JenisSampah(
       idJenisSampah: json['id_jenis_sampah'] ?? 0,
-      nama: json['nama'] ?? '',
+      nama: json['nama_jenis_sampah'] ?? json['nama'] ?? '',
       poinPerKg: json['poin_per_kg'] ?? 0,
       isDelete: json['is_delete'] == true || json['is_delete'] == 1 || json['is_delete'] == '1',
       createdAt: json['created_at'] != null

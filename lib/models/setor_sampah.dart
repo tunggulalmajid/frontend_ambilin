@@ -19,6 +19,8 @@ class SetorSampah {
   // Field tambahan dari relasi (untuk kemudahan binding di UI)
   final String customerName;
   final String petugasName;
+  final String namaJenisSampah;
+  final int? poinPerKg;
 
   const SetorSampah({
     required this.idSetorSampah,
@@ -37,6 +39,8 @@ class SetorSampah {
     this.pesanCustomer = '',
     this.customerName = '',
     this.petugasName = '',
+    this.namaJenisSampah = '',
+    this.poinPerKg,
   });
 
   factory SetorSampah.fromJson(Map<String, dynamic> json) {
@@ -55,8 +59,10 @@ class SetorSampah {
       createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
       pickupAt: json['pickup_at'] != null ? DateTime.tryParse(json['pickup_at']) : null,
       pesanCustomer: json['catatan'] ?? '',
-      customerName: json['customer_name'] ?? json['Customer']?['nama'] ?? json['Customer']?['User']?['nama'] ?? '',
-      petugasName: json['petugas_name'] ?? json['Petugas']?['nama'] ?? json['Petugas']?['User']?['nama'] ?? '',
+      customerName: json['nama_customer'] ?? json['customer_name'] ?? json['Customer']?['nama'] ?? json['Customer']?['User']?['nama'] ?? '',
+      petugasName: json['nama_petugas'] ?? json['petugas_name'] ?? json['Petugas']?['nama'] ?? json['Petugas']?['User']?['nama'] ?? '',
+      namaJenisSampah: json['nama_jenis_sampah'] ?? json['JenisSampah']?['nama_jenis_sampah'] ?? '',
+      poinPerKg: json['poin_per_kg'] != null ? int.tryParse(json['poin_per_kg'].toString()) : json['JenisSampah']?['poin_per_kg'],
     );
   }
 

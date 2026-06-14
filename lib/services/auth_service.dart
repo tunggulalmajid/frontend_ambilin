@@ -151,13 +151,16 @@ class AuthService extends ApiService {
       throw Exception("Gagal mengunggah foto profil");
     }
   }
-
-  Future<Map<String, dynamic>> updatePassword(
-      String oldPassword, String newPassword) async {
+  Future<Map<String, dynamic>> updatePassword({
+    required String passwordLama,
+    required String passwordBaru,
+    required String konfirmasiPassword,
+  }) async {
     try {
       final response = await dio.put('/auth/update-password', data: {
-        'oldPassword': oldPassword,
-        'newPassword': newPassword,
+        'password_lama': passwordLama,
+        'password_baru': passwordBaru,
+        'konfirmasi_password': konfirmasiPassword,
       });
       return response.data;
     } on DioException catch (e) {
@@ -166,6 +169,7 @@ class AuthService extends ApiService {
       throw Exception("Gagal mengubah password");
     }
   }
+
   String _extractErrorMessage(DioException e, String fallback) {
     if (e.response?.data != null && e.response?.data is Map) {
       final serverMessage = e.response?.data['message'];

@@ -180,14 +180,21 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> updatePassword(String oldPassword, String newPassword) async {
+  Future<bool> updatePassword({
+    required String passwordLama,
+    required String passwordBaru,
+    required String konfirmasiPassword,
+  }) async {
     _isLoading = true;
     _errorMessage = "";
     notifyListeners();
 
     try {
-      final response =
-          await _authService.updatePassword(oldPassword, newPassword);
+      final response = await _authService.updatePassword(
+        passwordLama: passwordLama,
+        passwordBaru: passwordBaru,
+        konfirmasiPassword: konfirmasiPassword,
+      );
       _isLoading = false;
       if (response['status'] == "success") {
         notifyListeners();

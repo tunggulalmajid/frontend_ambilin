@@ -1,5 +1,6 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
 import '../../widgets/w_text_fields.dart';
@@ -34,20 +35,50 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
 
     setState(() => _isLoading = true);
 
-    await Future.delayed(const Duration(milliseconds: 1500));
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.updatePassword(
+        passwordLama: _passwordLamaController.text,
+        passwordBaru: _passwordBaruController.text,
+        konfirmasiPassword: _konfirmasiPasswordController.text,
+      );
 
-    setState(() => _isLoading = false);
+      setState(() => _isLoading = false);
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Password berhasil diubah', style: AppFont.medium().copyWith(color: AppColor.putih100)),
-        backgroundColor: AppColor.base100,
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
-    Navigator.pop(context);
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Password berhasil diubah', style: AppFont.medium().copyWith(color: AppColor.putih100)),
+            backgroundColor: AppColor.base100,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal memperbarui password',
+              style: AppFont.medium().copyWith(color: AppColor.putih100),
+            ),
+            backgroundColor: Colors.red,
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Terjadi kesalahan: $e', style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
   }
 
   @override
@@ -79,7 +110,7 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
                     const SizedBox(height: 18),
                     WPasswordField(
                       label: 'Password Baru',
-                      hintText: 'Konfirmasi Password Baru',
+                      hintText: 'Masukkan Password Baru',
                       controller: _passwordBaruController,
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Password baru wajib diisi';
@@ -89,8 +120,8 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
                     ),
                     const SizedBox(height: 18),
                     WPasswordField(
-                      label: 'Password Baru',
-                      hintText: 'email@example.com',
+                      label: 'Konfirmasi Password Baru',
+                      hintText: 'Konfirmasi Password Baru',
                       controller: _konfirmasiPasswordController,
                       validator: (v) {
                         if (v == null || v.isEmpty) return 'Konfirmasi wajib diisi';
