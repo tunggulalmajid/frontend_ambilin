@@ -16,7 +16,7 @@ class MainPage extends StatelessWidget {
     // Pantau AuthProvider untuk mendapatkan data user
     // final auth = context.watch<AuthProvider>();
     // final user = auth.user;
-    final int dummyIdRole = 1;
+    final int dummyIdRole = 2;
 
     // Fallback: Jika user null (misal karena token hilang/belum login)
     // Kembalikan ke LoginPage
