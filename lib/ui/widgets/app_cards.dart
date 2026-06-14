@@ -1,6 +1,3 @@
-/// File gabungan untuk seluruh widget kartu (card/tile) di aplikasi Ambilin.
-/// Berisi: ArticleCard, PromoCard, PaymentMethodCard, UserAccountCard,
-///         ArticleManagementCard, PickupHistoryCard.
 library;
 
 import 'package:flutter/material.dart';
@@ -9,10 +6,6 @@ import 'package:frontend_ambilin/models/riwayat_penjemputan.dart';
 import 'package:frontend_ambilin/models/akun_pengguna.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
-
-// ============================================================================
-// 1. ArticleCard — Kartu artikel untuk halaman customer dashboard.
-// ============================================================================
 
 class ArticleCard extends StatelessWidget {
   final String title;

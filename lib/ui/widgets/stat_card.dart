@@ -35,7 +35,7 @@ class StatCard extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Left side — texts
+          
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -70,8 +70,6 @@ class StatCard extends StatelessWidget {
               ),
             ],
           ),
-
-          // Right side — icon container
           Container(
             width: 48,
             height: 48,

@@ -1,15 +1,7 @@
-// ----- FILE: detail_card_wrapper.dart -----
-// Widget reusable untuk card wrapper dengan judul + divider.
-// Digunakan di: pelanggan_proses_penjemputan, pelanggan_selesai_penjemputan,
-//               petugas_detail_tugas, petugas_proses_penjemputan,
-//               petugas_detail_selesai.
-
 import 'package:flutter/material.dart';
 import '../../utils/app_color.dart';
 import '../../utils/app_font.dart';
 
-/// Card wrapper standar untuk halaman detail penjemputan.
-/// Menampilkan judul hijau, divider, dan konten child di bawahnya.
 class DetailCardWrapper extends StatelessWidget {
   final String title;
   final Widget child;

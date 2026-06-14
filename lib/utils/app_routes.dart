@@ -13,7 +13,7 @@ class AppRoutes {
   static const String pembayaran = '/pembayaran';
   static const String transaksiBerhasil = '/transaksiberhasil';
 
-  // Modul Customer Baru
+  //Customer
   static const String pelangganPilihMap = '/pelanggan/pilih-map';
   static const String pelangganProsesPenjemputan = '/pelanggan/proses-penjemputan';
   static const String pelangganDetailSelesai = '/pelanggan/detail-selesai';
@@ -21,7 +21,7 @@ class AppRoutes {
   static const String pelangganEditProfil = '/pelanggan/edit-profil';
   static const String pelangganUbahPassword = '/pelanggan/ubah-password';
 
-  // Modul Petugas Baru
+  //Petugas
   static const String petugasHome = '/petugas/home';
   static const String petugasRiwayat = '/petugas/riwayat';
   static const String petugasDetailTugas = '/petugas/detail-tugas';
@@ -32,7 +32,7 @@ class AppRoutes {
   static const String petugasUbahPassword = '/petugas/ubah-password';
   static const String petugasProfil = '/petugas/profil';
 
-  // Modul Admin Baru
+  //Admin
   static const String adminProfil = '/admin/profil';
   static const String adminEditProfil = '/admin/edit-profil';
   static const String adminUbahPassword = '/admin/ubah-password';

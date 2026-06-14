@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../../models/user_model.dart';
 import '../../utils/app_color.dart';
 import '../../utils/app_font.dart';
 import '../../utils/app_routes.dart';
 import '../../providers/auth_provider.dart';
+import '../../providers/dashboard_provider.dart';
 import 'profile_header.dart';
 
-class CustomProfileScreen extends StatelessWidget {
+class CustomProfileScreen extends StatefulWidget {
   final String role; // 'customer', 'petugas', or 'admin'
 
   const CustomProfileScreen({
@@ -15,24 +17,89 @@ class CustomProfileScreen extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    // Determine details based on role
-    String backgroundUrl = '';
-    String nama = '';
-    String email = '';
+  State<CustomProfileScreen> createState() => _CustomProfileScreenState();
+}
 
-    if (role == 'admin') {
+class _CustomProfileScreenState extends State<CustomProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<AuthProvider>().fetchProfile();
+        if (widget.role == 'customer') {
+          context.read<DashboardProvider>().fetchCustomerDashboard();
+        } else if (widget.role == 'petugas') {
+          context.read<DashboardProvider>().fetchPetugasDashboard();
+        } else if (widget.role == 'admin') {
+          context.read<DashboardProvider>().fetchAdminDashboard();
+        }
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final auth = context.watch<AuthProvider>();
+    final dash = context.watch<DashboardProvider>();
+
+    if (auth.isProfileLoading || dash.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColor.base100),
+        ),
+      );
+    }
+
+    if (auth.errorMessage.isNotEmpty) {
+      return Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: AppColor.redAllert, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  auth.errorMessage,
+                  textAlign: TextAlign.center,
+                  style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<AuthProvider>().fetchProfile();
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
+                  child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final user = auth.user;
+    if (user == null) {
+      return const Scaffold(
+        body: Center(child: Text('Data tidak ditemukan')),
+      );
+    }
+
+    String backgroundUrl = '';
+    String nama = user.nama;
+    String email = user.email;
+
+    if (widget.role == 'admin') {
       backgroundUrl = 'assets/gambar_profile.png';
-      nama = 'Rafi Admin';
-      email = 'admin@gmail.com';
-    } else if (role == 'petugas') {
+    } else if (widget.role == 'petugas') {
       backgroundUrl = 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop';
-      nama = 'Rafi Petugas';
-      email = 'driver@gmail.com';
     } else {
       backgroundUrl = 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop';
-      nama = 'Rafi Customer';
-      email = 'customer@gmail.com';
     }
 
     final inisialVal = nama.isNotEmpty ? nama[0].toUpperCase() : 'R';
@@ -43,9 +110,8 @@ class CustomProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             // ========== Header Profil ==========
-            if (role == 'admin')
-              // Custom Header for Admin using Stack to support AssetImage
-              _buildAdminHeader(context, inisialVal, nama, email)
+            if (widget.role == 'admin')
+              _buildAdminHeader(context, inisialVal, nama, email, user)
             else
               ProfileHeaderFull(
                 backgroundUrl: backgroundUrl,
@@ -54,10 +120,10 @@ class CustomProfileScreen extends StatelessWidget {
                 email: email,
                 onBackPressed: () => Navigator.pop(context),
                 onEditPressed: () {
-                  if (role == 'petugas') {
-                    Navigator.pushNamed(context, AppRoutes.petugasEditProfil);
+                  if (widget.role == 'petugas') {
+                    Navigator.pushNamed(context, AppRoutes.petugasEditProfil, arguments: user);
                   } else {
-                    Navigator.pushNamed(context, AppRoutes.pelangganEditProfil);
+                    Navigator.pushNamed(context, AppRoutes.pelangganEditProfil, arguments: user);
                   }
                 },
               ),
@@ -67,9 +133,9 @@ class CustomProfileScreen extends StatelessWidget {
             // ========== Rincian Profil ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: role == 'admin'
-                  ? _buildAdminDetails()
-                  : _buildUserDetails(),
+              child: widget.role == 'admin'
+                  ? _buildAdminDetails(user)
+                  : _buildUserDetails(context, user),
             ),
 
             const SizedBox(height: 16),
@@ -77,7 +143,7 @@ class CustomProfileScreen extends StatelessWidget {
             // ========== Menu Aksi ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: _buildActionMenu(context),
+              child: _buildActionMenu(context, auth),
             ),
             const SizedBox(height: 30),
           ],
@@ -86,7 +152,7 @@ class CustomProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdminHeader(BuildContext context, String inisial, String nama, String email) {
+  Widget _buildAdminHeader(BuildContext context, String inisial, String nama, String email, UserModel user) {
     double headerHeight = 280;
     return Stack(
       clipBehavior: Clip.none,
@@ -102,7 +168,7 @@ class CustomProfileScreen extends StatelessWidget {
             ),
           ),
           child: Container(
-            color: Colors.black.withOpacity(0.45),
+            color: Colors.black45,
           ),
         ),
         // Tombol Back
@@ -132,7 +198,7 @@ class CustomProfileScreen extends StatelessWidget {
           right: 20,
           child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.adminEditProfil);
+              Navigator.pushNamed(context, AppRoutes.adminEditProfil, arguments: user);
             },
             child: Text(
               'Edit',
@@ -203,12 +269,12 @@ class CustomProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildAdminDetails() {
+  Widget _buildAdminDetails(UserModel user) {
     return Row(
       children: [
-        _buildInfoCard('Alamat', 'Jl Halmahera'),
+        _buildInfoCard('Alamat', user.alamat ?? '-'),
         const SizedBox(width: 12),
-        _buildInfoCard('Nomor Telepon', '0821234567'),
+        _buildInfoCard('Nomor Telepon', user.nomorTelepon ?? '-'),
       ],
     );
   }
@@ -253,7 +319,8 @@ class CustomProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildUserDetails() {
+  Widget _buildUserDetails(BuildContext context, UserModel user) {
+    final dash = context.watch<DashboardProvider>();
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(18),
@@ -273,14 +340,14 @@ class CustomProfileScreen extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 16),
-          if (role == 'petugas') ...[
-            const ProfileInfoRow(label: 'Nomor Telepon', value: '080765423'),
+          if (widget.role == 'petugas') ...[
+            ProfileInfoRow(label: 'Nomor Telepon', value: user.nomorTelepon ?? '-'),
             const ProfileInfoRow(label: 'Status', value: 'Aktif'),
           ] else ...[
-            const ProfileInfoRow(label: 'Alamat', value: 'Jl Halmahera'),
-            const ProfileInfoRow(label: 'No Telepon', value: '089965423456'),
-            const ProfileInfoRow(label: 'Poin', value: '1000'),
-            const ProfileInfoRow(label: 'Member', value: 'Aktif'),
+            ProfileInfoRow(label: 'Alamat', value: user.alamat ?? '-'),
+            ProfileInfoRow(label: 'No Telepon', value: user.nomorTelepon ?? '-'),
+            ProfileInfoRow(label: 'Poin', value: dash.formattedPoin),
+            ProfileInfoRow(label: 'Member', value: dash.isMember ? 'Aktif' : 'Tidak Aktif'),
             const ProfileInfoRow(label: 'Status', value: 'Aktif'),
           ],
         ],
@@ -288,7 +355,7 @@ class CustomProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildActionMenu(BuildContext context) {
+  Widget _buildActionMenu(BuildContext context, AuthProvider auth) {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
@@ -313,9 +380,9 @@ class CustomProfileScreen extends StatelessWidget {
             ),
             trailing: const Icon(Icons.chevron_right, color: AppColor.font80),
             onTap: () {
-              if (role == 'admin') {
+              if (widget.role == 'admin') {
                 Navigator.pushNamed(context, AppRoutes.adminUbahPassword);
-              } else if (role == 'petugas') {
+              } else if (widget.role == 'petugas') {
                 Navigator.pushNamed(context, AppRoutes.petugasUbahPassword);
               } else {
                 Navigator.pushNamed(context, AppRoutes.pelangganUbahPassword);
@@ -361,7 +428,7 @@ class CustomProfileScreen extends StatelessWidget {
                     TextButton(
                       onPressed: () {
                         Navigator.pop(ctx);
-                        context.read<AuthProvider>().logout();
+                        auth.logout();
                         Navigator.pushNamedAndRemoveUntil(
                           context,
                           AppRoutes.login,

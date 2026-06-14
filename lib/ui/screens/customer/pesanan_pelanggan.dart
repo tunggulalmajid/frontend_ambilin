@@ -1,8 +1,15 @@
+// ----- FILE: lib/ui/screens/customer/pesanan_pelanggan.dart -----
+// Halaman Riwayat & Aktivitas Pesanan Pelanggan — menampilkan data dari API:
+// - Riwayat penjemputan sampah customer dari PickupHistoryProvider
+// Semua data dummy telah dihapus dan diganti dengan data real dari API.
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
 import '../../../utils/app_routes.dart';
 import '../../../models/setor_sampah.dart';
+import '../../../providers/pickup_history_provider.dart';
 import '../../widgets/loading_overlay.dart';
 
 class PesananPelangganPage extends StatefulWidget {
@@ -13,20 +20,24 @@ class PesananPelangganPage extends StatefulWidget {
 }
 
 class _PesananPelangganPageState extends State<PesananPelangganPage> {
-  bool _isLoading = false;
+  bool _isNavigating = false;
 
-  final List<SetorSampah> onGoingList = SetorSampah.getMockList().where((e) => e.status != 'selesai').toList();
-  final List<SetorSampah> selesaiList = SetorSampah.getMockList().where((e) => e.status == 'selesai').toList();
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data riwayat penjemputan customer saat halaman diinisialisasi
+    Future.microtask(() {
+      context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 3);
+    });
+  }
 
   Future<void> _navigateToDetail(BuildContext context, SetorSampah data) async {
     setState(() {
-      _isLoading = true;
+      _isNavigating = true;
     });
-
-    await Future.delayed(const Duration(milliseconds: 500));
-
+    await Future.delayed(const Duration(milliseconds: 300));
     setState(() {
-      _isLoading = false;
+      _isNavigating = false;
     });
 
     if (!context.mounted) return;
@@ -46,8 +57,19 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
     }
   }
 
+  Future<void> _refreshData() async {
+    await context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 3);
+  }
+
   @override
   Widget build(BuildContext context) {
+    final pickupProvider = context.watch<PickupHistoryProvider>();
+    final history = pickupProvider.setorHistory;
+
+    // Filter list berdasarkan status
+    final onGoingList = history.where((e) => e.status == 'menunggu' || e.status == 'proses').toList();
+    final selesaiList = history.where((e) => e.status == 'selesai' || e.status == 'dibatalkan').toList();
+
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       appBar: AppBar(
@@ -61,52 +83,80 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('On Going', style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100)),
-                const SizedBox(height: 10),
-                ...onGoingList.map((data) => _buildCard(data, isOnGoing: true)),
+          pickupProvider.isLoading
+              ? const Center(
+                  child: CircularProgressIndicator(color: AppColor.base100),
+                )
+              : RefreshIndicator(
+                  color: AppColor.base100,
+                  onRefresh: _refreshData,
+                  child: SingleChildScrollView(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // On Going Section
+                        Text(
+                          'Dalam Proses',
+                          style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100),
+                        ),
+                        const SizedBox(height: 10),
+                        if (onGoingList.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Center(
+                              child: Text(
+                                'Tidak ada penjemputan aktif.',
+                                style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 13),
+                              ),
+                            ),
+                          )
+                        else
+                          ...onGoingList.map((data) => _buildCard(data, isOnGoing: true)),
 
-                const SizedBox(height: 20),
-                Text('Selesai', style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100)),
-                const SizedBox(height: 10),
-                ...selesaiList.map((data) => _buildCard(data, isOnGoing: false)),
-              ],
-            ),
-          ),
-          LoadingOverlay(isLoading: _isLoading),
+                        const SizedBox(height: 24),
+
+                        // Selesai Section
+                        Text(
+                          'Selesai & Riwayat',
+                          style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100),
+                        ),
+                        const SizedBox(height: 10),
+                        if (selesaiList.isEmpty)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Center(
+                              child: Text(
+                                'Belum ada riwayat penjemputan.',
+                                style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 13),
+                              ),
+                            ),
+                          )
+                        else
+                          ...selesaiList.map((data) => _buildCard(data, isOnGoing: false)),
+                      ],
+                    ),
+                  ),
+                ),
+          LoadingOverlay(isLoading: _isNavigating),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1,
-        selectedItemColor: AppColor.base100,
-        unselectedItemColor: AppColor.font80,
-        showUnselectedLabels: true,
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Beranda'),
-          BottomNavigationBarItem(icon: Icon(Icons.receipt_long), label: 'Pesanan'),
-          BottomNavigationBarItem(icon: Icon(Icons.article), label: 'Artikel'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
-        ],
-        onTap: (index) {
-
-        },
-      ),
-
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {},
-        backgroundColor: AppColor.base100,
-        child: const Icon(Icons.local_shipping, color: AppColor.putih100),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 
   Widget _buildCard(SetorSampah data, {required bool isOnGoing}) {
+    // Format tanggal
+    String tanggalText = '';
+    if (data.createdAt != null) {
+      final d = data.createdAt!;
+      final months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      ];
+      tanggalText = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+    }
+
     return Container(
       margin: const EdgeInsets.only(bottom: 15),
       padding: const EdgeInsets.all(15),
@@ -122,14 +172,31 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '12 Mei, 15:22',
+                tanggalText.isNotEmpty ? tanggalText : '-',
                 style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 12),
               ),
-              if (!isOnGoing)
-                Text(
-                  '+1.000 Poin',
-                  style: AppFont.bold().copyWith(color: AppColor.base100, fontSize: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                decoration: BoxDecoration(
+                  color: data.status == 'selesai'
+                      ? const Color(0xFFE8F5E9)
+                      : data.status == 'dibatalkan'
+                          ? const Color(0xFFFFEBEE)
+                          : const Color(0xFFFFF8E1),
+                  borderRadius: BorderRadius.circular(20),
                 ),
+                child: Text(
+                  data.status.toUpperCase(),
+                  style: AppFont.bold().copyWith(
+                    fontSize: 10,
+                    color: data.status == 'selesai'
+                        ? const Color(0xFF2E7D32)
+                        : data.status == 'dibatalkan'
+                            ? const Color(0xFFC62828)
+                            : const Color(0xFFE65100),
+                  ),
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 10),
@@ -143,9 +210,10 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                   height: 80,
                   color: Colors.grey.shade200,
                   child: Image.network(
-                    'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=200&auto=format&fit=crop',
+                    data.foto ?? '',
                     fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const Icon(Icons.delete, color: Colors.grey),
+                    errorBuilder: (context, error, stackTrace) =>
+                        const Icon(Icons.image_outlined, color: Colors.grey),
                   ),
                 ),
               ),
@@ -154,10 +222,22 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Alamat : ${data.alamat ?? "-"}', style: AppFont.regular().copyWith(fontSize: 12), maxLines: 2, overflow: TextOverflow.ellipsis),
-                    Text('Berat : ${isOnGoing ? "-" : "5"} kg', style: AppFont.regular().copyWith(fontSize: 12)),
-                    Text('Jenis Sampah : Plastik', style: AppFont.regular().copyWith(fontSize: 12)),
-                    Text('Driver : ${data.status == 'menunggu' ? "-" : data.petugasName}', style: AppFont.regular().copyWith(fontSize: 12)),
+                    Text(
+                      'Alamat : ${data.alamat ?? "-"}',
+                      style: AppFont.regular().copyWith(fontSize: 12),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Berat : ${data.beratSampah != null ? "${data.beratSampah} kg" : "-"}',
+                      style: AppFont.regular().copyWith(fontSize: 12),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'Driver : ${data.petugasName.isNotEmpty ? data.petugasName : "-"}',
+                      style: AppFont.regular().copyWith(fontSize: 12),
+                    ),
                   ],
                 ),
               ),
@@ -173,7 +253,10 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                 minimumSize: const Size(80, 35),
               ),
               onPressed: () => _navigateToDetail(context, data),
-              child: Text('Lihat', style: AppFont.medium().copyWith(color: AppColor.putih100, fontSize: 12)),
+              child: Text(
+                'Lihat Detail',
+                style: AppFont.medium().copyWith(color: AppColor.putih100, fontSize: 12),
+              ),
             ),
           )
         ],

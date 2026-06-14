@@ -6,6 +6,7 @@ class UserModel {
   final String password;
   final String? refreshToken;
   final int idRole;
+  final String? namaRole;
   final String? foto;
   final String? alamat;
   final String? nomorTelepon;
@@ -21,6 +22,7 @@ class UserModel {
     this.password = '',
     this.refreshToken,
     required this.idRole,
+    this.namaRole,
     this.foto,
     this.alamat,
     this.nomorTelepon,
@@ -32,12 +34,17 @@ class UserModel {
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      idUser: json['id_user'] ?? 0,
+      idUser: json['id_user'] != null
+          ? (int.tryParse(json['id_user'].toString()) ?? 0)
+          : 0,
       nama: json['nama'] ?? '',
       email: json['email'] ?? '',
       password: json['password'] ?? '',
       refreshToken: json['refresh_token'],
-      idRole: json['id_role'] ?? 3,
+      idRole: json['id_role'] != null
+          ? (int.tryParse(json['id_role'].toString()) ?? 3)
+          : 3,
+      namaRole: json['nama_role'],
       foto: json['foto'],
       alamat: json['alamat'],
       nomorTelepon: json['nomor_telepon'],
@@ -48,10 +55,10 @@ class UserModel {
           ? double.tryParse(json['longitude'].toString())
           : null,
       createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'])
+          ? DateTime.tryParse(json['created_at'].toString())
           : null,
       updatedAt: json['updated_at'] != null
-          ? DateTime.tryParse(json['updated_at'])
+          ? DateTime.tryParse(json['updated_at'].toString())
           : null,
     );
   }
@@ -62,6 +69,7 @@ class UserModel {
       'nama': nama,
       'email': email,
       'id_role': idRole,
+      'nama_role': namaRole,
       'foto': foto,
       'alamat': alamat,
       'nomor_telepon': nomorTelepon,

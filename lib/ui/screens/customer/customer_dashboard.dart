@@ -1,11 +1,22 @@
+// ----- FILE: lib/ui/screens/customer/customer_dashboard.dart -----
+// Dashboard utama Customer — menampilkan data dari API:
+// - Status member & poin dari DashboardProvider
+// - Nama user dari AuthProvider
+// - Artikel terbaru dari DashboardProvider
+// Semua data dummy telah dihapus dan diganti dengan data real dari API.
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:frontend_ambilin/models/artikel.dart';
+import 'package:frontend_ambilin/providers/auth_provider.dart';
+import 'package:frontend_ambilin/providers/dashboard_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
-
-enum CustomerSubscriptionState { belumBeli, menungguKonfirmasi, memberPlus }
+import 'pesanan_pelanggan.dart';
+import 'pelanggan_artikel_page.dart';
+import 'pelanggan_profil_page.dart';
 
 class CustomerDashboard extends StatefulWidget {
   const CustomerDashboard({super.key});
@@ -14,329 +25,351 @@ class CustomerDashboard extends StatefulWidget {
   State<CustomerDashboard> createState() => _CustomerDashboardState();
 }
 
-
 class _CustomerDashboardState extends State<CustomerDashboard> {
   int _currentIndex = 0;
-  CustomerSubscriptionState _subscriptionState = CustomerSubscriptionState.belumBeli;
+
+  @override
+  void initState() {
+    super.initState();
+    // Fetch data dashboard customer dari API saat pertama kali masuk
+    Future.microtask(() {
+      context.read<DashboardProvider>().fetchCustomerDashboard();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    // Navigasi antar tab bottom nav
+    switch (_currentIndex) {
+      case 1:
+        return PesananPelangganPage();
+      case 2:
+        return const PelangganArtikelPage();
+      case 3:
+        return const PelangganProfilPage();
+      default:
+        return _buildDashboardBody(context);
+    }
+  }
+
+  Widget _buildDashboardBody(BuildContext context) {
+    final authProvider = context.watch<AuthProvider>();
+    final dashProvider = context.watch<DashboardProvider>();
+
+    final String userName = authProvider.user?.nama ?? 'User';
+    final bool isMember = dashProvider.isMember;
+    final String poinText = '${dashProvider.formattedPoin} poin';
+    final String expiredText = dashProvider.formattedExpiredDate;
+    final List<Artikel> articles = dashProvider.recentArticles;
+
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Halo, User',
-                      style: GoogleFonts.poppins(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.base100,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Selamat datang di aplikasi penjemputan sampah',
-                      style: GoogleFonts.poppins(
-                        fontSize: 13,
-                        color: AppColor.font80,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.all(18),
-                  decoration: BoxDecoration(
-                    color: AppColor.base100,
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            width: 40,
-                            height: 40,
-                            decoration: BoxDecoration(
-                              color: AppColor.yellow,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          const SizedBox(width: 14),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  _subscriptionState == CustomerSubscriptionState.memberPlus
-                                      ? 'Member Customer+'
-                                      : 'Member Customer',
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  _subscriptionState == CustomerSubscriptionState.memberPlus
-                                      ? 'Masa Berlaku hingga 14 Juli 2026'
-                                      : 'Nikmati layanan premium dan diskon khusus',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 11,
-                                    color: Colors.white.withOpacity(0.85),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.15),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Poin Anda',
-                                  style: GoogleFonts.poppins(
-                                    fontSize: 12,
-                                    color: Colors.white.withOpacity(0.9),
-                                  ),
-                                ),
-                                Text(
-                                  '1.000 poin',
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 14,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.pushNamed(context, AppRoutes.subscription);
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.white,
-                                foregroundColor: AppColor.base100,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                                elevation: 0,
-                              ),
-                              child: Text(
-                                'Beli',
-                                style: GoogleFonts.poppins(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              if (_subscriptionState != CustomerSubscriptionState.memberPlus) ...[
-                const SizedBox(height: 12),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFF8E1),
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: AppColor.yellowAllert.withOpacity(0.6)),
-                    ),
-                    child: Text(
-                      _subscriptionState == CustomerSubscriptionState.belumBeli
-                          ? 'Silakan aktifkan langganan Anda untuk mulai melakukan pemesanan.'
-                          : 'Silahkan tunggu konfirmasi pengajuan Customer+ oleh admin!!',
-                      style: GoogleFonts.poppins(
-                        fontSize: 11,
-                        color: const Color(0xFFE65100),
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-              const SizedBox(height: 24),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      'Artikel',
-                      style: GoogleFonts.poppins(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColor.font100,
-                      ),
-                    ),
-                    GestureDetector(
-                      onTap: () {},
-                      child: Text(
-                        'Lihat lebih banyak',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          color: AppColor.font80,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: AppColor.font60.withOpacity(0.5)),
-                  ),
+        child: dashProvider.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColor.base100),
+              )
+            : RefreshIndicator(
+                color: AppColor.base100,
+                onRefresh: () => dashProvider.fetchCustomerDashboard(),
+                child: SingleChildScrollView(
+                  physics: const AlwaysScrollableScrollPhysics(),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          topLeft: Radius.circular(16),
-                          topRight: Radius.circular(16),
-                        ),
-                        child: Container(
-                          width: double.infinity,
-                          height: 180,
-                          color: const Color(0xFFE0E0E0),
-                          child: Image.network(
-                            'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?w=800&auto=format&fit=crop',
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Icon(
-                                Icons.delete_outline,
-                                size: 48,
-                                color: AppColor.font80,
-                              );
-                            },
-                          ),
-                        ),
-                      ),
+                      const SizedBox(height: 24),
+
+                      // ============================================
+                      // HEADER: Greeting
+                      // ============================================
                       Padding(
-                        padding: const EdgeInsets.all(16),
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Tips Memilah Sampah Organik dengan Benar',
+                              'Halo, $userName',
                               style: GoogleFonts.poppins(
+                                fontSize: 28,
                                 fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: AppColor.font100,
+                                color: AppColor.base100,
                               ),
                             ),
-                            const SizedBox(height: 6),
+                            const SizedBox(height: 4),
                             Text(
-                              'Tips',
+                              'Selamat datang di aplikasi penjemputan sampah',
                               style: GoogleFonts.poppins(
-                                fontSize: 11,
+                                fontSize: 13,
                                 color: AppColor.font80,
                               ),
                             ),
                           ],
                         ),
                       ),
-                    ],
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: AppColor.font60.withOpacity(0.5)),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Emulator Switcher (Uji Coba)',
-                        style: GoogleFonts.poppins(
-                          fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.base100,
+                      const SizedBox(height: 20),
+
+                      // ============================================
+                      // CARD: Member & Poin Info
+                      // ============================================
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(18),
+                          decoration: BoxDecoration(
+                            color: AppColor.base100,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    width: 40,
+                                    height: 40,
+                                    decoration: BoxDecoration(
+                                      color: AppColor.yellow,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: const Icon(
+                                      Icons.star_rounded,
+                                      color: Colors.white,
+                                      size: 22,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 14),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          isMember
+                                              ? 'Member Customer+'
+                                              : 'Member Customer',
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          isMember
+                                              ? 'Masa Berlaku hingga $expiredText'
+                                              : 'Nikmati layanan premium dan diskon khusus',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 11,
+                                            color:
+                                                Colors.white.withOpacity(0.85),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 16),
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 14, vertical: 10),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.15),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'Poin Anda',
+                                          style: GoogleFonts.poppins(
+                                            fontSize: 12,
+                                            color:
+                                                Colors.white.withOpacity(0.9),
+                                          ),
+                                        ),
+                                        Text(
+                                          poinText,
+                                          style: GoogleFonts.poppins(
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 14,
+                                            color: Colors.white,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    ElevatedButton(
+                                      onPressed: () {
+                                        Navigator.pushNamed(
+                                            context, AppRoutes.subscription);
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.white,
+                                        foregroundColor: AppColor.base100,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 20, vertical: 8),
+                                        minimumSize: Size.zero,
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        elevation: 0,
+                                      ),
+                                      child: Text(
+                                        'Beli',
+                                        style: GoogleFonts.poppins(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          _buildStateSelector(CustomerSubscriptionState.belumBeli, 'Belum Beli'),
-                          _buildStateSelector(CustomerSubscriptionState.menungguKonfirmasi, 'Pending'),
-                          _buildStateSelector(CustomerSubscriptionState.memberPlus, 'Member+'),
-                        ],
+
+                      // ============================================
+                      // BANNER: Info status membership
+                      // ============================================
+                      if (!isMember) ...[
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 10),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFF8E1),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(
+                                  color:
+                                      AppColor.yellowAllert.withOpacity(0.6)),
+                            ),
+                            child: Text(
+                              'Silakan aktifkan langganan Anda untuk mulai melakukan pemesanan.',
+                              style: GoogleFonts.poppins(
+                                fontSize: 11,
+                                color: const Color(0xFFE65100),
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 24),
+
+                      // ============================================
+                      // SECTION: Artikel Terbaru dari API
+                      // ============================================
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 20),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Artikel',
+                              style: GoogleFonts.poppins(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor.font100,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() => _currentIndex = 2);
+                              },
+                              child: Text(
+                                'Lihat lebih banyak',
+                                style: GoogleFonts.poppins(
+                                  fontSize: 12,
+                                  color: AppColor.font80,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
+                      const SizedBox(height: 12),
+
+                      // Error state
+                      if (dashProvider.errorMessage.isNotEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(16),
+                            decoration: BoxDecoration(
+                              color: AppColor.redLight,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              dashProvider.errorMessage,
+                              style: GoogleFonts.poppins(
+                                fontSize: 12,
+                                color: AppColor.redAllert,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      // Artikel cards
+                      if (articles.isNotEmpty)
+                        ...articles.map((artikel) => Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 6),
+                              child: _buildArtikelCard(artikel),
+                            ))
+                      else if (!dashProvider.isLoading &&
+                          dashProvider.errorMessage.isEmpty)
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Center(
+                            child: Text(
+                              'Belum ada artikel terbaru.',
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                color: AppColor.font80,
+                              ),
+                            ),
+                          ),
+                        ),
+
+                      const SizedBox(height: 80),
                     ],
                   ),
                 ),
               ),
-              const SizedBox(height: 80),
-            ],
-          ),
-        ),
       ),
       floatingActionButton: SizedBox(
         width: 56,
         height: 56,
         child: FloatingActionButton(
           onPressed: () {
-            if (_subscriptionState == CustomerSubscriptionState.memberPlus) {
+            if (isMember) {
               Navigator.pushNamed(context, AppRoutes.pemesanan);
             } else {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Center(child: Text('Silakan aktifkan langganan Anda terlebih dahulu')),
+                  content: Center(
+                      child: Text(
+                          'Silakan aktifkan langganan Anda terlebih dahulu')),
                   backgroundColor: AppColor.redAllert,
                 ),
               );
             }
           },
-          backgroundColor: _subscriptionState == CustomerSubscriptionState.memberPlus
-              ? AppColor.base100
-              : AppColor.font60,
+          backgroundColor: isMember ? AppColor.base100 : AppColor.font60,
           elevation: 4,
           shape: const CircleBorder(),
           child: const Icon(
@@ -366,32 +399,87 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
     );
   }
 
-  Widget _buildStateSelector(CustomerSubscriptionState state, String label) {
-    final bool isSelected = _subscriptionState == state;
+  // ================================================================
+  // WIDGET BUILDER: Artikel Card
+  // ================================================================
+
+  Widget _buildArtikelCard(Artikel artikel) {
     return GestureDetector(
       onTap: () {
-        setState(() {
-          _subscriptionState = state;
-        });
+        Navigator.pushNamed(
+          context,
+          AppRoutes.detailArtikel,
+          arguments: artikel,
+        );
       },
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(
-          color: isSelected ? AppColor.base100 : Colors.white,
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColor.base100),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: AppColor.font60.withOpacity(0.5)),
         ),
-        child: Text(
-          label,
-          style: GoogleFonts.poppins(
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            color: isSelected ? Colors.white : AppColor.base100,
-          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+              ),
+              child: Container(
+                width: double.infinity,
+                height: 180,
+                color: const Color(0xFFE0E0E0),
+                child: Image.network(
+                  artikel.fotoThumbnail ?? '',
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Icon(
+                        Icons.image_outlined,
+                        size: 48,
+                        color: AppColor.font80,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    artikel.judul,
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                      color: AppColor.font100,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    artikel.kategori.isNotEmpty ? artikel.kategori : 'Artikel',
+                    style: GoogleFonts.poppins(
+                      fontSize: 11,
+                      color: AppColor.font80,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  // ================================================================
+  // WIDGET BUILDER: Bottom Nav Item
+  // ================================================================
 
   Widget _buildNavItem(IconData icon, String label, int index) {
     final bool isActive = _currentIndex == index;

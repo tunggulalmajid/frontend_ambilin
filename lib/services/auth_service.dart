@@ -8,26 +8,35 @@ class AuthService extends ApiService {
     try {
       final response = await dio.post('/auth/login', data: request.toJson());
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal login"));
     } catch (e) {
-      throw Exception("Gagal login: terhubung ke server");
+      throw Exception("Gagal login: tidak dapat terhubung ke server");
     }
   }
 
   Future<Map<String, dynamic>> register(RegisterRequest request) async {
     try {
-      final response = await dio.post('/auth/register', data: request.toJson());
+      final response =
+          await dio.post('/auth/register', data: request.toJson());
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal registrasi"));
     } catch (e) {
-      throw Exception("Gagal registrasi: terhubung ke server");
+      throw Exception("Gagal registrasi: tidak dapat terhubung ke server");
     }
   }
 
-  Future<Map<String, dynamic>> googleLogin(String idToken) async {
+  Future<Map<String, dynamic>> loginWithGoogle(String idToken) async {
     try {
-      final response = await dio.post('/auth/google', data: {'idToken': idToken});
+      final response =
+          await dio.post('/auth/google', data: {'idToken': idToken});
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal login dengan Google"));
     } catch (e) {
-      throw Exception("Gagal login Google");
+      throw Exception(
+          "Gagal login dengan Google: tidak dapat terhubung ke server");
     }
   }
 
@@ -35,29 +44,70 @@ class AuthService extends ApiService {
     try {
       final response = await dio.post('/auth/logout');
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal logout"));
     } catch (e) {
       throw Exception("Gagal logout");
     }
   }
 
-  Future<Map<String, dynamic>> updatePassword(String oldPassword, String newPassword) async {
+  Future<Map<String, dynamic>> refreshToken(String refreshToken) async {
     try {
-      final response = await dio.put('/auth/update-password', data: {
-        'oldPassword': oldPassword,
-        'newPassword': newPassword,
+      final refreshDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
+      final response = await refreshDio.post('/auth/refresh', data: {
+        'token': refreshToken,
       });
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal memperbarui token"));
     } catch (e) {
-      throw Exception("Gagal mengubah password");
+      throw Exception("Gagal memperbarui token");
     }
   }
 
-  Future<Map<String, dynamic>> getProfile() async {
+  Future<Map<String, dynamic>> getProfile(String token) async {
     try {
-      final response = await dio.get('/profile');
+      final response = await dio.get(
+        '/profile',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal memuat profil"));
     } catch (e) {
       throw Exception("Gagal memuat profil");
+    }
+  }
+
+  Future<Map<String, dynamic>> getPendingTransactions({int page = 1, int limit = 10}) async {
+    try {
+      final response = await dio.get(
+        '/subscriptions/transactions',
+        queryParameters: {
+          'status': 'menunggu',
+          'page': page,
+          'limit': limit,
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal mengambil daftar antrean verifikasi"));
+    } catch (e) {
+      throw Exception("Gagal mengambil daftar antrean verifikasi");
+    }
+  }
+
+  Future<Map<String, dynamic>> confirmTransaction(int id, String status) async {
+    try {
+      final response = await dio.put(
+        '/subscriptions/transactions/$id/confirm',
+        data: {'status': status},
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal memproses verifikasi transaksi"));
+    } catch (e) {
+      throw Exception("Gagal memproses verifikasi transaksi");
     }
   }
 
@@ -79,6 +129,8 @@ class AuthService extends ApiService {
         if (longitude != null) 'longitude': longitude,
       });
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal mengubah profil"));
     } catch (e) {
       throw Exception("Gagal mengubah profil");
     }
@@ -92,19 +144,46 @@ class AuthService extends ApiService {
       });
       final response = await dio.put('/profile/photo', data: formData);
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(
+          _extractErrorMessage(e, "Gagal mengunggah foto profil"));
     } catch (e) {
       throw Exception("Gagal mengunggah foto profil");
     }
   }
 
-  Future<Map<String, dynamic>> loginWithGoogle(String idToken) async {
+  Future<Map<String, dynamic>> updatePassword(
+      String oldPassword, String newPassword) async {
     try {
-      final response = await dio.post('/auth/google', data: {
-        'idToken': idToken,
+      final response = await dio.put('/auth/update-password', data: {
+        'oldPassword': oldPassword,
+        'newPassword': newPassword,
       });
       return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal mengubah password"));
     } catch (e) {
-      throw Exception("Gagal terhubung ke server");
+      throw Exception("Gagal mengubah password");
     }
+  }
+  String _extractErrorMessage(DioException e, String fallback) {
+    if (e.response?.data != null && e.response?.data is Map) {
+      final serverMessage = e.response?.data['message'];
+      if (serverMessage != null && serverMessage.toString().isNotEmpty) {
+        return serverMessage.toString();
+      }
+    }
+
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout ||
+        e.type == DioExceptionType.sendTimeout) {
+      return "Koneksi ke server timeout. Periksa jaringan Anda.";
+    }
+
+    if (e.type == DioExceptionType.connectionError) {
+      return "Tidak dapat terhubung ke server. Periksa koneksi internet Anda.";
+    }
+
+    return fallback;
   }
 }

@@ -1,7 +1,15 @@
-
+// ----- FILE: lib/ui/screens/petugas/petugas_detail_tugas_page.dart -----
+// Halaman Detail Tugas Petugas — menampilkan detail dari API:
+// - Menggunakan data SetorSampah yang dilewatkan sebagai argument.
+// - Menghubungkan tombol aksi ke API process/complete via PickupHistoryProvider.
+// - Menghapus mock data text.
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../models/setor_sampah.dart';
+import '../../../models/jenis_sampah.dart';
+import '../../../providers/pickup_history_provider.dart';
+import '../../../providers/waste_category_provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
 import '../../../utils/app_routes.dart';
@@ -13,8 +21,7 @@ class PetugasDetailTugasPage extends StatefulWidget {
   const PetugasDetailTugasPage({super.key, required this.data});
 
   @override
-  State<PetugasDetailTugasPage> createState() =>
-      _PetugasDetailTugasPageState();
+  State<PetugasDetailTugasPage> createState() => _PetugasDetailTugasPageState();
 }
 
 class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
@@ -23,27 +30,91 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
   Future<void> _ambilSampah() async {
     setState(() => _isLoading = true);
 
-    await Future.delayed(const Duration(seconds: 1));
+    final success = await context
+        .read<PickupHistoryProvider>()
+        .processPickup(widget.data.idSetorSampah);
 
     setState(() => _isLoading = false);
 
     if (!mounted) return;
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(
-          'Berhasil mengambil tugas penjemputan!',
-          style: AppFont.medium().copyWith(color: AppColor.putih100),
+    if (success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'Berhasil mengambil tugas penjemputan!',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
+          backgroundColor: AppColor.base100,
+          behavior: SnackBarBehavior.floating,
         ),
-        backgroundColor: AppColor.base100,
-        behavior: SnackBarBehavior.floating,
-      ),
+      );
+      // Refresh list order aktif dan riwayat
+      context.read<PickupHistoryProvider>().fetchActiveOrders();
+      context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 2);
+
+      // Arahkan langsung ke halaman proses penjemputan
+      Navigator.pushReplacementNamed(
+        context,
+        AppRoutes.petugasProsesPenjemputan,
+        arguments: widget.data,
+      );
+    } else {
+      final error = context.read<PickupHistoryProvider>().errorMessage;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            error.isNotEmpty ? error : 'Gagal mengambil tugas penjemputan.',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
+          backgroundColor: AppColor.redAllert,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+
+  void _navigasiKeProses() {
+    Navigator.pushNamed(
+      context,
+      AppRoutes.petugasProsesPenjemputan,
+      arguments: widget.data,
     );
   }
 
   @override
   Widget build(BuildContext context) {
     final data = widget.data;
+    final categoryProvider = context.watch<WasteCategoryProvider>();
+
+    String getJenisSampahName(int? id) {
+      if (id == null) return '-';
+      final cat = categoryProvider.categories.firstWhere(
+        (element) => element.idJenisSampah == id,
+        orElse: () => JenisSampah(idJenisSampah: id, nama: 'Jenis Sampah #$id', poinPerKg: 0),
+      );
+      return cat.nama;
+    }
+
+    String tanggalText = '-';
+    if (data.createdAt != null) {
+      final d = data.createdAt!;
+      final months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      tanggalText = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+    }
+
+    // Tentukan status teks yang ramah pengguna
+    String statusTeks = 'Mencari Kurir';
+    if (data.status == 'proses') {
+      statusTeks = 'Sedang Dijemput';
+    } else if (data.status == 'selesai') {
+      statusTeks = 'Selesai';
+    } else if (data.status == 'dibatalkan') {
+      statusTeks = 'Dibatalkan';
+    }
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -67,13 +138,11 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
         child: Column(
           children: [
-
             DetailCardWrapper(
               title: 'Rute',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-
                   GestureDetector(
                     onTap: () {
                       Navigator.pushNamed(
@@ -100,7 +169,6 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                               ),
                             ),
                           ),
-
                           Positioned(
                             bottom: 40,
                             left: 30,
@@ -117,7 +185,6 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                               ),
                             ),
                           ),
-
                           Positioned(
                             top: 30,
                             right: 60,
@@ -140,7 +207,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    '0.5 km dari lokasi anda',
+                    'Lihat rute lokasi penjemputan di peta',
                     style: AppFont.regular().copyWith(
                       fontSize: 12,
                       color: AppColor.font80,
@@ -156,16 +223,25 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
               child: Column(
                 children: [
                   DetailDataRow(
-                    label: 'Nama',
-                    value: data.customerName.isNotEmpty
-                        ? data.customerName
-                        : 'Yanto',
+                    label: 'Nama Pelanggan',
+                    value: data.customerName.isNotEmpty ? data.customerName : '-',
                   ),
-                  const DetailDataRow(label: 'Status', value: 'Mencari Kurir'),
-                  DetailDataRow(label: 'Alamat', value: data.alamat ?? 'Jl Semeru'),
-                  const DetailDataRow(label: 'Waktu Pengajuan', value: 'TIMESTAMP'),
-                  const DetailDataRow(label: 'Driver', value: '-'),
-                  const DetailDataRow(label: 'Waktu Penjemputan', value: '-'),
+                  DetailDataRow(
+                    label: 'Status',
+                    value: statusTeks,
+                  ),
+                  DetailDataRow(
+                    label: 'Alamat',
+                    value: data.alamat ?? '-',
+                  ),
+                  DetailDataRow(
+                    label: 'Waktu Pengajuan',
+                    value: tanggalText,
+                  ),
+                  DetailDataRow(
+                    label: 'Petugas',
+                    value: data.petugasName.isNotEmpty ? data.petugasName : '-',
+                  ),
                 ],
               ),
             ),
@@ -176,7 +252,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
               child: Text(
                 data.pesanCustomer.isNotEmpty
                     ? data.pesanCustomer
-                    : 'sampah depan rumah yang ada mobil avanza hitam',
+                    : 'Tidak ada catatan tambahan.',
                 style: AppFont.regular().copyWith(
                   fontSize: 14,
                   color: AppColor.font80,
@@ -193,7 +269,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
                     child: Image.network(
-                      'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=600&auto=format&fit=crop',
+                      data.foto ?? '',
                       width: double.infinity,
                       height: 150,
                       fit: BoxFit.cover,
@@ -201,8 +277,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                         width: double.infinity,
                         height: 150,
                         color: AppColor.base20,
-                        child: const Icon(Icons.image,
-                            size: 50, color: AppColor.font60),
+                        child: const Icon(Icons.image, size: 50, color: AppColor.font60),
                       ),
                     ),
                   ),
@@ -213,23 +288,27 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('jenis sampah',
-                              style: AppFont.bold().copyWith(
-                                  fontSize: 14, color: AppColor.font100)),
-                          Text('botol',
-                              style: AppFont.regular().copyWith(
-                                  fontSize: 14, color: AppColor.font80)),
+                          Text(
+                            'Jenis Sampah',
+                            style: AppFont.bold().copyWith(fontSize: 14, color: AppColor.font100),
+                          ),
+                          Text(
+                            getJenisSampahName(data.idJenisSampah),
+                            style: AppFont.regular().copyWith(fontSize: 14, color: AppColor.font80),
+                          ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('Berat Sampah',
-                              style: AppFont.bold().copyWith(
-                                  fontSize: 14, color: AppColor.font100)),
-                          Text('- kg',
-                              style: AppFont.regular().copyWith(
-                                  fontSize: 14, color: AppColor.font80)),
+                          Text(
+                            'Berat Sampah',
+                            style: AppFont.bold().copyWith(fontSize: 14, color: AppColor.font100),
+                          ),
+                          Text(
+                            data.beratSampah != null ? '${data.beratSampah} kg' : '- kg',
+                            style: AppFont.regular().copyWith(fontSize: 14, color: AppColor.font80),
+                          ),
                         ],
                       ),
                     ],
@@ -240,19 +319,20 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
           ],
         ),
       ),
-
-      bottomSheet: Container(
-        width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-        decoration: const BoxDecoration(
-          color: AppColor.putihBackground,
-        ),
-        child: AsyncButton(
-          text: 'Ambil Sampah',
-          isLoading: _isLoading,
-          onPressed: _ambilSampah,
-        ),
-      ),
+      bottomSheet: (data.status != 'selesai' && data.status != 'dibatalkan')
+          ? Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+              decoration: const BoxDecoration(
+                color: AppColor.putihBackground,
+              ),
+              child: AsyncButton(
+                text: data.status == 'proses' ? 'Selesaikan Penjemputan' : 'Ambil Sampah',
+                isLoading: _isLoading,
+                onPressed: data.status == 'proses' ? _navigasiKeProses : _ambilSampah,
+              ),
+            )
+          : null,
     );
   }
 }

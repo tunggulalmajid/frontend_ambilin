@@ -21,7 +21,7 @@ class WButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity, // Membuat button full width
+      width: double.infinity,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor ?? AppColor.base100,
@@ -30,7 +30,7 @@ class WButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           elevation:
-              0, // Opsional: hilangkan bayangan agar terlihat flat/modern
+              0, 
         ),
         onPressed: onPressed,
         child: Text(

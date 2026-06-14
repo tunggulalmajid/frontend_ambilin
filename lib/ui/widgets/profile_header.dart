@@ -1,18 +1,6 @@
-// ----- FILE: profile_header.dart -----
-// Widget reusable untuk header profil dengan background gambar,
-// avatar inisial, dan tombol back/edit.
-// Digunakan di: pelanggan_profil, pelanggan_edit_profil,
-//               petugas_profil, petugas_edit_profil,
-//               pelanggan_ubah_password, petugas_ubah_password.
-
 import 'package:flutter/material.dart';
 import '../../utils/app_color.dart';
 import '../../utils/app_font.dart';
-
-// ============================================================================
-// 1. ProfileHeaderFull — Header profil lengkap dengan avatar, nama, email.
-//    Digunakan di halaman profil (pelanggan & petugas).
-// ============================================================================
 
 class ProfileHeaderFull extends StatelessWidget {
   final String backgroundUrl;

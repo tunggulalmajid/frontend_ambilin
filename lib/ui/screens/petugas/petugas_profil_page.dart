@@ -1,7 +1,9 @@
-
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../models/user_model.dart';
 import '../../../models/petugas.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/dashboard_provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
 import '../../../utils/app_routes.dart';
@@ -16,50 +18,107 @@ class PetugasProfilPage extends StatefulWidget {
 }
 
 class _PetugasProfilPageState extends State<PetugasProfilPage> {
-
-  late UserModel _user;
-  late Petugas _petugas;
-
   @override
   void initState() {
     super.initState();
-    _user = UserModel(
-      idUser: 2,
-      nama: 'Rafi Petugas',
-      email: 'driver@gmail.com',
-      idRole: 2,
-      nomorTelepon: '080765423',
-    );
-    _petugas = const Petugas(
-      idPetugas: 1,
-      idUser: 2,
-      isAktif: true,
-      nama: 'Rafi Petugas',
-      email: 'driver@gmail.com',
-    );
+    Future.microtask(() {
+      if (mounted) {
+        context.read<AuthProvider>().fetchProfile();
+        context.read<DashboardProvider>().fetchPetugasDashboard();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final inisial = _user.nama.isNotEmpty ? _user.nama[0].toUpperCase() : '?';
+    final auth = context.watch<AuthProvider>();
+    final dash = context.watch<DashboardProvider>();
+
+    if (auth.isProfileLoading || dash.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColor.base100),
+        ),
+      );
+    }
+
+    if (auth.errorMessage.isNotEmpty) {
+      return Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: AppColor.redAllert, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  auth.errorMessage,
+                  textAlign: TextAlign.center,
+                  style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<AuthProvider>().fetchProfile();
+                    context.read<DashboardProvider>().fetchPetugasDashboard();
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
+                  child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final user = auth.user;
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Data tidak ditemukan',
+                style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<AuthProvider>().fetchProfile();
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
+                child: const Text('Muat Ulang', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final inisial = user.nama.isNotEmpty ? user.nama[0].toUpperCase() : '?';
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             ProfileHeaderFull(
               backgroundUrl: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
               inisial: inisial,
-              nama: _user.nama,
-              email: _user.email,
+              nama: user.nama,
+              email: user.email,
               onBackPressed: () => Navigator.pop(context),
               onEditPressed: () {
                 Navigator.pushNamed(
                   context,
                   AppRoutes.petugasEditProfil,
-                  arguments: _user,
+                  arguments: user,
                 );
               },
             ),
@@ -88,11 +147,11 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                     const SizedBox(height: 16),
                     ProfileInfoRow(
                       label: 'Nomor Telepon',
-                      value: _user.nomorTelepon ?? '-',
+                      value: user.nomorTelepon ?? '-',
                     ),
-                    ProfileInfoRow(
+                    const ProfileInfoRow(
                       label: 'Status',
-                      value: _petugas.isAktif ? 'Aktif' : 'Tidak Aktif',
+                      value: 'Aktif',
                     ),
                   ],
                 ),
@@ -158,7 +217,47 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                         ),
                       ),
                       onTap: () {
-
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text(
+                              'Konfirmasi Logout',
+                              style: AppFont.semibold().copyWith(fontSize: 16),
+                            ),
+                            content: Text(
+                              'Apakah Anda yakin ingin keluar?',
+                              style: AppFont.regular().copyWith(fontSize: 14),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: Text(
+                                  'Batal',
+                                  style: AppFont.medium().copyWith(
+                                    color: AppColor.font80,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                  auth.logout();
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    AppRoutes.login,
+                                    (route) => false,
+                                  );
+                                },
+                                child: Text(
+                                  'Logout',
+                                  style: AppFont.medium().copyWith(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
                       },
                     ),
                   ],

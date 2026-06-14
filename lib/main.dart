@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:frontend_ambilin/providers/auth_provider.dart';
+import 'package:frontend_ambilin/providers/dashboard_provider.dart';
 import 'package:frontend_ambilin/providers/pickup_history_provider.dart';
 import 'package:frontend_ambilin/providers/user_account_provider.dart';
 import 'package:frontend_ambilin/providers/article_provider.dart';
@@ -33,7 +34,6 @@ import 'package:frontend_ambilin/ui/screens/petugas/petugas_lihat_map_page.dart'
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_edit_profil_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_detail_tugas_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_ubah_password_page.dart';
-import 'package:frontend_ambilin/ui/screens/petugas/petugas_detail_selesai_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_proses_penjemputan_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/profile_admin_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/edit_profile_admin_page.dart';
@@ -54,6 +54,7 @@ void main() {
       builder: (context) => MultiProvider(
         providers: [
           ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => DashboardProvider()),
           ChangeNotifierProvider(create: (_) => PickupHistoryProvider()),
           ChangeNotifierProvider(create: (_) => UserAccountProvider()),
           ChangeNotifierProvider(create: (_) => ArticleProvider()),
@@ -163,8 +164,16 @@ class MyApp extends StatelessWidget {
           final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
           return PetugasLihatMapPage(data: data);
         },
-        AppRoutes.petugasProsesPenjemputan: (context) => const PetugasProsesPenjemputanPage(),
-        AppRoutes.petugasDetailSelesai: (context) => const PetugasDetailSelesaiPage(),
+        AppRoutes.petugasProsesPenjemputan: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
+          return PetugasProsesPenjemputanPage(data: data);
+        },
+        AppRoutes.petugasDetailSelesai: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final data = args is SetorSampah ? args : SetorSampah.getMockList().first;
+          return PetugasDetailTugasPage(data: data);
+        },
         AppRoutes.petugasEditProfil: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
           final user = args is UserModel ? args : UserModel(
