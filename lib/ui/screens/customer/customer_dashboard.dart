@@ -16,6 +16,7 @@ class CustomerDashboard extends StatefulWidget {
   State<CustomerDashboard> createState() => _CustomerDashboardState();
 }
 
+
 class _CustomerDashboardState extends State<CustomerDashboard> {
   int _currentIndex = 0;
 
@@ -184,10 +185,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             const SizedBox(height: 2),
             Text(
               label,
-              style: AppFont.medium().copyWith(
-                fontSize: 12,
-                color: color,
-              ),
+              style: AppFont.medium().copyWith(fontSize: 12, color: color),
             ),
           ],
         ),

@@ -127,8 +127,9 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                           _selectedKategori
                             ..clear()
                             ..addAll(tempSelected);
-                          _kategoriController.text =
-                              _selectedKategori.join(', ');
+                          _kategoriController.text = _selectedKategori.join(
+                            ', ',
+                          );
                         });
                         Navigator.pop(context);
                       },
@@ -241,8 +242,9 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                         onDeleted: () {
                           setState(() {
                             _selectedKategori.remove(k);
-                            _kategoriController.text =
-                                _selectedKategori.join(', ');
+                            _kategoriController.text = _selectedKategori.join(
+                              ', ',
+                            );
                           });
                         },
                         shape: RoundedRectangleBorder(
@@ -262,6 +264,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   ),
                 ),
                 const SizedBox(height: 8),
+
                 Container(
                   width: double.infinity,
                   height: 160,
