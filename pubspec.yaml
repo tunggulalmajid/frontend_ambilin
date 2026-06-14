@@ -69,13 +69,13 @@ flutter:
   assets:
     - assets/
     - assets/fonts/
-    
+
   fonts:
-      - family: Poppins
-        fonts:
-          - asset: assets/fonts/Poppins-Bold.ttf
-          - asset: assets/fonts/Poppins-SemiBold.ttf
-          - asset: assets/fonts/Poppins-Medium.ttf
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins-Bold.ttf
+        - asset: assets/fonts/Poppins-SemiBold.ttf
+        - asset: assets/fonts/Poppins-Medium.ttf
   # To add assets to your application, add an assets section, like this:
   #   - images/a_dot_ham.jpeg
 

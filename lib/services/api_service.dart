@@ -1,9 +1,8 @@
 import 'package:dio/dio.dart';
 
 class ApiService {
-  // Gunakan 10.0.2.2 untuk Emulator Android, localhost untuk Web/iOS
-  final String _baseUrl = "https://ambilin.kodetalma.my.id/api-docs/";
-
+  // Gunakan domain hosting untuk development dengan device langsung
+  final String _baseUrl = "https://ambilin.kodetalma.my.id/api";
   // Instance Dio yang bisa dipakai oleh class turunannya (child class)
   late Dio dio;
 
