@@ -41,5 +41,6 @@ class AppRoutes {
   static const String adminKonfirmasiPembayaran = '/admin/konfirmasi-pembayaran';
   static const String adminManajemenKonfirmasi = '/admin/manajemen-konfirmasi';
   static const String adminDetailKonfirmasi = '/admin/detail-konfirmasi';
+  static const String adminManajemenSubscription = '/admin/manajemen-subscription';
 
 }

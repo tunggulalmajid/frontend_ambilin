@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:frontend_ambilin/models/akun_pengguna.dart';
+import 'package:frontend_ambilin/providers/user_account_provider.dart';
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
 import 'package:frontend_ambilin/ui/widgets/w_text_fields.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
+import 'package:provider/provider.dart';
 
 class EditAkunPage extends StatefulWidget {
   final AkunPengguna user;
+  final int index;
 
-  const EditAkunPage({super.key, required this.user});
+  const EditAkunPage({super.key, required this.user, required this.index});
 
   @override
   State<EditAkunPage> createState() => _EditAkunPageState();
@@ -27,7 +30,7 @@ class _EditAkunPageState extends State<EditAkunPage> {
 
     _namaController = TextEditingController(text: widget.user.nama);
     _emailController = TextEditingController(text: widget.user.email);
-    _teleponController = TextEditingController();
+    _teleponController = TextEditingController(text: widget.user.nomorTelepon ?? '');
   }
 
   @override
@@ -38,13 +41,36 @@ class _EditAkunPageState extends State<EditAkunPage> {
     super.dispose();
   }
 
-  void _handleSimpan() {
+  void _handleSimpan() async {
     if (_formKey.currentState!.validate()) {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Akun berhasil diperbarui')),
+      final role = widget.user.peran == 'Petugas' ? 2 : 3;
+      final success = await context.read<UserAccountProvider>().editUser(
+        widget.index,
+        nama: _namaController.text,
+        email: _emailController.text,
+        idRole: role,
+        nomorTelepon: _teleponController.text,
       );
-      Navigator.pop(context);
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Akun berhasil diperbarui'),
+            backgroundColor: AppColor.base100,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        final error = context.read<UserAccountProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.isNotEmpty ? error : 'Gagal memperbarui akun'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -128,8 +154,8 @@ class _EditAkunPageState extends State<EditAkunPage> {
                 const SizedBox(height: 32),
 
                 WButton(
-                  text: 'Simpan',
-                  onPressed: _handleSimpan,
+                  text: context.watch<UserAccountProvider>().isLoading ? 'Menyimpan...' : 'Simpan',
+                  onPressed: context.watch<UserAccountProvider>().isLoading ? () {} : _handleSimpan,
                 ),
                 const SizedBox(height: 24),
               ],

@@ -209,6 +209,12 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
 
   Widget _buildAdminHeader(BuildContext context, String inisial, String nama, String email, UserModel user) {
     double headerHeight = 280;
+    final String? fotoUrl = user.foto != null && user.foto!.isNotEmpty
+        ? (user.foto!.startsWith('http')
+            ? user.foto
+            : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
+        : null;
+
     return Stack(
       clipBehavior: Clip.none,
       alignment: Alignment.center,
@@ -269,37 +275,43 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
           top: 90,
           child: Column(
             children: [
-              Stack(
-                children: [
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: const Color(0xFFFFCDD2),
-                    child: Text(
-                      inisial,
-                      style: AppFont.bold().copyWith(
-                        fontSize: 36,
-                        color: AppColor.redAllert,
+              GestureDetector(
+                onTap: _changeProfilePhoto,
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundColor: const Color(0xFFFFCDD2),
+                      backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                      child: fotoUrl == null
+                          ? Text(
+                              inisial,
+                              style: AppFont.bold().copyWith(
+                                fontSize: 36,
+                                color: AppColor.redAllert,
+                              ),
+                            )
+                          : null,
+                    ),
+                    Positioned(
+                      bottom: 4,
+                      right: 4,
+                      child: Container(
+                        width: 26,
+                        height: 26,
+                        decoration: const BoxDecoration(
+                          color: AppColor.putih100,
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(
+                          Icons.edit,
+                          size: 14,
+                          color: AppColor.redAllert,
+                        ),
                       ),
                     ),
-                  ),
-                  Positioned(
-                    bottom: 4,
-                    right: 4,
-                    child: Container(
-                      width: 26,
-                      height: 26,
-                      decoration: const BoxDecoration(
-                        color: AppColor.putih100,
-                        shape: BoxShape.circle,
-                      ),
-                      child: const Icon(
-                        Icons.edit,
-                        size: 14,
-                        color: AppColor.redAllert,
-                      ),
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               const SizedBox(height: 10),
               Text(

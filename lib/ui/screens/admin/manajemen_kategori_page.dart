@@ -31,67 +31,72 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 24),
+        child: RefreshIndicator(
+          color: AppColor.base100,
+          onRefresh: () => context.read<WasteCategoryProvider>().fetchCategories(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 24),
 
-              Text(
-                'Manajemen Poin & Kategori',
-                style: GoogleFonts.poppins(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 24,
-                  color: AppColor.base100,
+                Text(
+                  'Manajemen Poin & Kategori',
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 24,
+                    color: AppColor.base100,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Kelola kategori sampah, nilai poin, dan konversi voucher diskon.',
-                style: GoogleFonts.poppins(
-                  fontSize: 13,
-                  color: AppColor.font80,
+                const SizedBox(height: 4),
+                Text(
+                  'Kelola kategori sampah, nilai poin, and konversi voucher diskon.',
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: AppColor.font80,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 24),
+                const SizedBox(height: 24),
 
-              Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(16),
-                  border: Border.all(color: AppColor.font60),
-                ),
-                child: categoryProvider.isLoading
-                    ? const Center(
-                        child: Padding(
-                          padding: EdgeInsets.symmetric(vertical: 32),
-                          child: CircularProgressIndicator(
-                            color: AppColor.base100,
+                Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    border: Border.all(color: AppColor.font60),
+                  ),
+                  child: categoryProvider.isLoading
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 32),
+                            child: CircularProgressIndicator(
+                              color: AppColor.base100,
+                            ),
                           ),
+                        )
+                      : ListView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemCount: categoryProvider.categories.length,
+                          itemBuilder: (context, index) {
+                            final category = categoryProvider.categories[index];
+                            return KategoriSampahItem(
+                              nama: category.nama,
+                              poin: category.poinPerKg,
+                              onEdit: () {
+                                _showEditCategoryDialog(context, category, index);
+                              },
+                              onDelete: () {
+                                _showDeleteConfirmation(context, index);
+                              },
+                            );
+                          },
                         ),
-                      )
-                    : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: categoryProvider.categories.length,
-                        itemBuilder: (context, index) {
-                          final category = categoryProvider.categories[index];
-                          return KategoriSampahItem(
-                            nama: category.nama,
-                            poin: category.poinPerKg,
-                            onEdit: () {
-                              _showEditCategoryDialog(context, category, index);
-                            },
-                            onDelete: () {
-                              _showDeleteConfirmation(context, index);
-                            },
-                          );
-                        },
-                      ),
-              ),
-              const SizedBox(height: 80),
-            ],
+                ),
+                const SizedBox(height: 80),
+              ],
+            ),
           ),
         ),
       ),

@@ -97,6 +97,24 @@ class AuthService extends ApiService {
     }
   }
 
+  Future<Map<String, dynamic>> getTransactions({String? status, int page = 1, int limit = 10}) async {
+    try {
+      final response = await dio.get(
+        '/subscriptions/transactions',
+        queryParameters: {
+          if (status != null && status.isNotEmpty) 'status': status,
+          'page': page,
+          'limit': limit,
+        },
+      );
+      return response.data;
+    } on DioException catch (e) {
+      throw Exception(_extractErrorMessage(e, "Gagal mengambil daftar transaksi"));
+    } catch (e) {
+      throw Exception("Gagal mengambil daftar transaksi");
+    }
+  }
+
   Future<Map<String, dynamic>> confirmTransaction(int id, String status) async {
     try {
       final response = await dio.put(

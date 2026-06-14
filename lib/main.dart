@@ -38,6 +38,7 @@ import 'package:frontend_ambilin/ui/screens/petugas/petugas_ubah_password_page.d
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_proses_penjemputan_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/profile_admin_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/edit_profile_admin_page.dart';
+import 'package:frontend_ambilin/models/akun_pengguna.dart';
 import 'package:frontend_ambilin/ui/screens/admin/edit_password_admin_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/manajemen_subscription_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/admin_detail_pelanggan_page.dart';
@@ -217,16 +218,51 @@ class MyApp extends StatelessWidget {
             const PetugasUbahPasswordPage(),
         AppRoutes.petugasProfil: (context) => const PetugasProfilPage(),
         AppRoutes.adminProfil: (context) => const ProfileAdminPage(),
-        AppRoutes.adminEditProfil: (context) => const EditProfileAdminPage(),
+        AppRoutes.adminEditProfil: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final user = args is UserModel
+              ? args
+              : const UserModel(
+                  idUser: 3,
+                  nama: 'Rafi Admin',
+                  email: 'admin@gmail.com',
+                  idRole: 1,
+                );
+          return EditProfileAdminPage(user: user);
+        },
         AppRoutes.adminUbahPassword: (context) => const EditPasswordAdminPage(),
-        AppRoutes.adminDetailPelanggan: (context) =>
-            const AdminDetailPelangganPage(),
-        AppRoutes.adminDetailPetugas: (context) =>
-            const AdminDetailPetugasPage(),
+        AppRoutes.adminDetailPelanggan: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final user = args is AkunPengguna
+              ? args
+              : const AkunPengguna(
+                  nama: 'Rafi Customer',
+                  email: 'customer@gmail.com',
+                  peran: 'Pelanggan',
+                  status: 'Aktif',
+                  warnaAvatar: Colors.orange,
+                );
+          return AdminDetailPelangganPage(user: user);
+        },
+        AppRoutes.adminDetailPetugas: (context) {
+          final args = ModalRoute.of(context)?.settings.arguments;
+          final user = args is AkunPengguna
+              ? args
+              : const AkunPengguna(
+                  nama: 'Rafi Petugas',
+                  email: 'driver@gmail.com',
+                  peran: 'Petugas',
+                  status: 'Aktif',
+                  warnaAvatar: Colors.green,
+                );
+          return AdminDetailPetugasPage(user: user);
+        },
         AppRoutes.adminManajemenKonfirmasi: (context) =>
             const AdminManajemenKonfirmasi(),
         AppRoutes.adminDetailKonfirmasi: (context) =>
             const AdminKonfirmasiPembayaran(),
+        AppRoutes.adminManajemenSubscription: (context) =>
+            const ManajemenSubscriptionPage(),
       },
     );
   }

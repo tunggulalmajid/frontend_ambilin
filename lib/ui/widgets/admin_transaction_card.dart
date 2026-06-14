@@ -26,14 +26,30 @@ class AdminTransactionCard extends StatelessWidget {
       }
     }
 
-    final String customerName = trx['customer_name'] ?? trx['Customer']?['User']?['nama'] ?? 'Pelanggan';
-    final String planName = trx['plan_name'] ?? trx['Subscription']?['nama'] ?? 'Membership';
-    final String priceText = trx['harga'] != null ? trx['harga'].toString() : '0';
+    final String customerName = trx['nama_customer'] ?? trx['customer_name'] ?? trx['Customer']?['User']?['nama'] ?? 'Pelanggan';
+    final String planName = trx['nama_paket'] ?? trx['plan_name'] ?? trx['Subscription']?['nama'] ?? 'Membership';
+    
+    final int packagePrice = trx['harga_paket'] as int? ?? trx['harga'] as int? ?? 0;
+    final int poinDigunakan = trx['poin_digunakan'] as int? ?? 0;
+    final int totalPaid = packagePrice - poinDigunakan;
+
+    String formatHarga(int price) {
+      return price.toString().replaceAllMapped(
+            RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+            (Match m) => '${m[1]}.',
+          );
+    }
+
+    final String priceText = formatHarga(totalPaid);
     final String status = trx['status'] ?? 'pending';
 
     return GestureDetector(
       onTap: () {
-        Navigator.pushNamed(context, AppRoutes.adminManajemenKonfirmasi);
+        Navigator.pushNamed(
+          context,
+          AppRoutes.adminDetailKonfirmasi,
+          arguments: trx,
+        );
       },
       child: Container(
         margin: const EdgeInsets.only(bottom: 12),

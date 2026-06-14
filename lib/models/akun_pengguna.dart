@@ -8,6 +8,8 @@ class AkunPengguna {
   final String peran; // 'Petugas' or 'Pelanggan'
   final String status; // 'Aktif' or 'Nonaktif'
   final Color warnaAvatar;
+  final String? nomorTelepon;
+  final String? foto;
 
   const AkunPengguna({
     this.idUser,
@@ -16,6 +18,8 @@ class AkunPengguna {
     required this.peran,
     required this.status,
     required this.warnaAvatar,
+    this.nomorTelepon,
+    this.foto,
   });
 
   factory AkunPengguna.fromUserModel(UserModel user, {bool? active}) {
@@ -29,6 +33,8 @@ class AkunPengguna {
       peran: roleName,
       status: activeStatus,
       warnaAvatar: avatarColor,
+      nomorTelepon: user.nomorTelepon,
+      foto: user.foto,
     );
   }
 

@@ -145,7 +145,7 @@ class DashboardProvider extends ChangeNotifier {
       if (response['status'] == 'success') {
         final data = response['data'];
         _totalPendapatan = data['total_pendapatan'] ?? 0;
-        _totalPendingVerifikasi = data['total_pending_verifikasi'] ?? 0;
+        _totalPendingVerifikasi = data['total_pending_transaksi'] ?? 0;
         _totalSampahTerkumpul =
             (data['total_sampah_terkumpul'] ?? 0).toDouble();
         _totalArtikel = data['total_artikel'] ?? 0;

@@ -190,7 +190,9 @@ class _LoginPageState extends State<LoginPage> {
                         ? () {}
                         : () async {
                             try {
-                              final GoogleSignIn googleSignIn = GoogleSignIn();
+                              final GoogleSignIn googleSignIn = GoogleSignIn(
+                                serverClientId: "96061274554-74gre4m33vbpu3mj64phh9j50ci6g4v1.apps.googleusercontent.com",
+                              );
                               final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
                               if (googleUser == null) {
                                 return;

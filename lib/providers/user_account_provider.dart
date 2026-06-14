@@ -35,8 +35,21 @@ class UserAccountProvider extends ChangeNotifier {
         _allUsers = [];
         for (int i = 0; i < userList.length; i++) {
           final userJson = data[i];
-          final isActive = userJson['is_aktif'] != 0;
-          _allUsers.add(AkunPengguna.fromUserModel(userList[i], active: isActive));
+          bool isActive = true;
+          if (userList[i].idRole == 3) {
+            final profile = userJson['customer_profile'];
+            if (profile != null) {
+              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true);
+            }
+          } else if (userList[i].idRole == 2) {
+            final profile = userJson['petugas_profile'];
+            if (profile != null) {
+              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true);
+            }
+          }
+          if (isActive) {
+            _allUsers.add(AkunPengguna.fromUserModel(userList[i], active: true));
+          }
         }
         notifyListeners();
       } else {
@@ -58,6 +71,7 @@ class UserAccountProvider extends ChangeNotifier {
     required String email,
     required String password,
     required int idRole,
+    String? nomorTelepon,
   }) async {
     _isLoading = true;
     notifyListeners();
@@ -68,6 +82,7 @@ class UserAccountProvider extends ChangeNotifier {
         email: email,
         password: password,
         idRole: idRole,
+        nomorTelepon: nomorTelepon,
       );
       _isLoading = false;
       if (response['status'] == "success") {
@@ -92,6 +107,7 @@ class UserAccountProvider extends ChangeNotifier {
     required String email,
     String? password,
     required int idRole,
+    String? nomorTelepon,
   }) async {
     if (index < 0 || index >= _allUsers.length) return false;
     final idUser = _allUsers[index].idUser;
@@ -107,6 +123,7 @@ class UserAccountProvider extends ChangeNotifier {
         email: email,
         password: password,
         idRole: idRole,
+        nomorTelepon: nomorTelepon,
       );
       _isLoading = false;
       if (response['status'] == "success") {
@@ -178,6 +195,29 @@ class UserAccountProvider extends ChangeNotifier {
       log("Toggle User Status Error: $e");
       _isLoading = false;
       notifyListeners();
+    }
+  }
+
+  Future<bool> deleteUserById(int idUser, int idRole) async {
+    _isLoading = true;
+    notifyListeners();
+
+    try {
+      final response = await _userService.deleteUser(idUser, idRole);
+      _isLoading = false;
+      if (response['status'] == "success") {
+        await fetchUsers();
+        return true;
+      }
+      _errorMessage = response['message'] ?? "Gagal menghapus user";
+      notifyListeners();
+      return false;
+    } catch (e) {
+      log("Delete User By ID Error: $e");
+      _isLoading = false;
+      _errorMessage = "Terjadi kesalahan jaringan atau server";
+      notifyListeners();
+      return false;
     }
   }
 }

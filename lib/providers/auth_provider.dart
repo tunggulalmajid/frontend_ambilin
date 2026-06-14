@@ -17,6 +17,7 @@ class AuthProvider extends ChangeNotifier {
   String _errorMessage = "";
   bool _isLoggedIn = false;
   List<dynamic> _pendingTransactions = [];
+  List<dynamic> _allTransactions = [];
 
   UserModel? get user => _user;
   bool get isLoading => _isLoading;
@@ -25,6 +26,7 @@ class AuthProvider extends ChangeNotifier {
   String get errorMessage => _errorMessage;
   bool get isLoggedIn => _isLoggedIn;
   List<dynamic> get pendingTransactions => _pendingTransactions;
+  List<dynamic> get allTransactions => _allTransactions;
 
   Future<String?> getSavedRole() async {
     return await _storage.read(key: "role");
@@ -368,6 +370,27 @@ class AuthProvider extends ChangeNotifier {
       }
     } catch (e) {
       log("fetchPendingTransactions Error: $e");
+      _errorMessage = e.toString().replaceFirst("Exception: ", "");
+    } finally {
+      _isTransactionsLoading = false;
+      notifyListeners();
+    }
+  }
+
+  Future<void> fetchTransactions({String? status, int page = 1, int limit = 10}) async {
+    _isTransactionsLoading = true;
+    _errorMessage = "";
+    notifyListeners();
+
+    try {
+      final response = await _authService.getTransactions(status: status, page: page, limit: limit);
+      if (response['status'] == "success") {
+        _allTransactions = response['data'] ?? [];
+      } else {
+        _errorMessage = response['message'] ?? "Gagal mengambil daftar transaksi";
+      }
+    } catch (e) {
+      log("fetchTransactions Error: $e");
       _errorMessage = e.toString().replaceFirst("Exception: ", "");
     } finally {
       _isTransactionsLoading = false;

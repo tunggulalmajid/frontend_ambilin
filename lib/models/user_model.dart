@@ -43,8 +43,10 @@ class UserModel {
       refreshToken: json['refresh_token'],
       idRole: json['id_role'] != null
           ? (int.tryParse(json['id_role'].toString()) ?? 3)
-          : 3,
-      namaRole: json['nama_role'],
+          : (json['role'] != null && json['role']['id_role'] != null
+              ? (int.tryParse(json['role']['id_role'].toString()) ?? 3)
+              : 3),
+      namaRole: json['nama_role'] ?? (json['role'] != null ? json['role']['nama_role'] : null),
       foto: json['foto'],
       alamat: json['alamat'],
       nomorTelepon: json['nomor_telepon'],

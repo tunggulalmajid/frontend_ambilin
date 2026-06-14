@@ -5,7 +5,6 @@ import 'package:frontend_ambilin/ui/screens/admin/edit_artikel_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/tambah_artikel_page.dart';
 import 'package:frontend_ambilin/ui/screens/detail_artikel_page.dart';
 import 'package:frontend_ambilin/ui/widgets/app_cards.dart';
-import 'package:frontend_ambilin/ui/widgets/filter_chips.dart';
 import 'package:frontend_ambilin/ui/widgets/navbar.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
@@ -19,9 +18,6 @@ class ManajemenArtikelPage extends StatefulWidget {
 }
 
 class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
-  String _selectedFilter = 'Semua';
-  final List<String> _filters = ['Semua', 'Aktif', 'Nonaktif'];
-
   @override
   void initState() {
     super.initState();
@@ -33,82 +29,77 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
   @override
   Widget build(BuildContext context) {
     final articleProvider = context.watch<ArticleProvider>();
-    final filteredArticles = articleProvider.getFilteredArticles(_selectedFilter);
+    final articles = articleProvider.allArticles;
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Text(
-                'Manajemen Artikel',
-                style: AppFont.bold().copyWith(
-                  fontSize: 24,
-                  color: AppColor.base100,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Kelola artikel aplikasi Ambilin',
-                style: AppFont.regular().copyWith(
-                  fontSize: 13,
-                  color: AppColor.font80,
-                ),
-              ),
-              const SizedBox(height: 16),
-              FilterChips(
-                filters: _filters,
-                selectedFilter: _selectedFilter,
-                onFilterChanged: (filter) {
-                  setState(() {
-                    _selectedFilter = filter;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              if (articleProvider.isLoading)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: CircularProgressIndicator(
-                      color: AppColor.base100,
-                    ),
+        child: RefreshIndicator(
+          color: AppColor.base100,
+          onRefresh: () => context.read<ArticleProvider>().fetchArticles(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Text(
+                  'Manajemen Artikel',
+                  style: AppFont.bold().copyWith(
+                    fontSize: 24,
+                    color: AppColor.base100,
                   ),
-                )
-              else
-                ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: filteredArticles.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => DetailArtikelPage(
-                              article: filteredArticles[index],
-                            ),
-                          ),
-                        );
-                      },
-                      child: ArticleManagementCard(
-                        article: filteredArticles[index],
-                        onMenuTap: () {
-                          _showArticleMenu(context, filteredArticles[index], index);
-                        },
-                      ),
-                    );
-                  },
                 ),
+                const SizedBox(height: 4),
+                Text(
+                  'Kelola artikel aplikasi Ambilin',
+                  style: AppFont.regular().copyWith(
+                    fontSize: 13,
+                    color: AppColor.font80,
+                  ),
+                ),
+                const SizedBox(height: 16),
 
-              const SizedBox(height: 80),
-            ],
+                if (articleProvider.isLoading)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: CircularProgressIndicator(
+                        color: AppColor.base100,
+                      ),
+                    ),
+                  )
+                else
+                  ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: articles.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => DetailArtikelPage(
+                                article: articles[index],
+                              ),
+                            ),
+                          );
+                        },
+                        child: ArticleManagementCard(
+                          article: articles[index],
+                          onMenuTap: () {
+                            _showArticleMenu(context, articles[index], index);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+
+                const SizedBox(height: 80),
+              ],
+            ),
           ),
         ),
       ),
@@ -148,7 +139,7 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ListTile(
+                 ListTile(
                   leading: const Icon(Icons.edit_outlined),
                   title: Text(
                     'Edit Artikel',
@@ -165,26 +156,6 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
                         ),
                       ),
                     );
-                  },
-                ),
-                ListTile(
-                  leading: Icon(
-                    article.status == 'Aktif'
-                        ? Icons.block
-                        : Icons.check_circle_outline,
-                    color: article.status == 'Aktif'
-                        ? const Color(0xFFD32F2F)
-                        : AppColor.base100,
-                  ),
-                  title: Text(
-                    article.status == 'Aktif'
-                        ? 'Nonaktifkan Artikel'
-                        : 'Aktifkan Artikel',
-                    style: AppFont.medium().copyWith(fontSize: 14),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.read<ArticleProvider>().toggleArticleStatus(index);
                   },
                 ),
                 ListTile(

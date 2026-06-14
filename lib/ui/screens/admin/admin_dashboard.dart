@@ -21,6 +21,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
   void initState() {
     super.initState();
     Future.microtask(() {
+      if (!mounted) return;
       context.read<DashboardProvider>().fetchAdminDashboard();
     });
   }
@@ -42,7 +43,12 @@ class _AdminDashboardState extends State<AdminDashboard> {
         ? '${totalSampah.toInt()} kg'
         : '${totalSampah.toStringAsFixed(1)} kg';
     final String totalArtikelText = '${dashProvider.totalArtikel} Artikel';
-    final List<Map<String, dynamic>> transactions = dashProvider.recentTransactions;
+    final List<Map<String, dynamic>> transactions = dashProvider.recentTransactions
+        .where((trx) {
+          final status = (trx['status'] ?? 'pending').toString().toLowerCase();
+          return status != 'berhasil' && status != 'gagal';
+        })
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -123,7 +129,7 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         value: totalPendapatanText,
                         icon: Icons.monetization_on_outlined,
                         onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.adminManajemenKonfirmasi);
+                          Navigator.pushNamed(context, AppRoutes.adminManajemenSubscription);
                         },
                       ),
                       AdminStatCard(
@@ -159,13 +165,34 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           ),
                         ),
 
-                      Text(
-                        'Transaksi Masuk',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: AppColor.font100,
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Transaksi Masuk',
+                            style: GoogleFonts.poppins(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.font100,
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(
+                                context,
+                                AppRoutes.adminManajemenKonfirmasi,
+                              );
+                            },
+                            child: Text(
+                              'Lihat Selengkapnya',
+                              style: GoogleFonts.poppins(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: AppColor.base100,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 12),
 

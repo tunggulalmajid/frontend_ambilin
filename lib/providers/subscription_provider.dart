@@ -9,12 +9,14 @@ class SubscriptionProvider extends ChangeNotifier {
   List<Langganan> _subscriptions = [];
   List<dynamic> _paymentMethods = [];
   List<dynamic> _history = [];
+  Map<String, dynamic>? _summary;
   bool _isLoading = false;
   String _errorMessage = '';
 
   List<Langganan> get subscriptions => _subscriptions;
   List<dynamic> get paymentMethods => _paymentMethods;
   List<dynamic> get history => _history;
+  Map<String, dynamic>? get summary => _summary;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
@@ -114,6 +116,54 @@ class SubscriptionProvider extends ChangeNotifier {
       _errorMessage = e.toString().replaceFirst("Exception: ", "");
       notifyListeners();
       return {'status': 'error', 'message': _errorMessage};
+    }
+  }
+
+  Future<void> fetchSummary() async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+
+    try {
+      final response = await _subscriptionService.getSummary();
+      _isLoading = false;
+      if (response['status'] == 'success') {
+        _summary = response['data'];
+        notifyListeners();
+      } else {
+        _errorMessage = response['message'] ?? 'Gagal memuat ringkasan keuangan';
+        notifyListeners();
+      }
+    } catch (e) {
+      log("Fetch Summary Error: $e");
+      _isLoading = false;
+      _errorMessage = 'Gagal memuat ringkasan keuangan';
+      notifyListeners();
+    }
+  }
+
+  Future<bool> updateSubscriptionPrice(int id, String nama, int harga) async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+
+    try {
+      final response = await _subscriptionService.updateSubscription(id, nama, harga);
+      _isLoading = false;
+      if (response['status'] == 'success') {
+        await fetchSubscriptions();
+        await fetchSummary();
+        return true;
+      }
+      _errorMessage = response['message'] ?? 'Gagal memperbarui tarif';
+      notifyListeners();
+      return false;
+    } catch (e) {
+      log("Update Subscription Price Error: $e");
+      _isLoading = false;
+      _errorMessage = 'Terjadi kesalahan jaringan atau server';
+      notifyListeners();
+      return false;
     }
   }
 }

@@ -1,54 +1,133 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend_ambilin/models/akun_pengguna.dart';
+import 'package:frontend_ambilin/services/user_management_service.dart';
+import 'package:frontend_ambilin/providers/user_account_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 
 class AdminDetailPetugasPage extends StatefulWidget {
-  const AdminDetailPetugasPage({super.key});
+  final AkunPengguna user;
+  const AdminDetailPetugasPage({super.key, required this.user});
 
   @override
   State<AdminDetailPetugasPage> createState() => _AdminDetailPetugasPageState();
 }
 
 class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
-  bool _isLoading = false;
+  final _userService = UserManagementService();
+  Map<String, dynamic>? _userDetail;
+  bool _isLoadingDetail = true;
+  bool _isDeleting = false;
 
-  void _handleNonaktifkanAkun() async {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserDetail();
+  }
+
+  Future<void> _loadUserDetail() async {
+    if (widget.user.idUser == null) {
+      setState(() => _isLoadingDetail = false);
+      return;
+    }
+    try {
+      final res = await _userService.getAkunDetail(widget.user.idUser!);
+      if (res['status'] == 'success') {
+        setState(() {
+          _userDetail = res['data'];
+          _isLoadingDetail = false;
+        });
+      } else {
+        setState(() => _isLoadingDetail = false);
+      }
+    } catch (e) {
+      setState(() => _isLoadingDetail = false);
+    }
+  }
+
+  void _handleHapusAkun() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Konfirmasi Hapus', style: AppFont.bold().copyWith(fontSize: 16)),
+        content: Text('Apakah Anda yakin ingin menghapus akun ini?', style: AppFont.regular().copyWith(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Batal', style: TextStyle(color: Colors.grey[600])),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
     setState(() {
-      _isLoading = true;
+      _isDeleting = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
+    final success = await context.read<UserAccountProvider>().deleteUserById(widget.user.idUser!, 2);
 
     if (mounted) {
       setState(() {
-        _isLoading = false;
+        _isDeleting = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Center(child: Text('Akun Petugas Berhasil Dinonaktifkan')),
-          backgroundColor: AppColor.redAllert,
-        ),
-      );
-      Navigator.pop(context);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Akun Petugas Berhasil Dihapus'),
+            backgroundColor: AppColor.redAllert,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        final err = context.read<UserAccountProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(err.isNotEmpty ? err : 'Gagal menghapus akun'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     double headerHeight = 280;
+    final inisial = widget.user.inisial;
+
+    // Resolve fotoUrl
+    final String? foto = _userDetail?['foto'];
+    final String? fotoUrl = foto != null && foto.isNotEmpty
+        ? (foto.startsWith('http')
+            ? foto
+            : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+        : null;
+
+    final String wilayahTugas = _userDetail?['alamat'] ?? '-';
+    final String telepon = _userDetail?['nomor_telepon'] ?? widget.user.nomorTelepon ?? '-';
+
+    final bool isAktif = _userDetail?['petugas_profile']?['is_aktif'] == 1 ||
+        _userDetail?['petugas_profile']?['is_aktif'] == true;
+    final String statusAkun = isAktif ? 'Aktif' : 'Nonaktif';
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             Stack(
               clipBehavior: Clip.none,
               alignment: Alignment.center,
               children: [
-
                 Container(
                   width: double.infinity,
                   height: headerHeight,
@@ -64,7 +143,6 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
                     color: Colors.black.withOpacity(0.55),
                   ),
                 ),
-
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 8,
                   left: 16,
@@ -85,26 +163,28 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
                     ),
                   ),
                 ),
-
                 Positioned(
                   top: 80,
                   child: Column(
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundColor: const Color(0xFFFFCDD2),
-                        child: Text(
-                          'R',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 36,
-                            color: AppColor.redAllert,
-                          ),
-                        ),
+                        backgroundColor: widget.user.warnaAvatar,
+                        backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                        child: fotoUrl == null
+                            ? Text(
+                                inisial,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 36,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Rafi Petugas',
+                        widget.user.nama,
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -113,7 +193,7 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'driver@gmail.com',
+                        widget.user.email,
                         style: GoogleFonts.poppins(
                           fontSize: 13,
                           color: Colors.white.withOpacity(0.85),
@@ -125,94 +205,68 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
               ],
             ),
             const SizedBox(height: 24),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Row(
-                    children: [
-                      _buildInfoCard(
-                        title: 'Wilayah Tugas',
-                        value: 'Sumbersari',
-                        icon: Icons.map_outlined,
+              child: _isLoadingDetail
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: CircularProgressIndicator(color: AppColor.base100),
                       ),
-                      const SizedBox(width: 12),
-                      _buildInfoCard(
-                        title: 'Nomor Telepon',
-                        value: '080765423',
-                        icon: Icons.phone_outlined,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColor.font60.withOpacity(0.5)),
-                    ),
-                    child: Column(
+                    )
+                  : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Performa Kerja',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: AppColor.base100,
+                        Row(
+                          children: [
+                            _buildInfoCard(
+                              title: 'Wilayah Tugas / Alamat',
+                              value: wilayahTugas,
+                              icon: Icons.map_outlined,
+                            ),
+                            const SizedBox(width: 12),
+                            _buildInfoCard(
+                              title: 'Nomor Telepon',
+                              value: telepon,
+                              icon: Icons.phone_outlined,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFC62828),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: _isDeleting ? null : _handleHapusAkun,
+                            child: _isDeleting
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : Text(
+                                    'Hapus Akun Petugas',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildDetailRow('Status Akun', 'Aktif'),
-                        const Divider(height: 20, color: AppColor.font60),
-                        _buildDetailRow('Total Tugas Diambil', '24 Tugas'),
-                        const Divider(height: 20, color: AppColor.font60),
-                        _buildDetailRow('Total Sampah Diangkut', '120.5 kg'),
+                        const SizedBox(height: 24),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFC62828),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 0,
-                      ),
-                      onPressed: _isLoading ? null : _handleNonaktifkanAkun,
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : Text(
-                              'Nonaktifkan Akun Petugas',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
             ),
           ],
         ),
@@ -255,7 +309,7 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
               value,
               style: GoogleFonts.poppins(
                 fontWeight: FontWeight.bold,
-                fontSize: 14,
+                fontSize: 13,
                 color: AppColor.font100,
               ),
               maxLines: 2,

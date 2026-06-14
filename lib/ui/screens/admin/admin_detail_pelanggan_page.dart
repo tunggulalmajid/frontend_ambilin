@@ -1,54 +1,151 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import 'package:frontend_ambilin/models/akun_pengguna.dart';
+import 'package:frontend_ambilin/services/user_management_service.dart';
+import 'package:frontend_ambilin/providers/user_account_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
+import 'package:intl/intl.dart';
 
 class AdminDetailPelangganPage extends StatefulWidget {
-  const AdminDetailPelangganPage({super.key});
+  final AkunPengguna user;
+  const AdminDetailPelangganPage({super.key, required this.user});
 
   @override
   State<AdminDetailPelangganPage> createState() => _AdminDetailPelangganPageState();
 }
 
 class _AdminDetailPelangganPageState extends State<AdminDetailPelangganPage> {
-  bool _isLoading = false;
+  final _userService = UserManagementService();
+  Map<String, dynamic>? _userDetail;
+  bool _isLoadingDetail = true;
+  bool _isDeleting = false;
 
-  void _handleBlokirAkun() async {
+  @override
+  void initState() {
+    super.initState();
+    _loadUserDetail();
+  }
+
+  Future<void> _loadUserDetail() async {
+    if (widget.user.idUser == null) {
+      setState(() => _isLoadingDetail = false);
+      return;
+    }
+    try {
+      final res = await _userService.getAkunDetail(widget.user.idUser!);
+      if (res['status'] == 'success') {
+        setState(() {
+          _userDetail = res['data'];
+          _isLoadingDetail = false;
+        });
+      } else {
+        setState(() => _isLoadingDetail = false);
+      }
+    } catch (e) {
+      setState(() => _isLoadingDetail = false);
+    }
+  }
+
+  void _handleHapusAkun() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text('Konfirmasi Hapus', style: AppFont.bold().copyWith(fontSize: 16)),
+        content: Text('Apakah Anda yakin ingin menghapus akun ini?', style: AppFont.regular().copyWith(fontSize: 14)),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text('Batal', style: TextStyle(color: Colors.grey[600])),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Hapus', style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
     setState(() {
-      _isLoading = true;
+      _isDeleting = true;
     });
 
-    await Future.delayed(const Duration(seconds: 1));
+    final success = await context.read<UserAccountProvider>().deleteUserById(widget.user.idUser!, 3);
 
     if (mounted) {
       setState(() {
-        _isLoading = false;
+        _isDeleting = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Center(child: Text('Akun Pelanggan Berhasil Diblokir')),
-          backgroundColor: AppColor.redAllert,
-        ),
-      );
-      Navigator.pop(context);
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Akun Pelanggan Berhasil Dihapus'),
+            backgroundColor: AppColor.redAllert,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        final err = context.read<UserAccountProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(err.isNotEmpty ? err : 'Gagal menghapus akun'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+  }
+
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return '-';
+    try {
+      final parsed = DateTime.parse(dateStr);
+      return DateFormat('d MMMM yyyy', 'id_ID').format(parsed);
+    } catch (_) {
+      try {
+        final parsed = DateTime.parse(dateStr);
+        return DateFormat('d MMMM yyyy').format(parsed);
+      } catch (_) {
+        return dateStr;
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     double headerHeight = 280;
+    final inisial = widget.user.inisial;
+
+    // Resolve fotoUrl
+    final String? foto = _userDetail?['foto'];
+    final String? fotoUrl = foto != null && foto.isNotEmpty
+        ? (foto.startsWith('http')
+            ? foto
+            : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+        : null;
+
+    final String alamat = _userDetail?['alamat'] ?? '-';
+    final String telepon = _userDetail?['nomor_telepon'] ?? widget.user.nomorTelepon ?? '-';
+
+    final bool isMember = _userDetail?['customer_profile']?['is_member'] == 1 ||
+        _userDetail?['customer_profile']?['is_member'] == true;
+    final String statusBerlangganan = isMember ? 'Premium (Member)' : 'Reguler (Non-Member)';
+    final String tanggalBergabung = _userDetail?['created_at'] != null ? _formatDate(_userDetail?['created_at']) : '-';
+    final String totalPoin = _userDetail?['customer_profile']?['poin']?.toString() ?? '0';
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             Stack(
               clipBehavior: Clip.none,
               alignment: Alignment.center,
               children: [
-
                 Container(
                   width: double.infinity,
                   height: headerHeight,
@@ -64,7 +161,6 @@ class _AdminDetailPelangganPageState extends State<AdminDetailPelangganPage> {
                     color: Colors.black.withOpacity(0.55),
                   ),
                 ),
-
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 8,
                   left: 16,
@@ -85,26 +181,28 @@ class _AdminDetailPelangganPageState extends State<AdminDetailPelangganPage> {
                     ),
                   ),
                 ),
-
                 Positioned(
                   top: 80,
                   child: Column(
                     children: [
                       CircleAvatar(
                         radius: 50,
-                        backgroundColor: const Color(0xFFFFCDD2),
-                        child: Text(
-                          'R',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 36,
-                            color: AppColor.redAllert,
-                          ),
-                        ),
+                        backgroundColor: widget.user.warnaAvatar,
+                        backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                        child: fotoUrl == null
+                            ? Text(
+                                inisial,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 36,
+                                  color: Colors.white,
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(height: 12),
                       Text(
-                        'Rafi Customer',
+                        widget.user.nama,
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
@@ -113,7 +211,7 @@ class _AdminDetailPelangganPageState extends State<AdminDetailPelangganPage> {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'customer@gmail.com',
+                        widget.user.email,
                         style: GoogleFonts.poppins(
                           fontSize: 13,
                           color: Colors.white.withOpacity(0.85),
@@ -125,94 +223,68 @@ class _AdminDetailPelangganPageState extends State<AdminDetailPelangganPage> {
               ],
             ),
             const SizedBox(height: 24),
-
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-
-                  Row(
-                    children: [
-                      _buildInfoCard(
-                        title: 'Alamat',
-                        value: 'Jl. Kalimantan No. 12',
-                        icon: Icons.location_on_outlined,
+              child: _isLoadingDetail
+                  ? const Center(
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(vertical: 40),
+                        child: CircularProgressIndicator(color: AppColor.base100),
                       ),
-                      const SizedBox(width: 12),
-                      _buildInfoCard(
-                        title: 'Nomor Telepon',
-                        value: '0812345678',
-                        icon: Icons.phone_outlined,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-
-                  Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.all(18),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColor.font60.withOpacity(0.5)),
-                    ),
-                    child: Column(
+                    )
+                  : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          'Detail Berlangganan',
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                            color: AppColor.base100,
+                        Row(
+                          children: [
+                            _buildInfoCard(
+                              title: 'Alamat',
+                              value: alamat,
+                              icon: Icons.location_on_outlined,
+                            ),
+                            const SizedBox(width: 12),
+                            _buildInfoCard(
+                              title: 'Nomor Telepon',
+                              value: telepon,
+                              icon: Icons.phone_outlined,
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFC62828),
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: _isDeleting ? null : _handleHapusAkun,
+                            child: _isDeleting
+                                ? const SizedBox(
+                                    height: 24,
+                                    width: 24,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2.5,
+                                    ),
+                                  )
+                                : Text(
+                                    'Hapus Akun Pelanggan',
+                                    style: GoogleFonts.poppins(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 16,
+                                      color: Colors.white,
+                                    ),
+                                  ),
                           ),
                         ),
-                        const SizedBox(height: 16),
-                        _buildDetailRow('Status Berlangganan', 'Premium'),
-                        const Divider(height: 20, color: AppColor.font60),
-                        _buildDetailRow('Tanggal Bergabung', '12 Juni 2026'),
-                        const Divider(height: 20, color: AppColor.font60),
-                        _buildDetailRow('Total Poin Terkumpul', '1.250 Poin'),
+                        const SizedBox(height: 24),
                       ],
                     ),
-                  ),
-                  const SizedBox(height: 24),
-
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFC62828),
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        elevation: 0,
-                      ),
-                      onPressed: _isLoading ? null : _handleBlokirAkun,
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 24,
-                              width: 24,
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                                strokeWidth: 2.5,
-                              ),
-                            )
-                          : Text(
-                              'Blokir Akun Pelanggan',
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                color: Colors.white,
-                              ),
-                            ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                ],
-              ),
             ),
           ],
         ),

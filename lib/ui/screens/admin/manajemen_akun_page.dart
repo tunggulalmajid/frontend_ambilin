@@ -38,73 +38,78 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 8),
-              Text('Manajemen Akun', style:
-                AppFont.bold().copyWith(
-                  fontSize: 24,
-                  color: AppColor.base100,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Kelola pengguna dan petugas aplikasi Ambilin',
-                style: AppFont.regular().copyWith(
-                  fontSize: 13,
-                  color: AppColor.font80,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              FilterChips(
-                filters: _filters,
-                selectedFilter: _selectedFilter,
-                onFilterChanged: (filter) {
-                  setState(() {
-                    _selectedFilter = filter;
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-
-              if (userProvider.isLoading)
-                const Center(
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(vertical: 32),
-                    child: CircularProgressIndicator(
-                      color: AppColor.base100,
-                    ),
+        child: RefreshIndicator(
+          color: AppColor.base100,
+          onRefresh: () => context.read<UserAccountProvider>().fetchUsers(),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 8),
+                Text('Manajemen Akun', style:
+                  AppFont.bold().copyWith(
+                    fontSize: 24,
+                    color: AppColor.base100,
                   ),
-                )
-              else
-                ...List.generate(
-                  filteredUsers.length,
-                  (index) {
-                    final user = filteredUsers[index];
-                    return GestureDetector(
-                      onTap: () {
-                        if (user.peran == 'Petugas') {
-                          Navigator.pushNamed(context, AppRoutes.adminDetailPetugas);
-                        } else {
-                          Navigator.pushNamed(context, AppRoutes.adminDetailPelanggan);
-                        }
-                      },
-                      child: UserAccountCard(
-                        user: user,
-                        onMenuTap: () {
-                          _showUserMenu(context, user, index);
-                        },
-                      ),
-                    );
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Kelola pengguna dan petugas aplikasi Ambilin',
+                  style: AppFont.regular().copyWith(
+                    fontSize: 13,
+                    color: AppColor.font80,
+                  ),
+                ),
+                const SizedBox(height: 16),
+
+                FilterChips(
+                  filters: _filters,
+                  selectedFilter: _selectedFilter,
+                  onFilterChanged: (filter) {
+                    setState(() {
+                      _selectedFilter = filter;
+                    });
                   },
                 ),
+                const SizedBox(height: 16),
 
-              const SizedBox(height: 80),
-            ],
+                if (userProvider.isLoading)
+                  const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 32),
+                      child: CircularProgressIndicator(
+                        color: AppColor.base100,
+                      ),
+                    ),
+                  )
+                else
+                  ...List.generate(
+                    filteredUsers.length,
+                    (index) {
+                      final user = filteredUsers[index];
+                      return GestureDetector(
+                        onTap: () {
+                          if (user.peran == 'Petugas') {
+                            Navigator.pushNamed(context, AppRoutes.adminDetailPetugas, arguments: user);
+                          } else {
+                            Navigator.pushNamed(context, AppRoutes.adminDetailPelanggan, arguments: user);
+                          }
+                        },
+                        child: UserAccountCard(
+                          user: user,
+                          onMenuTap: () {
+                            _showUserMenu(context, user, index);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+
+                const SizedBox(height: 80),
+              ],
+            ),
           ),
         ),
       ),
@@ -155,31 +160,12 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditAkunPage(user: user),
+                        builder: (context) => EditAkunPage(user: user, index: index),
                       ),
                     );
                   },
                 ),
-                ListTile(
-                  leading: Icon(
-                    user.status == 'Aktif'
-                        ? Icons.block
-                        : Icons.check_circle_outline,
-                    color: user.status == 'Aktif'
-                        ? const Color(0xFFD32F2F)
-                        : AppColor.base100,
-                  ),
-                  title: Text(
-                    user.status == 'Aktif'
-                        ? 'Nonaktifkan Akun'
-                        : 'Aktifkan Akun',
-                    style: AppFont.medium().copyWith(fontSize: 14),
-                  ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    context.read<UserAccountProvider>().toggleUserStatus(index);
-                  },
-                ),
+
                 ListTile(
                   leading: const Icon(
                     Icons.delete_outline,

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend_ambilin/providers/user_account_provider.dart';
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
 import 'package:frontend_ambilin/ui/widgets/w_text_fields.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
+import 'package:provider/provider.dart';
 
 class TambahAkunPage extends StatefulWidget {
   const TambahAkunPage({super.key});
@@ -33,13 +35,36 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
     super.dispose();
   }
 
-  void _handleSimpan() {
+  void _handleSimpan() async {
     if (_formKey.currentState!.validate()) {
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Akun berhasil ditambahkan')),
+      final role = _selectedTipeUser == 'Petugas' ? 2 : 3;
+      final success = await context.read<UserAccountProvider>().addUser(
+        nama: _namaController.text,
+        email: _emailController.text,
+        password: _passwordController.text,
+        idRole: role,
+        nomorTelepon: _teleponController.text,
       );
-      Navigator.pop(context);
+
+      if (!mounted) return;
+
+      if (success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Akun berhasil ditambahkan'),
+            backgroundColor: AppColor.base100,
+          ),
+        );
+        Navigator.pop(context);
+      } else {
+        final error = context.read<UserAccountProvider>().errorMessage;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(error.isNotEmpty ? error : 'Gagal menambahkan akun'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -180,8 +205,8 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 const SizedBox(height: 32),
 
                 WButton(
-                  text: 'Simpan',
-                  onPressed: _handleSimpan,
+                  text: context.watch<UserAccountProvider>().isLoading ? 'Menyimpan...' : 'Simpan',
+                  onPressed: context.watch<UserAccountProvider>().isLoading ? () {} : _handleSimpan,
                 ),
                 const SizedBox(height: 24),
               ],

@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend_ambilin/providers/auth_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
-import 'package:frontend_ambilin/utils/app_font.dart';
 
 class AdminKonfirmasiPembayaran extends StatefulWidget {
   const AdminKonfirmasiPembayaran({super.key});
@@ -48,7 +47,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
 
   void _handleSetujui() async {
     if (_item == null) return;
-    final id = _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
+    final id = _item!['id_transaksi'] ?? _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
 
     setState(() {
       _isApproving = true;
@@ -96,7 +95,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
 
   void _handleTolak() async {
     if (_item == null) return;
-    final id = _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
+    final id = _item!['id_transaksi'] ?? _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
 
     setState(() {
       _isRejecting = true;
@@ -152,12 +151,25 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
       );
     }
 
-    final userName = item['user']?['nama'] ?? item['nama_user'] ?? item['nama'] ?? 'User';
+    final userName = item['nama_customer'] ?? item['user']?['nama'] ?? item['nama_user'] ?? item['nama'] ?? 'User';
     final inisial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
-    final transId = item['id_riwayat_subscribtion'] ?? item['id'] ?? 0;
-    final subNama = item['subscribtion']?['nama'] ?? item['nama_subscribtion'] ?? '';
+    final transId = item['id_transaksi'] ?? item['id_riwayat_subscribtion'] ?? item['id'] ?? 0;
+    final String status = (item['status'] ?? 'pending').toString().toLowerCase();
+
+    final String? foto = item['foto'] ??
+        item['user']?['foto'] ??
+        item['Customer']?['User']?['foto'] ??
+        item['Customer']?['foto'] ??
+        item['customer_foto'] ??
+        item['foto_user']?.toString();
+    final String? fotoUrl = foto != null && foto.isNotEmpty
+        ? (foto.startsWith('http')
+            ? foto
+            : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+        : null;
+    final subNama = item['nama_paket'] ?? item['subscribtion']?['nama'] ?? item['nama_subscribtion'] ?? '';
     
-    final int harga = item['subscribtion']?['harga'] as int? ?? item['harga'] as int? ?? 0;
+    final int harga = item['harga_paket'] as int? ?? item['subscribtion']?['harga'] as int? ?? item['harga'] as int? ?? 0;
     final int poinDigunakan = item['poin_digunakan'] as int? ?? 0;
     final int totalBayar = harga - poinDigunakan;
 
@@ -223,14 +235,17 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                       CircleAvatar(
                         radius: 26,
                         backgroundColor: const Color(0xFFE3F2FD),
-                        child: Text(
-                          inisial,
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                            color: const Color(0xFF1565C0),
-                          ),
-                        ),
+                        backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                        child: fotoUrl == null
+                            ? Text(
+                                inisial,
+                                style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 20,
+                                  color: const Color(0xFF1565C0),
+                                ),
+                              )
+                            : null,
                       ),
                       const SizedBox(width: 14),
                       Text(
@@ -255,6 +270,14 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                   _buildInfoRow('Metode Pembayaran', paymentMethod),
                   const Divider(color: AppColor.font60),
                   _buildInfoRow('Tanggal dan Waktu', formattedDate),
+                  const Divider(color: AppColor.font60),
+                  _buildInfoRow(
+                    'Status',
+                    status.toUpperCase(),
+                    valueColor: status == 'berhasil'
+                        ? const Color(0xFF2E7D32)
+                        : (status == 'gagal' ? Colors.red : const Color(0xFFE65100)),
+                  ),
                 ],
               ),
             ),
@@ -312,82 +335,81 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                 ],
               ),
             ),
-            const SizedBox(height: 24),
-
-            Row(
-              children: [
-
-                Expanded(
-                  child: OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.red, width: 1.5),
-                      backgroundColor: const Color(0xFFFFEBEE),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+            if (status != 'berhasil' && status != 'gagal') ...[
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: Colors.red, width: 1.5),
+                        backgroundColor: const Color(0xFFFFEBEE),
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
+                      onPressed: (_isApproving || _isRejecting) ? null : _handleTolak,
+                      child: _isRejecting
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.red,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : Text(
+                              'Tolak',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.red,
+                              ),
+                            ),
                     ),
-                    onPressed: (_isApproving || _isRejecting) ? null : _handleTolak,
-                    child: _isRejecting
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.red,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                        : Text(
-                            'Tolak',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: Colors.red,
-                            ),
-                          ),
                   ),
-                ),
-                const SizedBox(width: 16),
-
-                Expanded(
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.base100,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColor.base100,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        elevation: 0,
                       ),
-                      elevation: 0,
+                      onPressed: (_isApproving || _isRejecting) ? null : _handleSetujui,
+                      child: _isApproving
+                          ? const SizedBox(
+                              height: 20,
+                              width: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2.5,
+                              ),
+                            )
+                          : Text(
+                              'Setujui',
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
-                    onPressed: (_isApproving || _isRejecting) ? null : _handleSetujui,
-                    child: _isApproving
-                        ? const SizedBox(
-                            height: 20,
-                            width: 20,
-                            child: CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                        : Text(
-                            'Setujui',
-                            style: GoogleFonts.poppins(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInfoRow(String label, String value) {
+  Widget _buildInfoRow(String label, String value, {Color? valueColor}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
@@ -405,7 +427,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
             style: GoogleFonts.poppins(
               fontWeight: FontWeight.bold,
               fontSize: 13,
-              color: AppColor.font100,
+              color: valueColor ?? AppColor.font100,
             ),
           ),
         ],

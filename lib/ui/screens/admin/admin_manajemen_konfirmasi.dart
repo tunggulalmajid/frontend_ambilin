@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:frontend_ambilin/providers/auth_provider.dart';
+import 'package:frontend_ambilin/ui/widgets/filter_chips.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
-import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
 
 class AdminManajemenKonfirmasi extends StatefulWidget {
@@ -14,24 +14,35 @@ class AdminManajemenKonfirmasi extends StatefulWidget {
 }
 
 class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
+  String _selectedFilter = 'Semua';
+  final List<String> _filters = ['Semua', 'Menunggu', 'Berhasil', 'Gagal'];
+
   @override
   void initState() {
     super.initState();
     Future.microtask(() {
       if (mounted) {
-        context.read<AuthProvider>().fetchPendingTransactions();
+        _fetchData();
       }
     });
   }
 
+  void _fetchData() {
+    String? status;
+    if (_selectedFilter == 'Menunggu') status = 'menunggu';
+    else if (_selectedFilter == 'Berhasil') status = 'berhasil';
+    else if (_selectedFilter == 'Gagal') status = 'gagal';
+    context.read<AuthProvider>().fetchTransactions(status: status);
+  }
+
   Future<void> _onRefresh() async {
-    await context.read<AuthProvider>().fetchPendingTransactions();
+    _fetchData();
   }
 
   @override
   Widget build(BuildContext context) {
     final authProvider = context.watch<AuthProvider>();
-    final pendingList = authProvider.pendingTransactions;
+    final transactionList = authProvider.allTransactions;
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -43,7 +54,7 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
           onPressed: () => Navigator.pop(context),
         ),
         title: Text(
-          'Konfirmasi Langganan',
+          'Daftar Transaksi',
           style: GoogleFonts.poppins(
             fontWeight: FontWeight.bold,
             fontSize: 18,
@@ -64,8 +75,22 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: FilterChips(
+                        filters: _filters,
+                        selectedFilter: _selectedFilter,
+                        onFilterChanged: (filter) {
+                          setState(() {
+                            _selectedFilter = filter;
+                          });
+                          _fetchData();
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
                     Text(
-                      'Daftar Langganan Pending',
+                      'Rincian Transaksi',
                       style: GoogleFonts.poppins(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
@@ -73,12 +98,12 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    pendingList.isEmpty
+                    transactionList.isEmpty
                         ? Padding(
                             padding: const EdgeInsets.only(top: 40.0),
                             child: Center(
                               child: Text(
-                                'Tidak ada antrean konfirmasi pembayaran.',
+                                'Tidak ada data transaksi.',
                                 style: GoogleFonts.poppins(
                                   fontSize: 14,
                                   color: AppColor.font80,
@@ -89,13 +114,24 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                         : ListView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            itemCount: pendingList.length,
+                            itemCount: transactionList.length,
                             itemBuilder: (context, index) {
-                              final item = pendingList[index];
-                              final userName = item['user']?['nama'] ?? item['nama_user'] ?? item['nama'] ?? 'User';
+                              final item = transactionList[index];
+                              final userName = item['nama_customer'] ?? item['user']?['nama'] ?? item['nama_user'] ?? item['nama'] ?? 'User';
                               final inisial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
-                              final transId = item['id_riwayat_subscribtion'] ?? item['id'] ?? 0;
-                              final subNama = item['subscribtion']?['nama'] ?? item['nama_subscribtion'] ?? item['paket'] ?? '';
+                              final transId = item['id_transaksi'] ?? item['id_riwayat_subscribtion'] ?? item['id'] ?? 0;
+                              final subNama = item['nama_paket'] ?? item['subscribtion']?['nama'] ?? item['nama_subscribtion'] ?? item['paket'] ?? '';
+                              final String? foto = item['foto'] ??
+                                  item['user']?['foto'] ??
+                                  item['Customer']?['User']?['foto'] ??
+                                  item['Customer']?['foto'] ??
+                                  item['customer_foto'] ??
+                                  item['foto_user']?.toString();
+                              final String? fotoUrl = foto != null && foto.isNotEmpty
+                                  ? (foto.startsWith('http')
+                                      ? foto
+                                      : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+                                  : null;
 
                               return GestureDetector(
                                 onTap: () async {
@@ -119,14 +155,17 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                                       CircleAvatar(
                                         radius: 24,
                                         backgroundColor: const Color(0xFFFFCDD2),
-                                        child: Text(
-                                          inisial,
-                                          style: GoogleFonts.poppins(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 18,
-                                            color: AppColor.redAllert,
-                                          ),
-                                        ),
+                                        backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                                        child: fotoUrl == null
+                                            ? Text(
+                                                inisial,
+                                                style: GoogleFonts.poppins(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 18,
+                                                  color: AppColor.redAllert,
+                                                ),
+                                              )
+                                            : null,
                                       ),
                                       const SizedBox(width: 14),
                                       Expanded(

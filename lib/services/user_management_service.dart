@@ -28,6 +28,7 @@ class UserManagementService extends ApiService {
     required String email,
     required String password,
     required int idRole,
+    String? nomorTelepon,
   }) async {
     try {
       final response = await dio.post('/manajemen-akun', data: {
@@ -35,6 +36,7 @@ class UserManagementService extends ApiService {
         'email': email,
         'password': password,
         'id_role': idRole,
+        if (nomorTelepon != null) 'nomor_telepon': nomorTelepon,
       });
       return response.data;
     } catch (e) {
@@ -48,6 +50,7 @@ class UserManagementService extends ApiService {
     required String email,
     String? password,
     required int idRole,
+    String? nomorTelepon,
   }) async {
     try {
       final response = await dio.put('/manajemen-akun/$idUser', data: {
@@ -55,6 +58,7 @@ class UserManagementService extends ApiService {
         'email': email,
         if (password != null && password.isNotEmpty) 'password': password,
         'id_role': idRole,
+        if (nomorTelepon != null) 'nomor_telepon': nomorTelepon,
       });
       return response.data;
     } catch (e) {

@@ -300,6 +300,13 @@ class UserAccountCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String? foto = user.foto;
+    final String? fotoUrl = foto != null && foto.isNotEmpty
+        ? (foto.startsWith('http')
+            ? foto
+            : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+        : null;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
@@ -321,13 +328,16 @@ class UserAccountCard extends StatelessWidget {
           CircleAvatar(
             radius: 22,
             backgroundColor: user.warnaAvatar.withOpacity(0.15),
-            child: Text(
-              user.inisial,
-              style: AppFont.bold().copyWith(
-                fontSize: 18,
-                color: user.warnaAvatar,
-              ),
-            ),
+            backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+            child: fotoUrl == null
+                ? Text(
+                    user.inisial,
+                    style: AppFont.bold().copyWith(
+                      fontSize: 18,
+                      color: user.warnaAvatar,
+                    ),
+                  )
+                : null,
           ),
           const SizedBox(width: 12),
 
