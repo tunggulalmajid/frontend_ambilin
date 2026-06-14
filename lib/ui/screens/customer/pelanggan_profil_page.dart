@@ -1,9 +1,13 @@
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../models/customer.dart';
 import '../../../models/user_model.dart';
+import '../../../providers/auth_provider.dart';
+import '../../../providers/dashboard_provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/profile_header.dart';
 import 'pelanggan_edit_profil_page.dart';
 import 'pelanggan_ubah_password_page.dart';
@@ -16,42 +20,105 @@ class PelangganProfilPage extends StatefulWidget {
 }
 
 class _PelangganProfilPageState extends State<PelangganProfilPage> {
-  late UserModel _user;
-  late Customer _customer;
-
   @override
   void initState() {
     super.initState();
-    _user = UserModel(
-      idUser: 1, nama: 'Rafi Customer', email: 'customer@gmail.com',
-      idRole: 3, alamat: 'Jl Halmahera', nomorTelepon: '089965423456',
-    );
-    _customer = Customer(
-      idCustomer: 1, idUser: 1, poin: 1000,
-      isMember: true, isAktif: true, nama: 'Rafi Customer',
-      email: 'customer@gmail.com',
-    );
+    Future.microtask(() {
+      if (mounted) {
+        context.read<AuthProvider>().fetchProfile();
+        context.read<DashboardProvider>().fetchCustomerDashboard();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final inisial = _user.nama.isNotEmpty ? _user.nama[0].toUpperCase() : '?';
+    final auth = context.watch<AuthProvider>();
+    final dash = context.watch<DashboardProvider>();
+
+    if (auth.isProfileLoading || dash.isLoading) {
+      return const Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: CircularProgressIndicator(color: AppColor.base100),
+        ),
+      );
+    }
+
+    if (auth.errorMessage.isNotEmpty) {
+      return Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.error_outline, color: AppColor.redAllert, size: 48),
+                const SizedBox(height: 16),
+                Text(
+                  auth.errorMessage,
+                  textAlign: TextAlign.center,
+                  style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () {
+                    context.read<AuthProvider>().fetchProfile();
+                    context.read<DashboardProvider>().fetchCustomerDashboard();
+                  },
+                  style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
+                  child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    }
+
+    final user = auth.user;
+    if (user == null) {
+      return Scaffold(
+        backgroundColor: AppColor.putihBackground,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'Data tidak ditemukan',
+                style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: () {
+                  context.read<AuthProvider>().fetchProfile();
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
+                child: const Text('Muat Ulang', style: TextStyle(color: Colors.white)),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final inisial = user.nama.isNotEmpty ? user.nama[0].toUpperCase() : '?';
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             ProfileHeaderFull(
               backgroundUrl: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop',
               inisial: inisial,
-              nama: _user.nama,
-              email: _user.email,
+              nama: user.nama,
+              email: user.email,
               onBackPressed: () => Navigator.pop(context),
               onEditPressed: () {
                 Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => PelangganEditProfilPage(user: _user),
+                  builder: (_) => PelangganEditProfilPage(user: user),
                 ));
               },
             ),
@@ -71,11 +138,11 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
                   children: [
                     Text('Rincian Profil', style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.base100)),
                     const SizedBox(height: 16),
-                    ProfileInfoRow(label: 'Alamat', value: _user.alamat ?? '-'),
-                    ProfileInfoRow(label: 'No Telepon', value: _user.nomorTelepon ?? '-'),
-                    ProfileInfoRow(label: 'Poin', value: '${_customer.poin}'),
-                    ProfileInfoRow(label: 'Member', value: _customer.isMember ? 'Aktif' : 'Tidak Aktif'),
-                    ProfileInfoRow(label: 'Status', value: _customer.isAktif ? 'Aktif' : 'Tidak Aktif'),
+                    ProfileInfoRow(label: 'Alamat', value: user.alamat ?? '-'),
+                    ProfileInfoRow(label: 'No Telepon', value: user.nomorTelepon ?? '-'),
+                    ProfileInfoRow(label: 'Poin', value: dash.formattedPoin),
+                    ProfileInfoRow(label: 'Member', value: dash.isMember ? 'Aktif' : 'Tidak Aktif'),
+                    const ProfileInfoRow(label: 'Status', value: 'Aktif'),
                   ],
                 ),
               ),
@@ -110,7 +177,49 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
                         child: Icon(Icons.logout, size: 16, color: AppColor.putih100),
                       ),
                       title: Text('Logout', style: AppFont.medium().copyWith(fontSize: 14, color: AppColor.redAllert)),
-                      onTap: () {},
+                      onTap: () {
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: Text(
+                              'Konfirmasi Logout',
+                              style: AppFont.semibold().copyWith(fontSize: 16),
+                            ),
+                            content: Text(
+                              'Apakah Anda yakin ingin keluar?',
+                              style: AppFont.regular().copyWith(fontSize: 14),
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: Text(
+                                  'Batal',
+                                  style: AppFont.medium().copyWith(
+                                    color: AppColor.font80,
+                                  ),
+                                ),
+                              ),
+                              TextButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                  auth.logout();
+                                  Navigator.pushNamedAndRemoveUntil(
+                                    context,
+                                    AppRoutes.login,
+                                    (route) => false,
+                                  );
+                                },
+                                child: Text(
+                                  'Logout',
+                                  style: AppFont.medium().copyWith(
+                                    color: Colors.red,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ],
                 ),

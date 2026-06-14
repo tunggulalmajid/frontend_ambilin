@@ -3,12 +3,6 @@ import 'package:frontend_ambilin/models/customer.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 
-/// Widget banner langganan kondisional untuk customer dashboard.
-///
-/// Menampilkan 3 kondisi:
-/// - **Default**: Banner hijau ajakan berlangganan (belum beli)
-/// - **Pending**: Banner abu-abu menunggu konfirmasi admin
-/// - **Premium**: Card member aktif dengan info poin
 class HomeSubscriptionBanner extends StatelessWidget {
   final bool isMember;
   final String statusTransaksi; // 'none', 'pending', 'success'

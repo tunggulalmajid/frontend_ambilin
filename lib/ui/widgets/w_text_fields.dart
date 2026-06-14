@@ -1,18 +1,9 @@
-/// File gabungan untuk seluruh widget input teks di aplikasi Ambilin.
-/// Berisi: WTextFieldPutih, WPasswordField, WDropdownField.
-///
-/// Catatan: Widget [WTextField] lama yang menggunakan AppColor.base20 sebagai
-/// fillColor telah dihapus. Seluruh halaman kini menggunakan [WTextFieldPutih]
-/// sebagai komponen input standar.
 library;
-
 import 'package:flutter/material.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 
-// ============================================================================
-// 1. WTextFieldPutih — Text field standar dengan label luar dan latar putih.
-// ============================================================================
+
 
 class WTextFieldPutih extends StatelessWidget {
   final String label;

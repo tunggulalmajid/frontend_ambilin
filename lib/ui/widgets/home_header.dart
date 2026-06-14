@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 
-/// Widget header sapaan untuk halaman customer dashboard.
 class HomeHeader extends StatelessWidget {
   final String namaUser;
 

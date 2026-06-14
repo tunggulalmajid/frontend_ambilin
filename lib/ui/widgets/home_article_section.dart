@@ -4,7 +4,6 @@ import 'package:frontend_ambilin/ui/widgets/app_cards.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 
-/// Widget section artikel untuk halaman customer dashboard.
 class HomeArticleSection extends StatelessWidget {
   final List<Artikel> articles;
   final VoidCallback? onLihatSemua;

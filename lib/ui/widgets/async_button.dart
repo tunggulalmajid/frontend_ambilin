@@ -1,15 +1,7 @@
-// ----- FILE: async_button.dart -----
-// Widget reusable untuk tombol elevated dengan loading state.
-// Digunakan di: pelanggan_edit_profil, pelanggan_ubah_password,
-//               petugas_edit_profil, petugas_ubah_password,
-//               petugas_detail_tugas, petugas_proses_penjemputan.
-
 import 'package:flutter/material.dart';
 import '../../utils/app_color.dart';
 import '../../utils/app_font.dart';
 
-/// Tombol ElevatedButton full-width dengan loading spinner built-in.
-/// Ketika [isLoading] true, menampilkan CircularProgressIndicator.
 class AsyncButton extends StatelessWidget {
   final String text;
   final bool isLoading;

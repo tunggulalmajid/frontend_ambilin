@@ -1,13 +1,6 @@
-// ----- FILE: loading_overlay.dart -----
-// Widget reusable untuk overlay loading semi-transparan.
-// Digunakan di: pesanan_pelanggan, petugas_dashboard, petugas_riwayat,
-//               pelanggan_artikel.
-
 import 'package:flutter/material.dart';
 import '../../utils/app_color.dart';
 
-/// Overlay loading semi-transparan yang menutupi seluruh layar.
-/// Biasanya ditampilkan saat navigasi async sedang berlangsung.
 class LoadingOverlay extends StatelessWidget {
   final bool isLoading;
 

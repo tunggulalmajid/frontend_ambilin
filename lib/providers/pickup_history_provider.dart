@@ -8,12 +8,43 @@ class PickupHistoryProvider extends ChangeNotifier {
   final _setorService = SetorService();
 
   List<RiwayatPenjemputan> _pickupList = [];
+  List<SetorSampah> _activeOrders = [];
+  List<SetorSampah> _setorHistory = [];
   bool _isLoading = false;
   String _errorMessage = '';
 
   List<RiwayatPenjemputan> get pickupList => _pickupList;
+  List<SetorSampah> get activeOrders => _activeOrders;
+  List<SetorSampah> get setorHistory => _setorHistory;
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
+
+  Future<void> fetchActiveOrders() async {
+    _isLoading = true;
+    _errorMessage = '';
+    notifyListeners();
+
+    try {
+      final response = await _setorService.dapatkanOrderAktif();
+      _isLoading = false;
+
+      if (response['status'] == "success") {
+        final List<dynamic> data = response['data'] ?? [];
+        _activeOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        notifyListeners();
+      } else {
+        _errorMessage = response['message'] ?? 'Gagal memuat antrean penjemputan';
+        _activeOrders = [];
+        notifyListeners();
+      }
+    } catch (e) {
+      log("Fetch Active Orders Error: $e");
+      _isLoading = false;
+      _errorMessage = 'Gagal memuat antrean penjemputan';
+      _activeOrders = [];
+      notifyListeners();
+    }
+  }
 
   Future<void> fetchPickupHistory({required int roleId}) async {
     _isLoading = true;
@@ -34,11 +65,13 @@ class PickupHistoryProvider extends ChangeNotifier {
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
         final List<SetorSampah> setorList = data.map((json) => SetorSampah.fromJson(json)).toList();
+        _setorHistory = setorList;
         _pickupList = setorList.map((setor) => RiwayatPenjemputan.fromSetorSampah(setor)).toList();
         notifyListeners();
       } else {
         _errorMessage = response['message'] ?? 'Gagal memuat riwayat penjemputan';
         _pickupList = [];
+        _setorHistory = [];
         notifyListeners();
       }
     } catch (e) {
@@ -46,6 +79,7 @@ class PickupHistoryProvider extends ChangeNotifier {
       _isLoading = false;
       _errorMessage = 'Gagal memuat riwayat penjemputan';
       _pickupList = [];
+      _setorHistory = [];
       notifyListeners();
     }
   }
