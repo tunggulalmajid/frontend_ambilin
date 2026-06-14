@@ -17,46 +17,28 @@ class Langganan {
     this.updatedAt,
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static Langganan getMockData() {
+  factory Langganan.fromJson(Map<String, dynamic> json) {
     return Langganan(
-      idSubscribtion: 1,
-      nama: '1 Bulan',
-      harga: 30000,
-      poin: 100,
-      createdAt: DateTime(2026, 1, 1),
-      updatedAt: DateTime(2026, 6, 12),
+      idSubscribtion: json['id_subscribtion'] ?? 0,
+      nama: json['nama'] ?? '',
+      harga: json['harga'] ?? 0,
+      poin: json['poin'] ?? 0,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
-  static List<Langganan> getMockList() {
-    return [
-      Langganan(
-        idSubscribtion: 1,
-        nama: '1 Bulan',
-        harga: 30000,
-        poin: 100,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-      Langganan(
-        idSubscribtion: 2,
-        nama: '3 Bulan',
-        harga: 90000,
-        poin: 350,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-      Langganan(
-        idSubscribtion: 3,
-        nama: '6 Bulan',
-        harga: 180000,
-        poin: 800,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-      ),
-    ];
+  Map<String, dynamic> toJson() {
+    return {
+      'id_subscribtion': idSubscribtion,
+      'nama': nama,
+      'harga': harga,
+      'poin': poin,
+    };
   }
 }
 
@@ -79,26 +61,7 @@ class PaketLangganan {
 
   /// Dummy data paket langganan.
   static List<PaketLangganan> getPlans() {
-    return const [
-      PaketLangganan(
-        id: 'plan_1',
-        durasi: '1 Bulan',
-        hargaPerBulan: 30000,
-        totalBulan: 1,
-      ),
-      PaketLangganan(
-        id: 'plan_3',
-        durasi: '3 Bulan',
-        hargaPerBulan: 30000,
-        totalBulan: 3,
-      ),
-      PaketLangganan(
-        id: 'plan_6',
-        durasi: '6 Bulan',
-        hargaPerBulan: 30000,
-        totalBulan: 6,
-      ),
-    ];
+    return const [];
   }
 }
 
@@ -123,31 +86,6 @@ class Promo {
 
   /// Dummy data promo yang tersedia.
   static List<Promo> getPromos() {
-    return const [
-      Promo(
-        id: 'promo_50',
-        nama: 'Diskon 50%',
-        diskonPersen: 50,
-        berlakuHari: 2,
-      ),
-      Promo(
-        id: 'promo_25',
-        nama: 'Diskon 25%',
-        diskonPersen: 25,
-        berlakuHari: 4,
-      ),
-      Promo(
-        id: 'promo_10',
-        nama: 'Diskon 10%',
-        diskonPersen: 10,
-        berlakuHari: 7,
-      ),
-      Promo(
-        id: 'promo_5',
-        nama: 'Diskon 5%',
-        diskonPersen: 5,
-        berlakuHari: 7,
-      ),
-    ];
+    return const [];
   }
 }

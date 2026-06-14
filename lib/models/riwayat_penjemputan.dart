@@ -1,3 +1,5 @@
+import 'setor_sampah.dart';
+
 class RiwayatPenjemputan {
   final String id;
   final String namaCustomer;
@@ -15,33 +17,29 @@ class RiwayatPenjemputan {
     required this.status,
   });
 
-  /// Dummy data matching the design
-  static List<RiwayatPenjemputan> getDummyData() {
-    return const [
-      RiwayatPenjemputan(
-        id: 'ID Pemesanan',
-        namaCustomer: 'Fahri Ananta',
-        namaPetugas: 'Hadianto',
-        tanggal: '2 Jun 2025',
-        berat: '5 kg',
-        status: 'Selesai',
-      ),
-      RiwayatPenjemputan(
-        id: 'ID Pemesanan',
-        namaCustomer: 'Naufal Hakim',
-        namaPetugas: 'Hadianto',
-        tanggal: '2 Jun 2025',
-        berat: '5 kg',
-        status: 'Diproses',
-      ),
-      RiwayatPenjemputan(
-        id: 'ID Pemesanan',
-        namaCustomer: 'Tangga Panjili',
-        namaPetugas: 'Hadianto',
-        tanggal: '2 Jun 2025',
-        berat: '5 kg',
-        status: 'Dijemput',
-      ),
-    ];
+  factory RiwayatPenjemputan.fromSetorSampah(SetorSampah setor) {
+    String localStatus = 'Dijemput';
+    if (setor.status == 'proses') localStatus = 'Diproses';
+    if (setor.status == 'selesai') localStatus = 'Selesai';
+    if (setor.status == 'dibatalkan') localStatus = 'Dibatalkan';
+
+    String tgl = '';
+    if (setor.createdAt != null) {
+      final months = [
+        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+      ];
+      final d = setor.createdAt!;
+      tgl = '${d.day} ${months[d.month - 1]} ${d.year}';
+    }
+
+    return RiwayatPenjemputan(
+      id: 'ID Pemesanan ${setor.idSetorSampah}',
+      namaCustomer: setor.customerName.isNotEmpty ? setor.customerName : 'Pelanggan',
+      namaPetugas: setor.petugasName.isNotEmpty ? setor.petugasName : '-',
+      tanggal: tgl,
+      berat: '${setor.beratSampah ?? 0} kg',
+      status: localStatus,
+    );
   }
 }

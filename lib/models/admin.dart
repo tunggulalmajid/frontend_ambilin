@@ -18,29 +18,27 @@ class Admin {
     this.email = '',
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
-  static Admin getMockData() {
+  factory Admin.fromJson(Map<String, dynamic> json) {
     return Admin(
-      idAdmin: 1,
-      idUser: 3,
-      createdAt: DateTime(2026, 1, 1),
-      updatedAt: DateTime(2026, 6, 12),
-      nama: 'Admin Ambilin',
-      email: 'admin@ambilin.com',
+      idAdmin: json['id_admin'] ?? 0,
+      idUser: json['id_user'] ?? 0,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+      nama: json['nama'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
-  static List<Admin> getMockList() {
-    return [
-      Admin(
-        idAdmin: 1,
-        idUser: 3,
-        createdAt: DateTime(2026, 1, 1),
-        updatedAt: DateTime(2026, 6, 12),
-        nama: 'Admin Ambilin',
-        email: 'admin@ambilin.com',
-      ),
-    ];
+  Map<String, dynamic> toJson() {
+    return {
+      'id_admin': idAdmin,
+      'id_user': idUser,
+      'nama': nama,
+      'email': email,
+    };
   }
 }
