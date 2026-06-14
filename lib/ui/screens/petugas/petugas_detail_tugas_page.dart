@@ -1,7 +1,4 @@
-// ----- FILE: petugas_detail_tugas_page.dart -----
-// Halaman Detail Tugas Petugas.
-// Menampilkan rute peta mini, rincian penjemputan, catatan, rincian sampah,
-// dan tombol sticky "Ambil Sampah" di bawah.
+
 
 import 'package:flutter/material.dart';
 import '../../../models/setor_sampah.dart';
@@ -23,11 +20,9 @@ class PetugasDetailTugasPage extends StatefulWidget {
 class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
   bool _isLoading = false;
 
-  // ---------- Aksi Ambil Sampah (Async) ----------
   Future<void> _ambilSampah() async {
     setState(() => _isLoading = true);
 
-    // Simulasi proses konfirmasi ke server (1 detik)
     await Future.delayed(const Duration(seconds: 1));
 
     setState(() => _isLoading = false);
@@ -72,13 +67,13 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
         padding: const EdgeInsets.fromLTRB(20, 10, 20, 100),
         child: Column(
           children: [
-            // ========== Card 1: Rute Peta ==========
+
             DetailCardWrapper(
               title: 'Rute',
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Preview Map Mini (klik untuk navigasi ke map penuh)
+
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -106,7 +101,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                               ),
                             ),
                           ),
-                          // Pin oranye (driver)
+
                           Positioned(
                             bottom: 40,
                             left: 30,
@@ -123,7 +118,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                               ),
                             ),
                           ),
-                          // Pin hijau (lokasi sampah)
+
                           Positioned(
                             top: 30,
                             right: 60,
@@ -157,7 +152,6 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
             ),
             const SizedBox(height: 16),
 
-            // ========== Card 2: Rincian Penjemputan ==========
             DetailCardWrapper(
               title: 'Rincian penjemputan',
               child: Column(
@@ -178,7 +172,6 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
             ),
             const SizedBox(height: 16),
 
-            // ========== Card 3: Catatan Pelanggan ==========
             DetailCardWrapper(
               title: 'Catatan Pelanggan',
               child: Text(
@@ -193,7 +186,6 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
             ),
             const SizedBox(height: 16),
 
-            // ========== Card 4: Rincian Sampah ==========
             DetailCardWrapper(
               title: 'Rincian Sampah',
               child: Column(
@@ -250,7 +242,6 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
         ),
       ),
 
-      // ========== Sticky Button Bawah "Ambil Sampah" ==========
       bottomSheet: Container(
         width: double.infinity,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),

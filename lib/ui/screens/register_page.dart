@@ -138,14 +138,13 @@ class _RegisterPageState extends State<RegisterPage> {
                         ? () {}
                         : () async {
                             if (_formKey.currentState!.validate()) {
-                              // Buat objek request-nya
+
                               final request = RegisterRequest(
                                 nama: _namaController.text,
                                 email: _emailController.text,
                                 password: _passwordController.text,
                               );
 
-                              // Kirim ke provider
                               bool success = await auth.register(request);
 
                               if (!context.mounted) return;

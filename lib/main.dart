@@ -10,27 +10,22 @@ import 'package:frontend_ambilin/ui/screens/login_page.dart';
 import 'package:frontend_ambilin/ui/screens/register_page.dart';
 import 'package:frontend_ambilin/ui/screens/splash.dart';
 import 'package:frontend_ambilin/ui/screens/customer/subscription_page.dart';
-import 'package:frontend_ambilin/ui/screens/customer/form_pemesanan_page.dart';
+import 'package:frontend_ambilin/ui/screens/customer/form_pemesanan.dart';
 import 'package:frontend_ambilin/ui/screens/admin/admin_dashboard.dart';
 import 'package:frontend_ambilin/ui/screens/admin/manajemen_akun_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/manajemen_artikel_page.dart';
 import 'package:frontend_ambilin/ui/screens/admin/manajemen_kategori_page.dart';
-import 'package:frontend_ambilin/ui/screens/customer/metode_pembayaran_page.dart';
-import 'package:frontend_ambilin/ui/screens/customer/pilih_promo_page.dart';
+import 'package:frontend_ambilin/ui/screens/customer/form_pembelian_langganan.dart';
 import 'package:frontend_ambilin/ui/screens/customer/pembayaran_page.dart';
 import 'package:frontend_ambilin/ui/screens/customer/transaksi_berhasil_page.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
 import 'package:provider/provider.dart';
-
-// Import Halaman Modul Customer Baru
 import 'package:frontend_ambilin/ui/screens/customer/pilih_map.dart';
 import 'package:frontend_ambilin/ui/screens/customer/pelanggan_proses_penjemputan.dart';
 import 'package:frontend_ambilin/ui/screens/customer/pelanggan_selesai_penjemputan.dart';
 import 'package:frontend_ambilin/ui/screens/customer/detail_artikel_page.dart';
 import 'package:frontend_ambilin/ui/screens/customer/pelanggan_edit_profil_page.dart';
 import 'package:frontend_ambilin/ui/screens/customer/pelanggan_ubah_password_page.dart';
-
-// Import Halaman Modul Petugas Baru
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_dashboard.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_profil_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_riwayat_page.dart';
@@ -40,8 +35,14 @@ import 'package:frontend_ambilin/ui/screens/petugas/petugas_detail_tugas_page.da
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_ubah_password_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_detail_selesai_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_proses_penjemputan_page.dart';
-
-// Import Models untuk Safe Extraction
+import 'package:frontend_ambilin/ui/screens/admin/profile_admin_page.dart';
+import 'package:frontend_ambilin/ui/screens/admin/edit_profile_admin_page.dart';
+import 'package:frontend_ambilin/ui/screens/admin/edit_password_admin_page.dart';
+import 'package:frontend_ambilin/ui/screens/admin/manajemen_subscription_page.dart';
+import 'package:frontend_ambilin/ui/screens/admin/admin_detail_pelanggan_page.dart';
+import 'package:frontend_ambilin/ui/screens/admin/admin_detail_petugas_page.dart';
+import 'package:frontend_ambilin/ui/screens/admin/admin_manajemen_konfirmasi.dart';
+import 'package:frontend_ambilin/ui/screens/admin/admin_konfirmasi_pembayaran.dart';
 import 'package:frontend_ambilin/models/setor_sampah.dart';
 import 'package:frontend_ambilin/models/artikel.dart';
 import 'package:frontend_ambilin/models/user_model.dart';
@@ -106,22 +107,28 @@ class MyApp extends StatelessWidget {
         AppRoutes.login: (context) => LoginPage(),
         AppRoutes.register: (context) => RegisterPage(),
         AppRoutes.main: (context) => MainPage(),
-        AppRoutes.subscription: (context) => const SubscriptionPage(),
-        AppRoutes.pemesanan: (context) => const FormPemesananPage(),
+        AppRoutes.subscription: (context) {
+          final authProvider = Provider.of<AuthProvider>(context, listen: false);
+          if (authProvider.user?.idRole == 1) {
+            return const ManajemenSubscriptionPage();
+          } else {
+            return const SubscriptionPage();
+          }
+        },
+        AppRoutes.pemesanan: (context) => const FormPemesanan(),
+        AppRoutes.createOrder: (context) => const FormPemesanan(),
         AppRoutes.adminDashboard: (context) => const AdminDashboard(),
         AppRoutes.manajemenUser: (context) => const ManajemenAkunPage(),
         AppRoutes.manajemenArtikel: (context) => const ManajemenArtikelPage(),
         AppRoutes.manajemenKategori: (context) => const ManajemenKategoriPage(),
-        AppRoutes.metodePembayaran: (context) => const MetodePembayaranPage(),
-        AppRoutes.pilihPromo: (context) => const PilihPromoPage(),
+        AppRoutes.metodePembayaran: (context) => const FormPembelianLangganan(),
+        AppRoutes.purchaseSubscription: (context) => const FormPembelianLangganan(),
         AppRoutes.pembayaran: (context) => const PembayaranPage(
           subscriptionId: '',
           metodePembayaran: '',
           totalBayar: 0,
         ),
         AppRoutes.transaksiBerhasil: (context) => const TransaksiBerhasilPage(),
-
-        // Modul Customer Baru
         AppRoutes.pelangganPilihMap: (context) => const PilihMapPage(),
         AppRoutes.pelangganProsesPenjemputan: (context) {
           final args = ModalRoute.of(context)?.settings.arguments;
@@ -146,8 +153,6 @@ class MyApp extends StatelessWidget {
           return PelangganEditProfilPage(user: user);
         },
         AppRoutes.pelangganUbahPassword: (context) => const PelangganUbahPasswordPage(),
-
-        // Modul Petugas Baru
         AppRoutes.petugasHome: (context) => const PetugasDashboard(),
         AppRoutes.petugasRiwayat: (context) => const PetugasRiwayatPage(),
         AppRoutes.petugasDetailTugas: (context) {
@@ -171,6 +176,13 @@ class MyApp extends StatelessWidget {
         },
         AppRoutes.petugasUbahPassword: (context) => const PetugasUbahPasswordPage(),
         AppRoutes.petugasProfil: (context) => const PetugasProfilPage(),
+        AppRoutes.adminProfil: (context) => const ProfileAdminPage(),
+        AppRoutes.adminEditProfil: (context) => const EditProfileAdminPage(),
+        AppRoutes.adminUbahPassword: (context) => const EditPasswordAdminPage(),
+        AppRoutes.adminDetailPelanggan: (context) => const AdminDetailPelangganPage(),
+        AppRoutes.adminDetailPetugas: (context) => const AdminDetailPetugasPage(),
+        AppRoutes.adminManajemenKonfirmasi: (context) => const AdminManajemenKonfirmasi(),
+        AppRoutes.adminDetailKonfirmasi: (context) => const AdminKonfirmasiPembayaran(),
       },
     );
   }

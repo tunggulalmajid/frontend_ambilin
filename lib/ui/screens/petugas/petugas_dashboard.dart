@@ -1,6 +1,4 @@
-// ----- FILE: petugas_dashboard.dart -----
-// Halaman utama dashboard Petugas / Driver.
-// Menampilkan sapaan, ringkasan performa, dan daftar tugas ambil sampah.
+
 
 import 'package:flutter/material.dart';
 import '../../../models/setor_sampah.dart';
@@ -17,18 +15,17 @@ class PetugasDashboard extends StatefulWidget {
 }
 
 class _PetugasDashboardState extends State<PetugasDashboard> {
-  // ---------- Data Dummy ----------
+
   late List<SetorSampah> _daftarTugas;
   bool _isNavigating = false;
 
-  // Ringkasan performa dummy
   final int _totalTugasSelesai = 5;
   final double _totalSampahDiangkut = 2.5;
 
   @override
   void initState() {
     super.initState();
-    // Ambil data dummy dari model — hanya yang belum selesai (menunggu/dijemput/diproses)
+
     _daftarTugas = [
       SetorSampah(
         idSetorSampah: 10,
@@ -69,11 +66,9 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     ];
   }
 
-  // ---------- Navigasi Async ke Detail Tugas ----------
   Future<void> _lihatDetail(SetorSampah tugas) async {
     setState(() => _isNavigating = true);
 
-    // Simulasi async loading sesaat sebelum navigasi
     await Future.delayed(const Duration(milliseconds: 500));
 
     setState(() => _isNavigating = false);
@@ -99,7 +94,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ========== Header Sapaan ==========
+
                   Text(
                     'Halo, Driver',
                     style: AppFont.bold().copyWith(
@@ -117,10 +112,9 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                   ),
                   const SizedBox(height: 20),
 
-                  // ========== Ringkasan Performa (Grid 2 Card) ==========
                   Row(
                     children: [
-                      // Card Kiri — Total Tugas Selesai
+
                       Expanded(
                         child: _buildPerformaCard(
                           icon: Icons.lock_rounded,
@@ -130,7 +124,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      // Card Kanan — Total Sampah Diangkut
+
                       Expanded(
                         child: _buildPerformaCard(
                           icon: Icons.lock_rounded,
@@ -143,7 +137,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                   ),
                   const SizedBox(height: 24),
 
-                  // ========== Sub-judul Daftar Ambil Sampah ==========
                   Text(
                     'Daftar Ambil Sampah',
                     style: AppFont.bold().copyWith(
@@ -153,7 +146,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                   ),
                   const SizedBox(height: 12),
 
-                  // ========== ListView Tugas ==========
                   ListView.builder(
                     shrinkWrap: true,
                     physics: const NeverScrollableScrollPhysics(),
@@ -167,7 +159,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
             ),
           ),
 
-          // Overlay loading saat navigasi
           if (_isNavigating)
             Container(
               color: Colors.black.withOpacity(0.2),
@@ -178,12 +169,10 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
         ],
       ),
 
-      // ========== Bottom Navigation Bar ==========
       bottomNavigationBar: const PetugasNavBar(currentIndex: 0),
     );
   }
 
-  // ---------- Widget Card Performa ----------
   Widget _buildPerformaCard({
     required IconData icon,
     required String label,
@@ -241,7 +230,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     );
   }
 
-  // ---------- Widget Card Tugas ----------
   Widget _buildCardTugas(SetorSampah tugas) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -254,7 +242,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Baris tanggal + jarak
+
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -276,7 +264,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
           ),
           const SizedBox(height: 10),
 
-          // Foto + Detail
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -321,7 +308,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
           ),
           const SizedBox(height: 12),
 
-          // Tombol Lihat Detail
           SizedBox(
             width: double.infinity,
             child: ElevatedButton(

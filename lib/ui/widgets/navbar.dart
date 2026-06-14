@@ -34,8 +34,8 @@ class AdminNavBar extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
               _buildNavItem(context, Icons.home, 'Home', 0),
-              _buildNavItem(context, Icons.star_rounded, 'Users', 1),
-              _buildNavItem(context, Icons.star_rounded, 'Contents', 2),
+              _buildNavItem(context, Icons.people, 'Users', 1),
+              _buildNavItem(context, Icons.article, 'Contents', 2),
               _buildNavItem(context, Icons.star_rounded, 'Points', 3),
             ],
           ),
@@ -53,25 +53,25 @@ class AdminNavBar extends StatelessWidget {
       onTap: () {
         if (index == currentIndex) return;
 
-        Widget destination;
+        String routeName;
         switch (index) {
           case 0:
-            destination = const AdminDashboard();
+            routeName = AppRoutes.adminDashboard;
             break;
           case 1:
-            destination = const ManajemenAkunPage();
+            routeName = AppRoutes.manajemenUser;
             break;
           case 2:
-            destination = const ManajemenArtikelPage();
+            routeName = AppRoutes.manajemenArtikel;
+            break;
+          case 3:
+            routeName = AppRoutes.manajemenKategori;
             break;
           default:
             return;
         }
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => destination),
-        );
+        Navigator.pushReplacementNamed(context, routeName);
       },
       borderRadius: BorderRadius.circular(8),
       child: Padding(

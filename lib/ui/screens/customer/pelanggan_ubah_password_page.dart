@@ -1,4 +1,4 @@
-// ----- FILE: pelanggan_ubah_password_page.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
@@ -34,7 +34,6 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
 
     setState(() => _isLoading = true);
 
-    // Simulasi proses ubah password ke server (1.5 detik)
     await Future.delayed(const Duration(milliseconds: 1500));
 
     setState(() => _isLoading = false);
@@ -58,14 +57,13 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ========== Header Background ==========
+
             ProfileHeaderSimple(
               backgroundUrl: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop',
               onBackPressed: () => Navigator.pop(context),
             ),
             const SizedBox(height: 30),
 
-            // ========== Form Ubah Password ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Form(
@@ -102,7 +100,6 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
                     ),
                     const SizedBox(height: 30),
 
-                    // Tombol Simpan
                     AsyncButton(
                       text: 'Simpan',
                       isLoading: _isLoading,

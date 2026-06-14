@@ -1,4 +1,4 @@
-// ----- FILE: petugas_profil_page.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../models/user_model.dart';
 import '../../../models/petugas.dart';
@@ -17,7 +17,7 @@ class PetugasProfilPage extends StatefulWidget {
 }
 
 class _PetugasProfilPageState extends State<PetugasProfilPage> {
-  // ========== Data Dummy (Mock) ==========
+
   late UserModel _user;
   late Petugas _petugas;
 
@@ -49,7 +49,7 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ========== Header Profil dengan Background Truk ==========
+
             ProfileHeaderFull(
               backgroundUrl: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
               inisial: inisial,
@@ -67,7 +67,6 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
             ),
             const SizedBox(height: 80),
 
-            // ========== Card 1: Rincian Profil ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -103,7 +102,6 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
             ),
             const SizedBox(height: 16),
 
-            // ========== Card 2: Menu Navigasi ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -164,7 +162,7 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                         ),
                       ),
                       onTap: () {
-                        // Stub
+
                       },
                     ),
                   ],

@@ -10,7 +10,7 @@ class AppRoutes {
   static const String manajemenArtikel = '/manajemenartikel';
   static const String manajemenKategori = '/manajemenkategori';
   static const String metodePembayaran = '/metodepembayaran';
-  static const String pilihPromo = '/pilihpromo';
+  static const String pilihPromo = '/pilihpromo'; // perlu dihapus
   static const String pembayaran = '/pembayaran';
   static const String transaksiBerhasil = '/transaksiberhasil';
 
@@ -32,4 +32,16 @@ class AppRoutes {
   static const String petugasEditProfil = '/petugas/edit-profil';
   static const String petugasUbahPassword = '/petugas/ubah-password';
   static const String petugasProfil = '/petugas/profil';
+
+  // Modul Admin Baru
+  static const String adminProfil = '/admin/profil';
+  static const String adminEditProfil = '/admin/edit-profil';
+  static const String adminUbahPassword = '/admin/ubah-password';
+  static const String adminDetailPelanggan = '/admin/detail-pelanggan';
+  static const String adminDetailPetugas = '/admin/detail-petugas';
+  static const String adminKonfirmasiPembayaran = '/admin/konfirmasi-pembayaran';
+  static const String adminManajemenKonfirmasi = '/admin/manajemen-konfirmasi';
+  static const String adminDetailKonfirmasi = '/admin/detail-konfirmasi';
+  static const String purchaseSubscription = '/subscription';
+  static const String createOrder = '/pemesanan';
 }

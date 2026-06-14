@@ -14,14 +14,12 @@ class TambahAkunPage extends StatefulWidget {
 class _TambahAkunPageState extends State<TambahAkunPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   final _namaController = TextEditingController();
   final _emailController = TextEditingController();
   final _teleponController = TextEditingController();
   final _passwordController = TextEditingController();
   final _konfirmasiPasswordController = TextEditingController();
 
-  // Dropdown value
   String? _selectedTipeUser;
   final List<String> _tipeUserList = ['Petugas', 'Pelanggan'];
 
@@ -37,7 +35,7 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
 
   void _handleSimpan() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement save logic
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Akun berhasil ditambahkan')),
       );
@@ -48,9 +46,9 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Mengubah background Scaffold agar serasi dengan seluruh layar background form
-      backgroundColor: AppColor.putihBackground, 
-      // Properti appBar di sini telah dihapus sepenuhnya
+
+      backgroundColor: AppColor.putihBackground,
+
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
@@ -62,7 +60,7 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 Stack(
                   alignment: Alignment.centerLeft,
                   children: [
-                    // Tulisan Utama di Tengah
+
                     Center(
                       child: Text(
                         'Tambah Pengguna',
@@ -72,7 +70,7 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                         ),
                       ),
                     ),
-                    // Tombol Back di Kiri
+
                     GestureDetector(
                       onTap: () => Navigator.pop(context),
                       child: const Icon(
@@ -86,7 +84,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 const SizedBox(height: 24),
                 const SizedBox(height: 24),
 
-                // --- Tipe User Dropdown ---
                 WDropdownField(
                   label: 'Tipe User',
                   hintText: 'Pilih tipe user',
@@ -106,7 +103,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Nama Lengkap ---
                 WTextFieldPutih(
                   label: 'Nama Lengkap',
                   hintText: 'Masukkan nama',
@@ -120,7 +116,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Email ---
                 WTextFieldPutih(
                   label: 'Email',
                   hintText: 'email@example.com',
@@ -138,7 +133,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- No. Telepon ---
                 WTextFieldPutih(
                   label: 'No. Telepon',
                   hintText: 'Masukkan Nomor Telepon',
@@ -153,7 +147,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Password ---
                 WPasswordField(
                   label: 'Password',
                   hintText: 'Masukkan Password',
@@ -170,7 +163,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Konfirmasi Password ---
                 WPasswordField(
                   label: 'Konfirmasi Password',
                   hintText: 'Konfirmasi Password',
@@ -187,7 +179,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // --- Simpan Button ---
                 WButton(
                   text: 'Simpan',
                   onPressed: _handleSimpan,
