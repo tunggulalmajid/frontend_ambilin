@@ -1,4 +1,4 @@
-// ----- FILE: pelanggan_profil_page.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../models/customer.dart';
 import '../../../models/user_model.dart';
@@ -42,7 +42,7 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ========== Header Profil dengan Background ==========
+
             ProfileHeaderFull(
               backgroundUrl: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop',
               inisial: inisial,
@@ -57,7 +57,6 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
             ),
             const SizedBox(height: 80),
 
-            // ========== Card 1: Rincian Profil ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -83,7 +82,6 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
             ),
             const SizedBox(height: 16),
 
-            // ========== Card 2: Menu Aksi ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(

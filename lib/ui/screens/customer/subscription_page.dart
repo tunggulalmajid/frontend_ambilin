@@ -3,7 +3,7 @@ import 'package:frontend_ambilin/models/langganan.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
-import 'package:frontend_ambilin/ui/screens/customer/metode_pembayaran_page.dart';
+import 'package:frontend_ambilin/utils/app_routes.dart';
 
 class SubscriptionPage extends StatefulWidget {
   const SubscriptionPage({super.key});
@@ -13,7 +13,7 @@ class SubscriptionPage extends StatefulWidget {
 }
 
 class _SubscriptionPageState extends State<SubscriptionPage> {
-  // Selected plan index: 0 = 1 Bulan, 1 = 3 Bulan, 2 = 6 Bulan
+
   int _selectedPlanIndex = 0;
 
   final List<PaketLangganan> _subscriptionPlans = PaketLangganan.getPlans();
@@ -24,7 +24,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     {'durasi': '6 Bulan', 'harga': 'Rp. 180.000/Bulan'},
   ];
 
-  // Keuntungan list
   final List<Map<String, String>> _keuntungan = [
     {
       'title': 'Bonus Poin',
@@ -139,31 +138,31 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Background dasar scaffold diubah menjadi hijau utama agar status bar atas otomatis berwarna hijau
-      backgroundColor: AppColor.base100, 
+
+      backgroundColor: AppColor.base100,
       body: SafeArea(
         bottom: false,
         child: Container(
-          // Gunakan warna putih untuk area body di bawah SafeArea (di luar area scroll)
-          color: Colors.white, 
+
+          color: Colors.white,
           child: Column(
             children: [
-              // Header & Scrollable Content
+
               Expanded(
                 child: SingleChildScrollView(
                   child: Column(
                     children: [
-                      // Sisi background hijau dipasang khusus di area header ini saja
+
                       Container(
-                        color: AppColor.base100, // Warna hijau utama tetap di sini
+                        color: AppColor.base100,
                         child: Column(
                           children: [
                             Container(
-                              height: 70, 
+                              height: 70,
                               width: double.infinity,
                               child: Stack(
                                 children: [
-                                  // Tombol Back
+
                                   Positioned(
                                     left: 8,
                                     top: 0,
@@ -179,7 +178,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                       ),
                                     ),
                                   ),
-                                  // Image Logo Ambilin+
+
                                   Center(
                                     child: Image.asset(
                                       'assets/ambilin.png',
@@ -190,20 +189,18 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 ],
                               ),
                             ),
-                            // Berikan sedikit jarak bawah berlatar hijau sebelum masuk ke radius putih
+
                             const SizedBox(height: 16),
                           ],
                         ),
                       ),
 
-                      // Konten utama latar putih
                       transformContentCard(),
                     ],
                   ),
                 ),
               ),
 
-              // Bottom subscription bar
               _buildBottomBar(),
             ],
           ),
@@ -215,26 +212,26 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
   Widget transformContentCard() {
     return Container(
       width: double.infinity,
-      // Menggunakan tumpukan margin negatif agar lengkungan putih memotong pas di area hijau header atas
+
       transform: Matrix4.translationValues(0.0, -16.0, 0.0),
       decoration: const BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: Padding(
-        // Tambahkan padding atas sedikit (dari 24 ke 32) untuk mengonpensasi pergeseran transform di atas
+
         padding: const EdgeInsets.fromLTRB(24, 32, 24, 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Row memuat dua asset gambar secara langsung
+
             Row(
               children: [
                 Expanded(
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Image.asset(
-                      'assets/bonus.png', 
+                      'assets/bonus.png',
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -244,7 +241,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(16),
                     child: Image.asset(
-                      'assets/Free.png', 
+                      'assets/Free.png',
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -254,7 +251,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
 
             const SizedBox(height: 28),
 
-            // Judul Keuntungan
             Text(
               'Keuntungan:',
               style: AppFont.bold().copyWith(
@@ -264,7 +260,6 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             ),
             const SizedBox(height: 16),
 
-            // List item keuntungan
             ...List.generate(_keuntungan.length, (index) {
               final item = _keuntungan[index];
               return Padding(
@@ -275,7 +270,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 ),
               );
             }),
-            const SizedBox(height: 20), 
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -289,12 +284,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Bulatan hijau muda soft transparan tanpa icon bintang di dalamnya sesuai SVG
+
         Container(
           width: 40,
           height: 40,
           decoration: const BoxDecoration(
-            color: Color(0xFFE8FFF0), 
+            color: Color(0xFFE8FFF0),
             shape: BoxShape.circle,
           ),
         ),
@@ -343,7 +338,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
         children: [
           Row(
             children: [
-              // Area Informasi Paket Durasi & Panah Atas (Dapat di-tap di seluruh area)
+
               Expanded(
                 child: GestureDetector(
                   onTap: _showPaketLanggananSheet,
@@ -382,18 +377,13 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 ),
               ),
 
-              // Tombol Langganan Hijau
               SizedBox(
                 width: 180,
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => MetodePembayaranPage(
-                          subscriptionId: _subscriptionPlans[_selectedPlanIndex].id,
-                        ),
-                      ),
+                      AppRoutes.metodePembayaran,
                     );
                   },
                   style: ElevatedButton.styleFrom(

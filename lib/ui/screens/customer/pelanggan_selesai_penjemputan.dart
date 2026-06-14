@@ -1,4 +1,4 @@
-// ----- FILE: pelanggan_selesai_penjemputan.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
@@ -30,7 +30,7 @@ class PelangganSelesaiPenjemputanPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Card 1: Rincian penjemputan
+
             DetailCardWrapper(
               title: 'Rincian penjemputan',
               child: Column(
@@ -46,7 +46,6 @@ class PelangganSelesaiPenjemputanPage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
 
-            // Card 2: Catatan Pelanggan
             DetailCardWrapper(
               title: 'Catatan Pelanggan',
               child: Text(
@@ -56,7 +55,6 @@ class PelangganSelesaiPenjemputanPage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
 
-            // Card 3: Rincian Sampah
             DetailCardWrapper(
               title: 'Rincian Sampah',
               child: Column(
@@ -110,7 +108,6 @@ class PelangganSelesaiPenjemputanPage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
 
-            // Card 4: Bukti Penjemputan
             DetailCardWrapper(
               title: 'Bukti Penjemputan',
               child: ClipRRect(

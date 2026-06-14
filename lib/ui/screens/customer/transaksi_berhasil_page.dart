@@ -8,7 +8,6 @@ import 'package:frontend_ambilin/ui/widgets/w_button.dart';
 class TransaksiBerhasilPage extends StatelessWidget {
   const TransaksiBerhasilPage({super.key});
 
-  /// Navigasi kembali ke dashboard utama dengan membersihkan seluruh stack.
   Future<void> _onSelesaiPressed(BuildContext context) async {
     try {
       await Navigator.of(context).pushNamedAndRemoveUntil(
@@ -22,7 +21,7 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Ambil data transaksi dari model dummy (nantinya bisa dari provider/args)
+
     final transaction = Transaksi.getMockData();
 
     return Scaffold(
@@ -35,7 +34,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
               children: [
                 const SizedBox(height: 40),
 
-                // ===== Ikon Centang =====
                 Container(
                   width: 100,
                   height: 100,
@@ -59,7 +57,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // ===== Pesan Utama =====
                 Text(
                   'Terimakasih telah membeli\nPaket Langganan 1 Bulan Ambilin+',
                   textAlign: TextAlign.center,
@@ -72,7 +69,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
-                // ===== Card Detail Transaksi =====
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(20),
@@ -89,7 +85,7 @@ class TransaksiBerhasilPage extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-                      // Judul Card
+
                       Text(
                         'Transaksi berhasil!',
                         style: AppFont.bold().copyWith(
@@ -101,7 +97,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
                       const Divider(height: 1, color: AppColor.font60),
                       const SizedBox(height: 16),
 
-                      // Detail data transaksi di-binding dari model
                       _buildDetailRow(
                         'ID Transaksi',
                         transaction.idTransaksi.toString(),
@@ -127,7 +122,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
                 const SizedBox(height: 24),
 
-                // ===== Teks Peringatan =====
                 Text(
                   'Silahkan tunggu konfirmasi pengajuan\nCustomer+ oleh admin',
                   textAlign: TextAlign.center,
@@ -140,7 +134,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
                 const SizedBox(height: 32),
 
-                // ===== Tombol Selesai =====
                 WButton(
                   text: 'Selesai',
                   textSize: 16,
@@ -160,7 +153,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
     );
   }
 
-  /// Helper widget untuk menampilkan satu baris detail transaksi.
   Widget _buildDetailRow(String label, String value) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,

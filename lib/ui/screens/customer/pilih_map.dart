@@ -18,10 +18,9 @@ class _PilihMapPageState extends State<PilihMapPage> {
     setState(() {
       _isLoading = true;
     });
-    
-    // Simulasi loading 1.5 detik mengambil koordinat via Geolocator
+
     await Future.delayed(const Duration(milliseconds: 1500));
-    
+
     setState(() {
       _isLoading = false;
       _currentAddress = 'Jl. Semeru, Jember\nRumah Sakit Perkebunan Jember Klinik';
@@ -47,7 +46,7 @@ class _PilihMapPageState extends State<PilihMapPage> {
       ),
       body: Stack(
         children: [
-          // Placeholder Map Full Screen
+
           Container(
             width: double.infinity,
             height: double.infinity,
@@ -62,8 +61,7 @@ class _PilihMapPageState extends State<PilihMapPage> {
               },
             ),
           ),
-          
-          // Pin Locator statis di tengah layar
+
           const Center(
             child: Icon(
               Icons.location_on,
@@ -71,21 +69,19 @@ class _PilihMapPageState extends State<PilihMapPage> {
               color: AppColor.redAllert,
             ),
           ),
-          
-          // Floating Action Button (FAB) lokasi di kanan bawah
+
           Positioned(
             bottom: 120,
             right: 20,
             child: FloatingActionButton(
               backgroundColor: AppColor.base100,
               onPressed: _getCurrentLocation,
-              child: _isLoading 
+              child: _isLoading
                   ? const CircularProgressIndicator(color: AppColor.putih100)
                   : const Icon(Icons.my_location, color: AppColor.putih100),
             ),
           ),
 
-          // Floating Card bawah untuk Alamat Terkini dan Simpan Lokasi
           Align(
             alignment: Alignment.bottomCenter,
             child: Container(
@@ -134,7 +130,7 @@ class _PilihMapPageState extends State<PilihMapPage> {
                         ),
                       ),
                       onPressed: () {
-                        Navigator.pop(context); // Kembali jika ditekan
+                        Navigator.pop(context);
                       },
                       child: Text(
                         'Simpan Lokasi',

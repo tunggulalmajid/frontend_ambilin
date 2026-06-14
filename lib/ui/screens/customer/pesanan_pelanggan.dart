@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../../models/setor_sampah.dart';
 import '../../widgets/loading_overlay.dart';
-import 'pelanggan_proses_penjemputan.dart';
-import 'pelanggan_selesai_penjemputan.dart';
 
 class PesananPelangganPage extends StatefulWidget {
   const PesananPelangganPage({super.key});
@@ -16,7 +15,6 @@ class PesananPelangganPage extends StatefulWidget {
 class _PesananPelangganPageState extends State<PesananPelangganPage> {
   bool _isLoading = false;
 
-  // Data Dummy menggunakan fungsi di Model SetorSampah yang telah disediakan
   final List<SetorSampah> onGoingList = SetorSampah.getMockList().where((e) => e.status != 'selesai').toList();
   final List<SetorSampah> selesaiList = SetorSampah.getMockList().where((e) => e.status == 'selesai').toList();
 
@@ -25,7 +23,6 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
       _isLoading = true;
     });
 
-    // Efek async loading tipis
     await Future.delayed(const Duration(milliseconds: 500));
 
     setState(() {
@@ -35,18 +32,16 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
     if (!context.mounted) return;
 
     if (data.status == 'selesai') {
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => PelangganSelesaiPenjemputanPage(data: data),
-        ),
+        AppRoutes.pelangganDetailSelesai,
+        arguments: data,
       );
     } else {
-      Navigator.push(
+      Navigator.pushNamed(
         context,
-        MaterialPageRoute(
-          builder: (context) => PelangganProsesPenjemputanPage(data: data),
-        ),
+        AppRoutes.pelangganProsesPenjemputan,
+        arguments: data,
       );
     }
   }
@@ -74,7 +69,7 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                 Text('On Going', style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100)),
                 const SizedBox(height: 10),
                 ...onGoingList.map((data) => _buildCard(data, isOnGoing: true)),
-                
+
                 const SizedBox(height: 20),
                 Text('Selesai', style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100)),
                 const SizedBox(height: 10),
@@ -86,7 +81,7 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 1, // Menu "Pesanan" aktif
+        currentIndex: 1,
         selectedItemColor: AppColor.base100,
         unselectedItemColor: AppColor.font80,
         showUnselectedLabels: true,
@@ -98,10 +93,10 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profil'),
         ],
         onTap: (index) {
-          // Navigasi bawah statis diabaikan karena fokus halaman aktivitas
+
         },
       ),
-      // FAB Simulasi Truk berdasarkan gambar 2 (opsional namun menambah akurasi desain)
+
       floatingActionButton: FloatingActionButton(
         onPressed: () {},
         backgroundColor: AppColor.base100,
@@ -127,12 +122,12 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '12 Mei, 15:22', // Dummy timestamp format
+                '12 Mei, 15:22',
                 style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 12),
               ),
               if (!isOnGoing)
                 Text(
-                  '+1.000 Poin', // Indikator poin untuk pesanan selesai
+                  '+1.000 Poin',
                   style: AppFont.bold().copyWith(color: AppColor.base100, fontSize: 12),
                 ),
             ],

@@ -1,4 +1,4 @@
-// ----- FILE: petugas_edit_profil_page.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../models/user_model.dart';
 import '../../../utils/app_color.dart';
@@ -41,7 +41,6 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
     super.dispose();
   }
 
-  /// Fungsi async simulasi simpan profil ke server.
   Future<void> _simpanProfil() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _isLoading = true);
@@ -69,7 +68,7 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ========== Header Avatar dengan Background Truk ==========
+
             ProfileHeaderEdit(
               backgroundUrl:
                   'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
@@ -78,7 +77,6 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
             ),
             const SizedBox(height: 65),
 
-            // ========== Form Edit Profil ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Form(

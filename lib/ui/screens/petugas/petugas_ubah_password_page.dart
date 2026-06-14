@@ -1,4 +1,4 @@
-// ----- FILE: petugas_ubah_password_page.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
@@ -30,13 +30,11 @@ class _PetugasUbahPasswordPageState extends State<PetugasUbahPasswordPage> {
     super.dispose();
   }
 
-  /// Fungsi async simulasi ubah password ke server.
   Future<void> _simpanPassword() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
-    // Simulasi proses hit ke server API (1.2 detik)
     await Future.delayed(const Duration(milliseconds: 1200));
 
     setState(() => _isLoading = false);
@@ -63,14 +61,13 @@ class _PetugasUbahPasswordPageState extends State<PetugasUbahPasswordPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ========== Header Background Truk ==========
+
             ProfileHeaderSimple(
               backgroundUrl: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
               onBackPressed: () => Navigator.pop(context),
             ),
             const SizedBox(height: 30),
 
-            // ========== Form Ubah Password ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Form(

@@ -17,7 +17,6 @@ class EditAkunPage extends StatefulWidget {
 class _EditAkunPageState extends State<EditAkunPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   late final TextEditingController _namaController;
   late final TextEditingController _emailController;
   late final TextEditingController _teleponController;
@@ -25,7 +24,7 @@ class _EditAkunPageState extends State<EditAkunPage> {
   @override
   void initState() {
     super.initState();
-    // Pre-fill data dari user yang dipilih
+
     _namaController = TextEditingController(text: widget.user.nama);
     _emailController = TextEditingController(text: widget.user.email);
     _teleponController = TextEditingController();
@@ -41,7 +40,7 @@ class _EditAkunPageState extends State<EditAkunPage> {
 
   void _handleSimpan() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Implement update logic via API
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Akun berhasil diperbarui')),
       );
@@ -61,7 +60,7 @@ class _EditAkunPageState extends State<EditAkunPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Header: Back + Judul ---
+
                 Row(
                   children: [
                     GestureDetector(
@@ -84,7 +83,6 @@ class _EditAkunPageState extends State<EditAkunPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // --- Nama Lengkap ---
                 WTextFieldPutih(
                   label: 'Nama Lengkap',
                   hintText: 'Masukkan nama',
@@ -98,7 +96,6 @@ class _EditAkunPageState extends State<EditAkunPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Email ---
                 WTextFieldPutih(
                   label: 'Email',
                   hintText: 'email@example.com',
@@ -116,7 +113,6 @@ class _EditAkunPageState extends State<EditAkunPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- No. Telepon ---
                 WTextFieldPutih(
                   label: 'No. Telepon',
                   hintText: 'Masukkan Nomor Telepon',
@@ -131,7 +127,6 @@ class _EditAkunPageState extends State<EditAkunPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // --- Simpan Button ---
                 WButton(
                   text: 'Simpan',
                   onPressed: _handleSimpan,

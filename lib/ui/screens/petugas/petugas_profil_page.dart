@@ -1,13 +1,12 @@
-// ----- FILE: petugas_profil_page.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../models/user_model.dart';
 import '../../../models/petugas.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
+import '../../../utils/app_routes.dart';
 import '../../widgets/profile_header.dart';
 import '../../widgets/navbar.dart';
-import 'petugas_edit_profil_page.dart';
-import 'petugas_ubah_password_page.dart';
 
 class PetugasProfilPage extends StatefulWidget {
   const PetugasProfilPage({super.key});
@@ -17,7 +16,7 @@ class PetugasProfilPage extends StatefulWidget {
 }
 
 class _PetugasProfilPageState extends State<PetugasProfilPage> {
-  // ========== Data Dummy (Mock) ==========
+
   late UserModel _user;
   late Petugas _petugas;
 
@@ -49,7 +48,7 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ========== Header Profil dengan Background Truk ==========
+
             ProfileHeaderFull(
               backgroundUrl: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
               inisial: inisial,
@@ -57,17 +56,15 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
               email: _user.email,
               onBackPressed: () => Navigator.pop(context),
               onEditPressed: () {
-                Navigator.push(
+                Navigator.pushNamed(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => PetugasEditProfilPage(user: _user),
-                  ),
+                  AppRoutes.petugasEditProfil,
+                  arguments: _user,
                 );
               },
             ),
             const SizedBox(height: 80),
 
-            // ========== Card 1: Rincian Profil ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -103,7 +100,6 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
             ),
             const SizedBox(height: 16),
 
-            // ========== Card 2: Menu Navigasi ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: Container(
@@ -137,11 +133,9 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                         color: AppColor.font80,
                       ),
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (_) => const PetugasUbahPasswordPage(),
-                          ),
+                          AppRoutes.petugasUbahPassword,
                         );
                       },
                     ),
@@ -164,7 +158,7 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                         ),
                       ),
                       onTap: () {
-                        // Stub
+
                       },
                     ),
                   ],

@@ -1,10 +1,10 @@
 import 'dart:io';
-import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
+import 'package:frontend_ambilin/ui/widgets/instruksi_pembayaran_card.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -32,10 +32,8 @@ class _PembayaranPageState extends State<PembayaranPage> {
 
   final _currencyFormat =
       NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0);
-
   final ImagePicker _picker = ImagePicker();
 
-  /// Ambil gambar dari kamera.
   Future<void> _ambilDariKamera() async {
     try {
       final XFile? photo = await _picker.pickImage(
@@ -44,7 +42,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
         maxWidth: 1200,
       );
 
-      // User membatalkan pengambilan gambar
       if (photo == null) return;
       if (!mounted) return;
 
@@ -62,7 +59,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
     }
   }
 
-  /// Ambil gambar dari galeri.
   Future<void> _ambilDariGaleri() async {
     try {
       final XFile? image = await _picker.pickImage(
@@ -71,7 +67,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
         maxWidth: 1200,
       );
 
-      // User membatalkan pemilihan gambar
       if (image == null) return;
       if (!mounted) return;
 
@@ -89,7 +84,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
     }
   }
 
-  /// Submit konfirmasi pembayaran dengan loading overlay.
   Future<void> _konfirmasiPembayaran() async {
     if (_buktiTransfer == null) return;
 
@@ -98,12 +92,9 @@ class _PembayaranPageState extends State<PembayaranPage> {
     });
 
     try {
-      // Simulasi proses upload / API call
       await Future.delayed(const Duration(seconds: 2));
 
       if (!mounted) return;
-
-      // Navigasi langsung ke halaman Transaksi Berhasil
       Navigator.of(context).pushReplacementNamed(AppRoutes.transaksiBerhasil);
     } catch (e) {
       if (!mounted) return;
@@ -130,18 +121,15 @@ class _PembayaranPageState extends State<PembayaranPage> {
       backgroundColor: AppColor.putihBackground,
       body: Stack(
         children: [
-          // Main Content
           SafeArea(
             child: Column(
               children: [
-                // Scrollable Content
                 Expanded(
                   child: SingleChildScrollView(
                     physics: const BouncingScrollPhysics(),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // 1. Back Button
                         Padding(
                           padding: const EdgeInsets.only(left: 8, top: 12),
                           child: TextButton.icon(
@@ -160,10 +148,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 8),
-
-                        // 2. Title & Subtitle
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Column(
@@ -187,74 +172,12 @@ class _PembayaranPageState extends State<PembayaranPage> {
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 24),
-
-                        // 3. Card Instruksi Pembayaran
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            decoration: BoxDecoration(
-                              color: AppColor.putih100,
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: AppColor.font60),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  'Instruksi Pembayaran:',
-                                  style: AppFont.bold().copyWith(
-                                    fontSize: 15,
-                                    color: AppColor.font100,
-                                  ),
-                                ),
-                                const SizedBox(height: 12),
-                                _buildInstruksiItem(
-                                  '1.',
-                                  'Salin nomor rekening tujuan di bawah ini.',
-                                ),
-                                const SizedBox(height: 4),
-                                // Nomor Rekening
-                                Padding(
-                                  padding: const EdgeInsets.only(left: 20),
-                                  child: Text(
-                                    '8220341982 - BCA Yanto',
-                                    style: AppFont.bold().copyWith(
-                                      fontSize: 14,
-                                      color: AppColor.base100,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInstruksiItem(
-                                  '2.',
-                                  'Pastikan data yang dimasukkan sudah benar sebelum melanjutkan.',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInstruksiItem(
-                                  '3.',
-                                  'Buka aplikasi Mobile Banking atau pergi ke ATM terdekat.',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInstruksiItem(
-                                  '4.',
-                                  'Lakukan transfer dengan Nominal yang Tepat.',
-                                ),
-                                const SizedBox(height: 8),
-                                _buildInstruksiItem(
-                                  '5.',
-                                  'Simpan resi, lalu upload foto/tangkapan layar bukti transfer pada kolom yang disediakan.',
-                                ),
-                              ],
-                            ),
-                          ),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 24),
+                          child: InstruksiPembayaranCard(),
                         ),
-
                         const SizedBox(height: 20),
-
-                        // 4. Total yang harus ditransfer
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Container(
@@ -287,10 +210,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
                             ),
                           ),
                         ),
-
                         const SizedBox(height: 24),
-
-                        // 5. Section Bukti Transfer
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Column(
@@ -304,8 +224,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                 ),
                               ),
                               const SizedBox(height: 12),
-
-                              // Area upload / preview gambar
                               GestureDetector(
                                 onTap: isBuktiTerisi ? null : _ambilDariGaleri,
                                 child: Container(
@@ -316,15 +234,12 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                     borderRadius: BorderRadius.circular(12),
                                     border: Border.all(
                                       color: AppColor.font60,
-                                      style: isBuktiTerisi
-                                          ? BorderStyle.solid
-                                          : BorderStyle.solid,
+                                      style: BorderStyle.solid,
                                     ),
                                   ),
                                   child: isBuktiTerisi
                                       ? Stack(
                                           children: [
-                                            // Preview gambar
                                             ClipRRect(
                                               borderRadius:
                                                   BorderRadius.circular(11),
@@ -335,7 +250,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                                 fit: BoxFit.cover,
                                               ),
                                             ),
-                                            // Tombol hapus
                                             Positioned(
                                               top: 8,
                                               right: 8,
@@ -391,10 +305,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                         ),
                                 ),
                               ),
-
                               const SizedBox(height: 12),
-
-                              // Tombol Kamera & Galeri
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
@@ -414,14 +325,11 @@ class _PembayaranPageState extends State<PembayaranPage> {
                             ],
                           ),
                         ),
-
                         const SizedBox(height: 32),
                       ],
                     ),
                   ),
                 ),
-
-                // 6. Sticky Bottom Button "Konfirmasi Pembayaran"
                 Container(
                   padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
                   decoration: BoxDecoration(
@@ -460,9 +368,9 @@ class _PembayaranPageState extends State<PembayaranPage> {
                           : Text(
                               'Konfirmasi Pembayaran',
                               style: AppFont.bold().copyWith(
-                                fontSize: 16,
-                                color: AppColor.putih100,
-                              ),
+                                  fontSize: 16,
+                                  color: AppColor.putih100,
+                                ),
                             ),
                     ),
                   ),
@@ -470,8 +378,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
               ],
             ),
           ),
-
-          // Loading Overlay
           if (_isLoading)
             Container(
               color: Colors.black.withOpacity(0.3),
@@ -486,35 +392,6 @@ class _PembayaranPageState extends State<PembayaranPage> {
     );
   }
 
-  /// Helper: baris instruksi dengan nomor dan teks.
-  Widget _buildInstruksiItem(String nomor, String teks) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          width: 20,
-          child: Text(
-            nomor,
-            style: AppFont.regular().copyWith(
-              fontSize: 13,
-              color: AppColor.font100,
-            ),
-          ),
-        ),
-        Expanded(
-          child: Text(
-            teks,
-            style: AppFont.regular().copyWith(
-              fontSize: 13,
-              color: AppColor.font100,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  /// Helper: tombol kamera / galeri hijau
   Widget _buildPickerButton({
     required IconData icon,
     required String label,

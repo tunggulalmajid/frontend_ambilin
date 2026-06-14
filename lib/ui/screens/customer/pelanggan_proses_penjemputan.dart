@@ -1,4 +1,4 @@
-// ----- FILE: pelanggan_proses_penjemputan.dart -----
+
 import 'package:flutter/material.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
@@ -11,13 +11,11 @@ class PelangganProsesPenjemputanPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Logika state berdasarkan parameter:
-    // Jika 'menunggu', asumsikan belum ada driver.
-    // Jika tidak 'menunggu' tapi belum 'selesai', asumsikan 'Proses Penjemputan'.
+
     final isMenunggu = data.status == 'menunggu';
     final statusText = isMenunggu ? 'Menunggu Kurir' : 'Proses Penjemputan';
     final driverName = isMenunggu ? '-' : data.petugasName;
-    const beratText = '- kg'; // Berat selalu strip untuk status berjalan
+    const beratText = '- kg';
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -38,7 +36,7 @@ class PelangganProsesPenjemputanPage extends StatelessWidget {
         padding: const EdgeInsets.all(20),
         child: Column(
           children: [
-            // Card 1: Rincian penjemputan
+
             DetailCardWrapper(
               title: 'Rincian penjemputan',
               child: Column(
@@ -54,7 +52,6 @@ class PelangganProsesPenjemputanPage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
 
-            // Card 2: Catatan Pelanggan
             DetailCardWrapper(
               title: 'Catatan Pelanggan',
               child: Text(
@@ -64,7 +61,6 @@ class PelangganProsesPenjemputanPage extends StatelessWidget {
             ),
             const SizedBox(height: 15),
 
-            // Card 3: Rincian Sampah
             DetailCardWrapper(
               title: 'Rincian Sampah',
               child: Column(

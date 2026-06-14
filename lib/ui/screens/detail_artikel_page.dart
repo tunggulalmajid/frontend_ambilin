@@ -19,7 +19,6 @@ class DetailArtikelPage extends StatelessWidget {
             children: [
               const SizedBox(height: 8),
 
-              // --- Header: Back + Judul ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 child: Row(
@@ -45,7 +44,6 @@ class DetailArtikelPage extends StatelessWidget {
               ),
               const SizedBox(height: 16),
 
-              // --- Gambar Artikel ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: ClipRRect(
@@ -80,7 +78,6 @@ class DetailArtikelPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // --- Judul Artikel ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
@@ -93,7 +90,6 @@ class DetailArtikelPage extends StatelessWidget {
               ),
               const SizedBox(height: 8),
 
-              // --- Badge Kategori ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
@@ -114,7 +110,6 @@ class DetailArtikelPage extends StatelessWidget {
               ),
               const SizedBox(height: 20),
 
-              // --- Isi Artikel ---
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(

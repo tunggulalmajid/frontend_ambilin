@@ -2,31 +2,28 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:frontend_ambilin/ui/widgets/w_text_fields.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
-import 'package:frontend_ambilin/utils/app_font.dart';
 
-class EditProfileAdminPage extends StatefulWidget {
-  const EditProfileAdminPage({super.key});
+class EditPasswordAdminPage extends StatefulWidget {
+  const EditPasswordAdminPage({super.key});
 
   @override
-  State<EditProfileAdminPage> createState() => _EditProfileAdminPageState();
+  State<EditPasswordAdminPage> createState() => _EditPasswordAdminPageState();
 }
 
-class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
+class _EditPasswordAdminPageState extends State<EditPasswordAdminPage> {
   final _formKey = GlobalKey<FormState>();
 
-  final _namaController = TextEditingController(text: 'Rafi Admin');
-  final _emailController = TextEditingController(text: 'admin@gmail.com');
-  final _teleponController = TextEditingController(text: '0821234567');
-  final _alamatController = TextEditingController(text: 'Jl Halmahera');
+  final _oldPasswordController = TextEditingController();
+  final _newPasswordController = TextEditingController();
+  final _confirmPasswordController = TextEditingController();
 
   bool _isLoading = false;
 
   @override
   void dispose() {
-    _namaController.dispose();
-    _emailController.dispose();
-    _teleponController.dispose();
-    _alamatController.dispose();
+    _oldPasswordController.dispose();
+    _newPasswordController.dispose();
+    _confirmPasswordController.dispose();
     super.dispose();
   }
 
@@ -44,7 +41,7 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
         });
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Center(child: Text('Profil berhasil diperbarui')),
+            content: Center(child: Text('Password berhasil diperbarui')),
             backgroundColor: AppColor.base100,
           ),
         );
@@ -62,7 +59,7 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
 
           _buildHeader(context),
 
-          const SizedBox(height: 55),
+          const SizedBox(height: 20),
 
           Expanded(
             child: SingleChildScrollView(
@@ -73,57 +70,45 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
 
-                    WTextFieldPutih(
-                      label: 'Nama Lengkap',
-                      hintText: 'Masukkan nama',
-                      controller: _namaController,
+                    WPasswordField(
+                      label: 'Password Lama',
+                      hintText: 'Masukkan Password',
+                      controller: _oldPasswordController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Nama lengkap tidak boleh kosong';
+                          return 'Password lama tidak boleh kosong';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
 
-                    WTextFieldPutih(
-                      label: 'Email',
-                      hintText: 'email@example.com',
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
+                    WPasswordField(
+                      label: 'Password Baru',
+                      hintText: 'Masukkan Password',
+                      controller: _newPasswordController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Email tidak boleh kosong';
+                          return 'Password baru tidak boleh kosong';
                         }
-                        if (!value.contains('@')) {
-                          return 'Email tidak valid';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 16),
-
-                    WTextFieldPutih(
-                      label: 'No. Telepon',
-                      hintText: 'Masukkan Nomor Telepon',
-                      controller: _teleponController,
-                      keyboardType: TextInputType.phone,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Nomor telepon tidak boleh kosong';
+                        if (value.length < 6) {
+                          return 'Password minimal 6 karakter';
                         }
                         return null;
                       },
                     ),
                     const SizedBox(height: 16),
 
-                    WTextFieldPutih(
-                      label: 'Alamat',
-                      hintText: 'Masukkan Alamat',
-                      controller: _alamatController,
+                    WPasswordField(
+                      label: 'Konfirmasi Password Baru',
+                      hintText: 'Konfirmasi Password',
+                      controller: _confirmPasswordController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Alamat tidak boleh kosong';
+                          return 'Konfirmasi password tidak boleh kosong';
+                        }
+                        if (value != _newPasswordController.text) {
+                          return 'Password tidak cocok';
                         }
                         return null;
                       },
@@ -173,12 +158,10 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
 
   Widget _buildHeader(BuildContext context) {
     return Stack(
-      clipBehavior: Clip.none,
-      alignment: Alignment.center,
       children: [
         Container(
           width: double.infinity,
-          height: 180,
+          height: 160,
           decoration: const BoxDecoration(
             image: DecorationImage(
               image: AssetImage('assets/gambar_profile.png'),
@@ -189,7 +172,6 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
             color: Colors.black.withOpacity(0.45),
           ),
         ),
-
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
           left: 16,
@@ -208,42 +190,6 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
                 size: 24,
               ),
             ),
-          ),
-        ),
-
-        Positioned(
-          bottom: -45,
-          child: Stack(
-            children: [
-              CircleAvatar(
-                radius: 50,
-                backgroundColor: const Color(0xFFFFCDD2),
-                child: Text(
-                  'R',
-                  style: AppFont.bold().copyWith(
-                    fontSize: 36,
-                    color: AppColor.redAllert,
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: 4,
-                right: 4,
-                child: Container(
-                  width: 28,
-                  height: 28,
-                  decoration: const BoxDecoration(
-                    color: AppColor.putih100,
-                    shape: BoxShape.circle,
-                  ),
-                  child: const Icon(
-                    Icons.edit,
-                    size: 15,
-                    color: AppColor.redAllert,
-                  ),
-                ),
-              ),
-            ],
           ),
         ),
       ],

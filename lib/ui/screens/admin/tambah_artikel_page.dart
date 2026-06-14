@@ -19,11 +19,9 @@ class TambahArtikelPage extends StatefulWidget {
 class _TambahArtikelPageState extends State<TambahArtikelPage> {
   final _formKey = GlobalKey<FormState>();
 
-  // Controllers
   final _judulController = TextEditingController();
   final _isiController = TextEditingController();
 
-  // Dropdown value
   String? _selectedKategori;
   final List<String> _kategoriList = [
     'Tips',
@@ -33,7 +31,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
     'Pengelolaan',
   ];
 
-  // Image
   File? _selectedImage;
   final ImagePicker _picker = ImagePicker();
 
@@ -97,7 +94,7 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // --- Header: Back + Judul ---
+
                 Stack(
                   alignment: Alignment.centerLeft,
                   children: [
@@ -122,7 +119,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                 ),
                 const SizedBox(height: 24),
 
-                // --- Judul Artikel ---
                 WTextFieldPutih(
                   label: 'Judul Artikel',
                   hintText: 'Masukkan Judul',
@@ -136,7 +132,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Kategori Dropdown ---
                 WDropdownField(
                   label: 'Kategori',
                   hintText: 'Pilih Kategori Artikel',
@@ -156,7 +151,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // --- Foto Artikel ---
                 Text(
                   'Foto Artikel',
                   style: AppFont.semibold().copyWith(
@@ -168,7 +162,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                 _buildImagePicker(),
                 const SizedBox(height: 16),
 
-                // --- Isi Artikel ---
                 Text(
                   'Isi Artikel',
                   style: AppFont.semibold().copyWith(
@@ -228,7 +221,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                 ),
                 const SizedBox(height: 32),
 
-                // --- Simpan Button ---
                 WButton(
                   text: 'Simpan',
                   onPressed: _handleSimpan,
@@ -242,7 +234,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
     );
   }
 
-  /// Widget area upload gambar — tampilan kosong dengan ikon dan tombol Galeri
   Widget _buildImagePicker() {
     return GestureDetector(
       onTap: _pickImage,
@@ -267,7 +258,7 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  // Tombol hapus gambar
+
                   GestureDetector(
                     onTap: () {
                       setState(() {
@@ -306,7 +297,7 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  // Tombol Galeri
+
                   OutlinedButton.icon(
                     onPressed: _pickImage,
                     icon: const Icon(

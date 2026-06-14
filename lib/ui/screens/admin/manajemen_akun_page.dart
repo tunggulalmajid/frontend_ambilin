@@ -8,6 +8,7 @@ import 'package:frontend_ambilin/ui/widgets/navbar.dart';
 import 'package:frontend_ambilin/ui/widgets/app_cards.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
+import 'package:frontend_ambilin/utils/app_routes.dart';
 import 'package:provider/provider.dart';
 
 class ManajemenAkunPage extends StatefulWidget {
@@ -59,7 +60,6 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
               ),
               const SizedBox(height: 16),
 
-              // --- Filter Chips ---
               FilterChips(
                 filters: _filters,
                 selectedFilter: _selectedFilter,
@@ -71,7 +71,6 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
               ),
               const SizedBox(height: 16),
 
-              // --- User List dari Provider ---
               if (userProvider.isLoading)
                 const Center(
                   child: Padding(
@@ -84,15 +83,27 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
               else
                 ...List.generate(
                   filteredUsers.length,
-                  (index) => UserAccountCard(
-                    user: filteredUsers[index],
-                    onMenuTap: () {
-                      _showUserMenu(context, filteredUsers[index], index);
-                    },
-                  ),
+                  (index) {
+                    final user = filteredUsers[index];
+                    return GestureDetector(
+                      onTap: () {
+                        if (user.peran == 'Petugas') {
+                          Navigator.pushNamed(context, AppRoutes.adminDetailPetugas);
+                        } else {
+                          Navigator.pushNamed(context, AppRoutes.adminDetailPelanggan);
+                        }
+                      },
+                      child: UserAccountCard(
+                        user: user,
+                        onMenuTap: () {
+                          _showUserMenu(context, user, index);
+                        },
+                      ),
+                    );
+                  },
                 ),
 
-              const SizedBox(height: 80), // space for FAB
+              const SizedBox(height: 80),
             ],
           ),
         ),
@@ -120,9 +131,6 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
     );
   }
 
-  // --------------------------------------------------
-  // User menu popup
-  // --------------------------------------------------
   void _showUserMenu(BuildContext context, AkunPengguna user, int index) {
     showModalBottomSheet(
       context: context,
