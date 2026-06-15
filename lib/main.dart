@@ -143,34 +143,21 @@ class MyApp extends StatelessWidget {
         AppRoutes.transaksiBerhasil: (context) => const TransaksiBerhasilPage(),
         AppRoutes.pelangganPilihMap: (context) => const PilihMapPage(),
         AppRoutes.pelangganProsesPenjemputan: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah
-              ? args
-              : SetorSampah.getMockList().first;
+          final data =
+              ModalRoute.of(context)!.settings.arguments as SetorSampah;
           return PelangganProsesPenjemputanPage(data: data);
         },
         AppRoutes.pelangganDetailSelesai: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah
-              ? args
-              : SetorSampah.getMockList().first;
+          final data =
+              ModalRoute.of(context)!.settings.arguments as SetorSampah;
           return PelangganSelesaiPenjemputanPage(data: data);
         },
         AppRoutes.detailArtikel: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is Artikel ? args : Artikel.getMockList().first;
+          final data = ModalRoute.of(context)!.settings.arguments as Artikel;
           return DetailArtikelPage(artikel: data);
         },
         AppRoutes.pelangganEditProfil: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final user = args is UserModel
-              ? args
-              : UserModel(
-                  idUser: 1,
-                  nama: 'Rafi Customer',
-                  email: 'customer@gmail.com',
-                  idRole: 3,
-                );
+          final user = ModalRoute.of(context)!.settings.arguments as UserModel;
           return PelangganEditProfilPage(user: user);
         },
         AppRoutes.pelangganUbahPassword: (context) =>
@@ -180,43 +167,27 @@ class MyApp extends StatelessWidget {
         AppRoutes.petugasHome: (context) => const PetugasDashboard(),
         AppRoutes.petugasRiwayat: (context) => const PetugasRiwayatPage(),
         AppRoutes.petugasDetailTugas: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah
-              ? args
-              : SetorSampah.getMockList().first;
+          final data =
+              ModalRoute.of(context)!.settings.arguments as SetorSampah;
           return PetugasDetailTugasPage(data: data);
         },
         AppRoutes.petugasLihatMap: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah
-              ? args
-              : SetorSampah.getMockList().first;
+          final data =
+              ModalRoute.of(context)!.settings.arguments as SetorSampah;
           return PetugasLihatMapPage(data: data);
         },
         AppRoutes.petugasProsesPenjemputan: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah
-              ? args
-              : SetorSampah.getMockList().first;
+          final data =
+              ModalRoute.of(context)!.settings.arguments as SetorSampah;
           return PetugasProsesPenjemputanPage(data: data);
         },
         AppRoutes.petugasDetailSelesai: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final data = args is SetorSampah
-              ? args
-              : SetorSampah.getMockList().first;
+          final data =
+              ModalRoute.of(context)!.settings.arguments as SetorSampah;
           return PetugasDetailSelesaiPage(data: data);
         },
         AppRoutes.petugasEditProfil: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final user = args is UserModel
-              ? args
-              : UserModel(
-                  idUser: 2,
-                  nama: 'Rafi Petugas',
-                  email: 'driver@gmail.com',
-                  idRole: 2,
-                );
+          final user = ModalRoute.of(context)!.settings.arguments as UserModel;
           return PetugasEditProfilPage(user: user);
         },
         AppRoutes.petugasUbahPassword: (context) =>
@@ -224,42 +195,18 @@ class MyApp extends StatelessWidget {
         AppRoutes.petugasProfil: (context) => const PetugasProfilPage(),
         AppRoutes.adminProfil: (context) => const ProfileAdminPage(),
         AppRoutes.adminEditProfil: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final user = args is UserModel
-              ? args
-              : const UserModel(
-                  idUser: 3,
-                  nama: 'Rafi Admin',
-                  email: 'admin@gmail.com',
-                  idRole: 1,
-                );
+          final user = ModalRoute.of(context)!.settings.arguments as UserModel;
           return EditProfileAdminPage(user: user);
         },
         AppRoutes.adminUbahPassword: (context) => const EditPasswordAdminPage(),
         AppRoutes.adminDetailPelanggan: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final user = args is AkunPengguna
-              ? args
-              : const AkunPengguna(
-                  nama: 'Rafi Customer',
-                  email: 'customer@gmail.com',
-                  peran: 'Pelanggan',
-                  status: 'Aktif',
-                  warnaAvatar: Colors.orange,
-                );
+          final user =
+              ModalRoute.of(context)!.settings.arguments as AkunPengguna;
           return AdminDetailPelangganPage(user: user);
         },
         AppRoutes.adminDetailPetugas: (context) {
-          final args = ModalRoute.of(context)?.settings.arguments;
-          final user = args is AkunPengguna
-              ? args
-              : const AkunPengguna(
-                  nama: 'Rafi Petugas',
-                  email: 'driver@gmail.com',
-                  peran: 'Petugas',
-                  status: 'Aktif',
-                  warnaAvatar: Colors.green,
-                );
+          final user =
+              ModalRoute.of(context)!.settings.arguments as AkunPengguna;
           return AdminDetailPetugasPage(user: user);
         },
         AppRoutes.adminManajemenKonfirmasi: (context) =>
