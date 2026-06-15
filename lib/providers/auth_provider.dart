@@ -454,6 +454,39 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
+  Future<void> updateLocationSilent(double latitude, double longitude) async {
+    if (_user == null) return;
+    try {
+      final response = await _authService.updateProfile(
+        nama: _user!.nama,
+        email: _user!.email,
+        alamat: _user!.alamat,
+        nomorTelepon: _user!.nomorTelepon,
+        latitude: latitude,
+        longitude: longitude,
+      );
+      if (response['status'] == "success") {
+        _user = UserModel(
+          idUser: _user!.idUser,
+          nama: _user!.nama,
+          email: _user!.email,
+          idRole: _user!.idRole,
+          namaRole: _user!.namaRole,
+          foto: _user!.foto,
+          alamat: _user!.alamat,
+          nomorTelepon: _user!.nomorTelepon,
+          latitude: latitude,
+          longitude: longitude,
+          createdAt: _user!.createdAt,
+          updatedAt: _user!.updatedAt,
+        );
+        log("Silent Location Update Success: Lat $latitude, Lng $longitude");
+      }
+    } catch (e) {
+      log("Silent Location Update Error: $e");
+    }
+  }
+
   Future<void> _clearLocalSession() async {
     await _storage.deleteAll();
     _user = null;

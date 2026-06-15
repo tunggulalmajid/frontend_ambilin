@@ -5,7 +5,9 @@
 // - Nama user dari AuthProvider
 // Semua data dummy telah dihapus dan diganti dengan data real dari API.
 
+import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import '../../../models/setor_sampah.dart';
 import '../../../providers/auth_provider.dart';
@@ -30,6 +32,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
   int _currentPage = 1;
   bool _hasMore = true;
   bool _isFetchingMore = false;
+  Timer? _locationTimer;
 
   @override
   void initState() {
@@ -37,13 +40,60 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     _scrollController.addListener(_scrollListener);
     Future.microtask(() {
       _fetchData();
+      _startLocationTracking();
     });
   }
 
   @override
   void dispose() {
+    _locationTimer?.cancel();
     _scrollController.dispose();
     super.dispose();
+  }
+
+  Future<void> _startLocationTracking() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return;
+      }
+
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          return;
+        }
+      }
+
+      if (permission == LocationPermission.deniedForever) {
+        return;
+      }
+
+      // Ambil posisi pertama kali
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+      );
+      if (mounted) {
+        await context.read<AuthProvider>().updateLocationSilent(position.latitude, position.longitude);
+      }
+
+      // Update berkala setiap 30 detik
+      _locationTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
+        try {
+          final pos = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+          );
+          if (mounted) {
+            await context.read<AuthProvider>().updateLocationSilent(pos.latitude, pos.longitude);
+          }
+        } catch (e) {
+          debugPrint("Gagal memperbarui lokasi berkala: $e");
+        }
+      });
+    } catch (e) {
+      debugPrint("Setup pelacakan lokasi error: $e");
+    }
   }
 
   void _scrollListener() {

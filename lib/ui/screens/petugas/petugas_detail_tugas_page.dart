@@ -8,10 +8,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:dio/dio.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../models/setor_sampah.dart';
 import '../../../models/jenis_sampah.dart';
 import '../../../providers/pickup_history_provider.dart';
 import '../../../providers/waste_category_provider.dart';
+import '../../../providers/auth_provider.dart';
 import '../../../utils/app_color.dart';
 import '../../../utils/app_font.dart';
 import '../../../utils/app_routes.dart';
@@ -29,6 +32,94 @@ class PetugasDetailTugasPage extends StatefulWidget {
 
 class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
   bool _isLoading = false;
+  List<LatLng> _routePoints = [];
+  LatLng? _driverLocation;
+  bool _loadingRoute = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      _loadRoute();
+    });
+  }
+
+  Future<void> _loadRoute() async {
+    setState(() {
+      _loadingRoute = true;
+    });
+
+    try {
+      LatLng? driverLatLng;
+
+      // 1. Get driver location using geolocator
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (serviceEnabled) {
+        LocationPermission permission = await Geolocator.checkPermission();
+        if (permission == LocationPermission.denied) {
+          permission = await Geolocator.requestPermission();
+        }
+        if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+          final position = await Geolocator.getCurrentPosition(
+            desiredAccuracy: LocationAccuracy.high,
+          );
+          driverLatLng = LatLng(position.latitude, position.longitude);
+        }
+      }
+
+      // Fallback to auth provider user coordinates if geolocator failed
+      if (driverLatLng == null) {
+        final user = context.read<AuthProvider>().user;
+        if (user != null && user.latitude != null && user.longitude != null) {
+          driverLatLng = LatLng(user.latitude!, user.longitude!);
+        }
+      }
+
+      if (driverLatLng != null) {
+        setState(() {
+          _driverLocation = driverLatLng;
+        });
+
+        // 2. Fetch OSRM route points between driver and waste
+        final double wasteLat = widget.data.latitude ?? -8.1724;
+        final double wasteLng = widget.data.longitude ?? 113.7005;
+
+        final response = await Dio().get(
+          'https://router.project-osrm.org/route/v1/driving/${driverLatLng.longitude},${driverLatLng.latitude};$wasteLng,$wasteLat',
+          queryParameters: {
+            'geometries': 'geojson',
+            'overview': 'full',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = response.data;
+          final routes = data['routes'] as List;
+          if (routes.isNotEmpty) {
+            final geometry = routes[0]['geometry'];
+            final coordinates = geometry['coordinates'] as List;
+            final points = coordinates.map((coord) {
+              final lon = coord[0] as double;
+              final lat = coord[1] as double;
+              return LatLng(lat, lon);
+            }).toList();
+
+            setState(() {
+              _routePoints = points;
+            });
+          }
+        }
+      }
+    } catch (e) {
+      debugPrint("Gagal memuat rute OSRM: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _loadingRoute = false;
+        });
+      }
+    }
+  }
 
   Future<void> _ambilSampah() async {
     setState(() => _isLoading = true);
@@ -92,6 +183,16 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
     final double lat = data.latitude ?? -8.1724;
     final double lng = data.longitude ?? 113.7005;
 
+    LatLng mapCenter = LatLng(lat, lng);
+    double mapZoom = 14.0;
+    if (_driverLocation != null) {
+      mapCenter = LatLng(
+        (lat + _driverLocation!.latitude) / 2,
+        (lng + _driverLocation!.longitude) / 2,
+      );
+      mapZoom = 12.0;
+    }
+
     String getJenisSampahName(int? id) {
       if (id == null) return data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : '-';
       final cat = categoryProvider.categories.firstWhere(
@@ -153,6 +254,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   GestureDetector(
+                    behavior: HitTestBehavior.opaque,
                     onTap: () {
                       Navigator.pushNamed(
                         context,
@@ -165,47 +267,105 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                       width: double.infinity,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(12),
-                        child: FlutterMap(
-                          options: MapOptions(
-                            initialCenter: LatLng(lat, lng),
-                            initialZoom: 14.0,
-                            interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
-                          ),
-                          children: [
-                            TileLayer(
-                              urlTemplate:
-                                  'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-                              additionalOptions: const {
-                                'User-Agent':
-                                    'SeladakuApp_ByTunggulAbdulMajid_ClassOf2024_UNEJ',
-                              },
-                              userAgentPackageName: 'com.tunggul.seladaku',
+                        child: IgnorePointer(
+                          child: FlutterMap(
+                            key: ValueKey('${mapCenter.latitude}_${mapCenter.longitude}_${_routePoints.length}'),
+                            options: MapOptions(
+                              initialCenter: mapCenter,
+                              initialZoom: mapZoom,
+                              interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
                             ),
-                            MarkerLayer(
-                              markers: [
-                                Marker(
-                                  point: LatLng(lat, lng),
-                                  width: 40,
-                                  height: 40,
-                                  child: const Icon(
-                                    Icons.location_on,
-                                    color: AppColor.redAllert,
-                                    size: 30,
-                                  ),
+                            children: [
+                              TileLayer(
+                                urlTemplate:
+                                    'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                                additionalOptions: const {
+                                  'User-Agent':
+                                      'SeladakuApp_ByTunggulAbdulMajid_ClassOf2024_UNEJ',
+                                },
+                                userAgentPackageName: 'com.tunggul.seladaku',
+                              ),
+                              if (_routePoints.isNotEmpty)
+                                PolylineLayer(
+                                  polylines: [
+                                    Polyline(
+                                      points: _routePoints,
+                                      color: AppColor.base100,
+                                      strokeWidth: 4.0,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
-                          ],
+                              MarkerLayer(
+                                markers: [
+                                  Marker(
+                                    point: LatLng(lat, lng),
+                                    width: 40,
+                                    height: 40,
+                                    child: const Icon(
+                                      Icons.location_on,
+                                      color: AppColor.redAllert,
+                                      size: 30,
+                                    ),
+                                  ),
+                                  if (_driverLocation != null)
+                                    Marker(
+                                      point: _driverLocation!,
+                                      width: 40,
+                                      height: 40,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.blue,
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 2),
+                                          boxShadow: const [
+                                            BoxShadow(
+                                              color: Colors.black26,
+                                              blurRadius: 4,
+                                              offset: Offset(0, 2),
+                                            ),
+                                          ],
+                                        ),
+                                        child: const Icon(
+                                          Icons.navigation_rounded,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Text(
-                    'Lihat rute lokasi penjemputan di peta',
-                    style: AppFont.regular().copyWith(
-                      fontSize: 12,
-                      color: AppColor.font80,
+                  const SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        Navigator.pushNamed(
+                          context,
+                          AppRoutes.petugasLihatMap,
+                          arguments: data,
+                        );
+                      },
+                      style: OutlinedButton.styleFrom(
+                        side: const BorderSide(color: AppColor.base100),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 8),
+                      ),
+                      icon: const Icon(Icons.map_outlined, color: AppColor.base100, size: 16),
+                      label: Text(
+                        'Buka Peta Navigasi',
+                        style: AppFont.semibold().copyWith(
+                          fontSize: 12,
+                          color: AppColor.base100,
+                        ),
+                      ),
                     ),
                   ),
                 ],
