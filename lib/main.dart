@@ -29,6 +29,7 @@ import 'package:frontend_ambilin/ui/screens/customer/pelanggan_selesai_penjemput
 import 'package:frontend_ambilin/ui/screens/customer/detail_artikel_page.dart';
 import 'package:frontend_ambilin/ui/screens/customer/pelanggan_edit_profil_page.dart';
 import 'package:frontend_ambilin/ui/screens/customer/pelanggan_ubah_password_page.dart';
+import 'package:frontend_ambilin/ui/screens/customer/pelanggan_riwayat_membership_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_dashboard.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_profil_page.dart';
 import 'package:frontend_ambilin/ui/screens/petugas/petugas_riwayat_page.dart';
@@ -174,6 +175,8 @@ class MyApp extends StatelessWidget {
         },
         AppRoutes.pelangganUbahPassword: (context) =>
             const PelangganUbahPasswordPage(),
+        AppRoutes.pelangganRiwayatMembership: (context) =>
+            const PelangganRiwayatMembershipPage(),
         AppRoutes.petugasHome: (context) => const PetugasDashboard(),
         AppRoutes.petugasRiwayat: (context) => const PetugasRiwayatPage(),
         AppRoutes.petugasDetailTugas: (context) {

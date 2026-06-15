@@ -20,6 +20,7 @@ class AppRoutes {
   static const String detailArtikel = '/detail-artikel';
   static const String pelangganEditProfil = '/pelanggan/edit-profil';
   static const String pelangganUbahPassword = '/pelanggan/ubah-password';
+  static const String pelangganRiwayatMembership = '/pelanggan/riwayat-membership';
 
   //Petugas
   static const String petugasHome = '/petugas/home';

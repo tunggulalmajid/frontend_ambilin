@@ -67,26 +67,41 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchCustomerHistory({int page = 1, int limit = 10}) async {
-    _isLoading = true;
-    _errorMessage = '';
-    notifyListeners();
+  Future<int> fetchCustomerHistory({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _errorMessage = '';
+      _history = [];
+      notifyListeners();
+    }
 
     try {
       final response = await _subscriptionService.getCustomerHistory(page: page, limit: limit);
-      _isLoading = false;
       if (response['status'] == 'success') {
-        _history = response['data'] ?? [];
+        final List<dynamic> data = response['data'] ?? [];
+        if (isLoadMore) {
+          _history.addAll(data);
+        } else {
+          _history = data;
+        }
+        _isLoading = false;
+        _errorMessage = '';
         notifyListeners();
+        return data.length;
       } else {
+        _isLoading = false;
         _errorMessage = response['message'] ?? 'Gagal memuat riwayat transaksi';
+        if (!isLoadMore) _history = [];
         notifyListeners();
+        return 0;
       }
     } catch (e) {
       log("Fetch Customer History Error: $e");
       _isLoading = false;
       _errorMessage = 'Gagal memuat riwayat transaksi';
+      if (!isLoadMore) _history = [];
       notifyListeners();
+      return 0;
     }
   }
 
