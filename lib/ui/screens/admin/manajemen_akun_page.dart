@@ -43,8 +43,11 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_hasMore && !_isFetchingMore && !context.read<UserAccountProvider>().isLoading) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore &&
+          !_isFetchingMore &&
+          !context.read<UserAccountProvider>().isLoading) {
         _loadMoreData();
       }
     }
@@ -55,9 +58,16 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
     _hasMore = true;
     _isFetchingMore = false;
     int? role;
-    if (_selectedFilter == 'Petugas') role = 2;
-    else if (_selectedFilter == 'Pelanggan') role = 3;
-    final int rawCount = await context.read<UserAccountProvider>().fetchUsers(role: role, page: 1, limit: 10, isLoadMore: false);
+    if (_selectedFilter == 'Petugas')
+      role = 2;
+    else if (_selectedFilter == 'Pelanggan')
+      role = 3;
+    final int rawCount = await context.read<UserAccountProvider>().fetchUsers(
+      role: role,
+      page: 1,
+      limit: 10,
+      isLoadMore: false,
+    );
     if (mounted) {
       setState(() {
         if (rawCount < 10) {
@@ -76,11 +86,18 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
 
     _currentPage++;
     int? role;
-    if (_selectedFilter == 'Petugas') role = 2;
-    else if (_selectedFilter == 'Pelanggan') role = 3;
+    if (_selectedFilter == 'Petugas')
+      role = 2;
+    else if (_selectedFilter == 'Pelanggan')
+      role = 3;
 
     final provider = context.read<UserAccountProvider>();
-    final int rawCount = await provider.fetchUsers(role: role, page: _currentPage, limit: 10, isLoadMore: true);
+    final int rawCount = await provider.fetchUsers(
+      role: role,
+      page: _currentPage,
+      limit: 10,
+      isLoadMore: true,
+    );
 
     if (mounted) {
       setState(() {
@@ -98,7 +115,10 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
       if (mounted) {
         final provider = context.read<UserAccountProvider>();
         final filteredUsers = provider.getFilteredUsers(_selectedFilter);
-        if (filteredUsers.length < 8 && _hasMore && !_isFetchingMore && !provider.isLoading) {
+        if (filteredUsers.length < 8 &&
+            _hasMore &&
+            !_isFetchingMore &&
+            !provider.isLoading) {
           _loadMoreData();
         }
       }
@@ -124,8 +144,9 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 8),
-                Text('Manajemen Akun', style:
-                  AppFont.bold().copyWith(
+                Text(
+                  'Manajemen Akun',
+                  style: AppFont.bold().copyWith(
                     fontSize: 24,
                     color: AppColor.base100,
                   ),
@@ -156,33 +177,36 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 32),
-                      child: CircularProgressIndicator(
-                        color: AppColor.base100,
-                      ),
+                      child: CircularProgressIndicator(color: AppColor.base100),
                     ),
                   )
                 else
-                  ...List.generate(
-                    filteredUsers.length,
-                    (index) {
-                      final user = filteredUsers[index];
-                      return GestureDetector(
-                        onTap: () {
-                          if (user.peran == 'Petugas') {
-                            Navigator.pushNamed(context, AppRoutes.adminDetailPetugas, arguments: user);
-                          } else {
-                            Navigator.pushNamed(context, AppRoutes.adminDetailPelanggan, arguments: user);
-                          }
+                  ...List.generate(filteredUsers.length, (index) {
+                    final user = filteredUsers[index];
+                    return GestureDetector(
+                      onTap: () {
+                        if (user.peran == 'Petugas') {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.adminDetailPetugas,
+                            arguments: user,
+                          );
+                        } else {
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.adminDetailPelanggan,
+                            arguments: user,
+                          );
+                        }
+                      },
+                      child: UserAccountCard(
+                        user: user,
+                        onMenuTap: () {
+                          _showUserMenu(context, user, index);
                         },
-                        child: UserAccountCard(
-                          user: user,
-                          onMenuTap: () {
-                            _showUserMenu(context, user, index);
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                      ),
+                    );
+                  }),
 
                 if (_isFetchingMore)
                   const Padding(
@@ -202,20 +226,12 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const TambahAkunPage(),
-            ),
+            MaterialPageRoute(builder: (context) => const TambahAkunPage()),
           );
         },
         backgroundColor: AppColor.base100,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(
-          Icons.add,
-          color: AppColor.putih100,
-          size: 30,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, color: AppColor.putih100, size: 30),
       ),
       bottomNavigationBar: const AdminNavBar(currentIndex: 1),
     );
@@ -245,7 +261,8 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditAkunPage(user: user, index: index),
+                        builder: (context) =>
+                            EditAkunPage(user: user, index: index),
                       ),
                     );
                   },

@@ -26,10 +26,7 @@ class HomeArticleSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Artikel',
-                style: AppFont.bold().copyWith(fontSize: 18),
-              ),
+              Text('Artikel', style: AppFont.bold().copyWith(fontSize: 18)),
               GestureDetector(
                 onTap: onLihatSemua,
                 child: Text(

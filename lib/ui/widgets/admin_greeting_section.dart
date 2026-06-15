@@ -5,10 +5,7 @@ import 'package:frontend_ambilin/utils/app_font.dart';
 class AdminGreetingSection extends StatelessWidget {
   final VoidCallback onProfileTap;
 
-  const AdminGreetingSection({
-    super.key,
-    required this.onProfileTap,
-  });
+  const AdminGreetingSection({super.key, required this.onProfileTap});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +13,6 @@ class AdminGreetingSection extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Bagian Teks Kiri
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -24,8 +20,8 @@ class AdminGreetingSection extends StatelessWidget {
               Text(
                 'Halo, Admin',
                 style: AppFont.bold().copyWith(
-                  fontSize: 28, 
-                  color: AppColor.base100, 
+                  fontSize: 28,
+                  color: AppColor.base100,
                 ),
               ),
               const SizedBox(height: 4),
@@ -39,16 +35,16 @@ class AdminGreetingSection extends StatelessWidget {
             ],
           ),
         ),
-        
+
         const SizedBox(width: 16),
-        
+
         GestureDetector(
           onTap: onProfileTap,
           child: Container(
             width: 48,
             height: 48,
             decoration: BoxDecoration(
-              color: const Color(0xFF008000), 
+              color: const Color(0xFF008000),
               borderRadius: BorderRadius.circular(12),
             ),
             child: const Icon(

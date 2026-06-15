@@ -18,7 +18,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-
   final _formKey = GlobalKey<FormState>();
 
   final _emailController = TextEditingController();
@@ -33,7 +32,6 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-
     final auth = context.watch<AuthProvider>();
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -41,7 +39,6 @@ class _LoginPageState extends State<LoginPage> {
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Form(
-
             key: _formKey,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -105,7 +102,6 @@ class _LoginPageState extends State<LoginPage> {
                   onPressed: auth.isLoading
                       ? () {}
                       : () async {
-
                           if (_formKey.currentState!.validate()) {
                             final request = LoginRequest(
                               email: _emailController.text,
@@ -144,10 +140,7 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   children: [
                     const Expanded(
-                      child: Divider(
-                        color: AppColor.font60,
-                        thickness: 1,
-                      ),
+                      child: Divider(color: AppColor.font60, thickness: 1),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -161,10 +154,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const Expanded(
-                      child: Divider(
-                        color: AppColor.font60,
-                        thickness: 1,
-                      ),
+                      child: Divider(color: AppColor.font60, thickness: 1),
                     ),
                   ],
                 ),
@@ -181,7 +171,10 @@ class _LoginPageState extends State<LoginPage> {
                       padding: const EdgeInsets.symmetric(vertical: 14),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10),
-                        side: const BorderSide(color: AppColor.font60, width: 1),
+                        side: const BorderSide(
+                          color: AppColor.font60,
+                          width: 1,
+                        ),
                       ),
                       elevation: 1,
                       shadowColor: Colors.black12,
@@ -191,13 +184,16 @@ class _LoginPageState extends State<LoginPage> {
                         : () async {
                             try {
                               final GoogleSignIn googleSignIn = GoogleSignIn(
-                                serverClientId: "96061274554-74gre4m33vbpu3mj64phh9j50ci6g4v1.apps.googleusercontent.com",
+                                serverClientId:
+                                    "96061274554-74gre4m33vbpu3mj64phh9j50ci6g4v1.apps.googleusercontent.com",
                               );
-                              final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+                              final GoogleSignInAccount? googleUser =
+                                  await googleSignIn.signIn();
                               if (googleUser == null) {
                                 return;
                               }
-                              final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+                              final GoogleSignInAuthentication googleAuth =
+                                  await googleUser.authentication;
                               final String? idToken = googleAuth.idToken;
 
                               if (idToken == null) {
@@ -205,7 +201,9 @@ class _LoginPageState extends State<LoginPage> {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Center(
-                                        child: Text("Gagal mendapatkan token dari Google"),
+                                        child: Text(
+                                          "Gagal mendapatkan token dari Google",
+                                        ),
                                       ),
                                       backgroundColor: Colors.red,
                                     ),
@@ -214,7 +212,9 @@ class _LoginPageState extends State<LoginPage> {
                                 return;
                               }
 
-                              bool success = await auth.loginWithGoogle(idToken);
+                              bool success = await auth.loginWithGoogle(
+                                idToken,
+                              );
                               if (!context.mounted) return;
 
                               if (success) {
@@ -242,9 +242,7 @@ class _LoginPageState extends State<LoginPage> {
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
-                                    content: Center(
-                                      child: Text("Error: $e"),
-                                    ),
+                                    content: Center(child: Text("Error: $e")),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -258,10 +256,8 @@ class _LoginPageState extends State<LoginPage> {
                           'https://developers.google.com/static/identity/images/g-logo.png',
                           height: 24,
                           width: 24,
-                          errorBuilder: (context, error, stackTrace) => const Icon(
-                            Icons.login,
-                            color: Colors.red,
-                          ),
+                          errorBuilder: (context, error, stackTrace) =>
+                              const Icon(Icons.login, color: Colors.red),
                         ),
                         const SizedBox(width: 12),
                         Text(
@@ -291,7 +287,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     GestureDetector(
-                      onTap: () => Navigator.pushNamed(context, AppRoutes.register),
+                      onTap: () =>
+                          Navigator.pushNamed(context, AppRoutes.register),
                       child: Text(
                         "Sign Up",
                         style: GoogleFonts.poppins(

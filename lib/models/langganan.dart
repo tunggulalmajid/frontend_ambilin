@@ -1,5 +1,3 @@
-/// Model data untuk tabel `subscribtion` berdasarkan ERD Ambilin,
-/// serta model pendukung untuk paket langganan dan promo.
 class Langganan {
   final int idSubscribtion;
   final String nama;
@@ -42,11 +40,10 @@ class Langganan {
   }
 }
 
-/// Model data untuk paket langganan Ambilin+.
 class PaketLangganan {
   final String id;
   final String durasi;
-  final int hargaPerBulan; // dalam Rupiah
+  final int hargaPerBulan;
   final int totalBulan;
 
   const PaketLangganan({
@@ -56,21 +53,18 @@ class PaketLangganan {
     required this.totalBulan,
   });
 
-  /// Total harga langganan sebelum diskon.
   int get totalHarga => hargaPerBulan * totalBulan;
 
-  /// Dummy data paket langganan.
   static List<PaketLangganan> getPlans() {
     return const [];
   }
 }
 
-/// Model data untuk promo diskon.
 class Promo {
   final String id;
   final String nama;
-  final int diskonPersen; // persentase diskon
-  final int berlakuHari; // berlaku dalam N hari
+  final int diskonPersen;
+  final int berlakuHari;
 
   const Promo({
     required this.id,
@@ -79,12 +73,10 @@ class Promo {
     required this.berlakuHari,
   });
 
-  /// Hitung jumlah diskon dari harga asli.
   int hitungDiskon(int hargaAsli) {
     return (hargaAsli * diskonPersen / 100).round();
   }
 
-  /// Dummy data promo yang tersedia.
   static List<Promo> getPromos() {
     return const [];
   }

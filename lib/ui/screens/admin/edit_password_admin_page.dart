@@ -56,7 +56,6 @@ class _EditPasswordAdminPageState extends State<EditPasswordAdminPage> {
       backgroundColor: AppColor.putihBackground,
       body: Column(
         children: [
-
           _buildHeader(context),
 
           const SizedBox(height: 20),
@@ -69,7 +68,6 @@ class _EditPasswordAdminPageState extends State<EditPasswordAdminPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     WPasswordField(
                       label: 'Password Lama',
                       hintText: 'Masukkan Password',
@@ -168,9 +166,7 @@ class _EditPasswordAdminPageState extends State<EditPasswordAdminPage> {
               fit: BoxFit.cover,
             ),
           ),
-          child: Container(
-            color: Colors.black.withOpacity(0.45),
-          ),
+          child: Container(color: Colors.black.withOpacity(0.45)),
         ),
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,

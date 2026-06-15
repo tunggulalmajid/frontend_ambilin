@@ -21,7 +21,10 @@ class KategoriSampahItem extends StatelessWidget {
     return Column(
       children: [
         ListTile(
-          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          contentPadding: const EdgeInsets.symmetric(
+            horizontal: 16,
+            vertical: 8,
+          ),
           title: Text(
             nama,
             style: GoogleFonts.poppins(
@@ -32,16 +35,10 @@ class KategoriSampahItem extends StatelessWidget {
           ),
           subtitle: Text(
             '$poin poin',
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              color: AppColor.font80,
-            ),
+            style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font80),
           ),
           trailing: PopupMenuButton<String>(
-            icon: const Icon(
-              Icons.more_vert,
-              color: AppColor.font80,
-            ),
+            icon: const Icon(Icons.more_vert, color: AppColor.font80),
             onSelected: (value) {
               if (value == 'edit' && onEdit != null) {
                 onEdit!();
@@ -56,10 +53,7 @@ class KategoriSampahItem extends StatelessWidget {
                   children: [
                     const Icon(Icons.edit, color: AppColor.base100, size: 20),
                     const SizedBox(width: 8),
-                    Text(
-                      'Ubah',
-                      style: GoogleFonts.poppins(fontSize: 14),
-                    ),
+                    Text('Ubah', style: GoogleFonts.poppins(fontSize: 14)),
                   ],
                 ),
               ),
@@ -71,7 +65,10 @@ class KategoriSampahItem extends StatelessWidget {
                     const SizedBox(width: 8),
                     Text(
                       'Hapus',
-                      style: GoogleFonts.poppins(fontSize: 14, color: Colors.red),
+                      style: GoogleFonts.poppins(
+                        fontSize: 14,
+                        color: Colors.red,
+                      ),
                     ),
                   ],
                 ),

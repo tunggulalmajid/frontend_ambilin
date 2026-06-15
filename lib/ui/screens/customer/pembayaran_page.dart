@@ -40,8 +40,11 @@ class _PembayaranPageState extends State<PembayaranPage> {
   File? _buktiTransfer;
   bool _isLoading = false;
 
-  final _currencyFormat =
-      NumberFormat.currency(locale: 'id_ID', symbol: 'Rp. ', decimalDigits: 0);
+  final _currencyFormat = NumberFormat.currency(
+    locale: 'id_ID',
+    symbol: 'Rp. ',
+    decimalDigits: 0,
+  );
   final ImagePicker _picker = ImagePicker();
 
   Future<void> _ambilDariKamera() async {
@@ -117,11 +120,13 @@ class _PembayaranPageState extends State<PembayaranPage> {
       if (result['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Center(child: Text('Pembayaran Berhasil Dikirim untuk Verifikasi!')),
+            content: Center(
+              child: Text('Pembayaran Berhasil Dikirim untuk Verifikasi!'),
+            ),
             backgroundColor: AppColor.base100,
           ),
         );
-        // Refresh dashboard customer
+
         context.read<DashboardProvider>().fetchCustomerDashboard();
         Navigator.of(context).pushReplacementNamed(
           AppRoutes.transaksiBerhasil,
@@ -220,7 +225,9 @@ class _PembayaranPageState extends State<PembayaranPage> {
                         const SizedBox(height: 24),
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
-                          child: InstruksiPembayaranCard(keterangan: widget.keterangan),
+                          child: InstruksiPembayaranCard(
+                            keterangan: widget.keterangan,
+                          ),
                         ),
                         const SizedBox(height: 20),
                         Padding(
@@ -286,7 +293,11 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                       ? Stack(
                                           children: [
                                             GestureDetector(
-                                              onTap: () => ZoomableImageDialog.show(context, imageFile: _buktiTransfer!),
+                                              onTap: () =>
+                                                  ZoomableImageDialog.show(
+                                                    context,
+                                                    imageFile: _buktiTransfer!,
+                                                  ),
                                               child: ClipRRect(
                                                 borderRadius:
                                                     BorderRadius.circular(11),
@@ -308,8 +319,9 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                                   });
                                                 },
                                                 child: Container(
-                                                  padding:
-                                                      const EdgeInsets.all(4),
+                                                  padding: const EdgeInsets.all(
+                                                    4,
+                                                  ),
                                                   decoration: BoxDecoration(
                                                     color: AppColor.redAllert,
                                                     shape: BoxShape.circle,
@@ -343,8 +355,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                             const SizedBox(height: 8),
                                             Text(
                                               'Upload bukti Transfer Anda',
-                                              style:
-                                                  AppFont.regular().copyWith(
+                                              style: AppFont.regular().copyWith(
                                                 fontSize: 14,
                                                 color: AppColor.font80,
                                               ),
@@ -420,9 +431,9 @@ class _PembayaranPageState extends State<PembayaranPage> {
                           : Text(
                               'Konfirmasi Pembayaran',
                               style: AppFont.bold().copyWith(
-                                  fontSize: 16,
-                                  color: AppColor.putih100,
-                                ),
+                                fontSize: 16,
+                                color: AppColor.putih100,
+                              ),
                             ),
                     ),
                   ),
@@ -434,9 +445,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
             Container(
               color: Colors.black.withOpacity(0.3),
               child: const Center(
-                child: CircularProgressIndicator(
-                  color: AppColor.base100,
-                ),
+                child: CircularProgressIndicator(color: AppColor.base100),
               ),
             ),
         ],
@@ -462,9 +471,7 @@ class _PembayaranPageState extends State<PembayaranPage> {
       style: ElevatedButton.styleFrom(
         backgroundColor: AppColor.base100,
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         elevation: 0,
       ),
     );

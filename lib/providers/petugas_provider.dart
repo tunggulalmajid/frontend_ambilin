@@ -6,21 +6,18 @@ import '../services/petugas_service.dart';
 class PetugasProvider extends ChangeNotifier {
   final PetugasService _petugasService = PetugasService();
 
-  // Properti internal
   bool _isLoading = false;
   Map<String, dynamic> _dashboardData = {};
   List<dynamic> _activeOrders = [];
   List<dynamic> _historyOrders = [];
   String _errorMessage = '';
 
-  // Getters
   bool get isLoading => _isLoading;
   Map<String, dynamic> get dashboardData => _dashboardData;
   List<dynamic> get activeOrders => _activeOrders;
   List<dynamic> get historyOrders => _historyOrders;
   String get errorMessage => _errorMessage;
 
-  /// Mengambil data dashboard ringkasan performa petugas.
   Future<void> fetchDashboard() async {
     _isLoading = true;
     _errorMessage = '';
@@ -45,8 +42,11 @@ class PetugasProvider extends ChangeNotifier {
     }
   }
 
-  /// Mengambil antrean pesanan aktif berstatus 'menunggu'.
-  Future<void> fetchActiveOrders({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<void> fetchActiveOrders({
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     if (!isLoadMore) {
       _isLoading = true;
       _activeOrders = [];
@@ -58,7 +58,9 @@ class PetugasProvider extends ChangeNotifier {
       final response = await _petugasService.getOrderAktif(page, limit);
       if (response['status'] == 'success') {
         final List<dynamic> data = response['data'] ?? [];
-        final List<SetorSampah> newOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        final List<SetorSampah> newOrders = data
+            .map((json) => SetorSampah.fromJson(json))
+            .toList();
         if (isLoadMore) {
           _activeOrders.addAll(newOrders);
         } else {
@@ -66,7 +68,8 @@ class PetugasProvider extends ChangeNotifier {
         }
       } else {
         if (!isLoadMore) _activeOrders = [];
-        _errorMessage = response['message'] ?? 'Gagal mengambil antrean pesanan';
+        _errorMessage =
+            response['message'] ?? 'Gagal mengambil antrean pesanan';
       }
     } catch (e) {
       log("Fetch Active Orders Error: $e");
@@ -78,8 +81,11 @@ class PetugasProvider extends ChangeNotifier {
     }
   }
 
-  /// Mengambil riwayat pekerjaan penjemputan petugas.
-  Future<void> fetchHistoryOrders({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<void> fetchHistoryOrders({
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     if (!isLoadMore) {
       _isLoading = true;
       _historyOrders = [];
@@ -91,7 +97,9 @@ class PetugasProvider extends ChangeNotifier {
       final response = await _petugasService.getRiwayatPekerjaan(page, limit);
       if (response['status'] == 'success') {
         final List<dynamic> data = response['data'] ?? [];
-        final List<SetorSampah> newOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        final List<SetorSampah> newOrders = data
+            .map((json) => SetorSampah.fromJson(json))
+            .toList();
         if (isLoadMore) {
           _historyOrders.addAll(newOrders);
         } else {
@@ -99,7 +107,8 @@ class PetugasProvider extends ChangeNotifier {
         }
       } else {
         if (!isLoadMore) _historyOrders = [];
-        _errorMessage = response['message'] ?? 'Gagal mengambil riwayat pekerjaan';
+        _errorMessage =
+            response['message'] ?? 'Gagal mengambil riwayat pekerjaan';
       }
     } catch (e) {
       log("Fetch History Orders Error: $e");
@@ -111,7 +120,6 @@ class PetugasProvider extends ChangeNotifier {
     }
   }
 
-  /// Mengklaim atau memproses order penjemputan baru.
   Future<bool> processClaim(int id) async {
     _isLoading = true;
     _errorMessage = '';
@@ -135,14 +143,21 @@ class PetugasProvider extends ChangeNotifier {
     }
   }
 
-  /// Menyelesaikan order penjemputan dengan mengirimkan data timbangan berat sampah dan foto bukti.
-  Future<bool> submitCompleteOrder(int idSetor, String beratSampah, String imagePath) async {
+  Future<bool> submitCompleteOrder(
+    int idSetor,
+    String beratSampah,
+    String imagePath,
+  ) async {
     _isLoading = true;
     _errorMessage = '';
     notifyListeners();
 
     try {
-      final response = await _petugasService.completeOrder(idSetor, beratSampah, imagePath);
+      final response = await _petugasService.completeOrder(
+        idSetor,
+        beratSampah,
+        imagePath,
+      );
       if (response['status'] == 'success') {
         return true;
       } else {

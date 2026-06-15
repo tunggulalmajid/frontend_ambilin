@@ -1,4 +1,3 @@
-/// Model data untuk tabel `petugas` berdasarkan ERD Ambilin.
 class Petugas {
   final int idPetugas;
   final int idUser;
@@ -6,7 +5,6 @@ class Petugas {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  // Field tambahan dari relasi user (untuk kemudahan binding di UI)
   final String nama;
   final String email;
 

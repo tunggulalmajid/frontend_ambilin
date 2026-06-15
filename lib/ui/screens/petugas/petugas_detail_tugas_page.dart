@@ -1,9 +1,3 @@
-// ----- FILE: lib/ui/screens/petugas/petugas_detail_tugas_page.dart -----
-// Halaman Detail Tugas Petugas — menampilkan detail dari API:
-// - Menggunakan data SetorSampah yang dilewatkan sebagai argument.
-// - Menghubungkan tombol aksi ke API process/complete via PickupHistoryProvider.
-// - Menghapus mock data text.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -52,14 +46,14 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
     try {
       LatLng? driverLatLng;
 
-      // 1. Get driver location using geolocator
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (serviceEnabled) {
         LocationPermission permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
         }
-        if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        if (permission == LocationPermission.whileInUse ||
+            permission == LocationPermission.always) {
           final position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high,
           );
@@ -67,7 +61,6 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
         }
       }
 
-      // Fallback to auth provider user coordinates if geolocator failed
       if (driverLatLng == null) {
         final user = context.read<AuthProvider>().user;
         if (user != null && user.latitude != null && user.longitude != null) {
@@ -80,16 +73,12 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
           _driverLocation = driverLatLng;
         });
 
-        // 2. Fetch OSRM route points between driver and waste
         final double wasteLat = widget.data.latitude ?? -8.1724;
         final double wasteLng = widget.data.longitude ?? 113.7005;
 
         final response = await Dio().get(
           'https://router.project-osrm.org/route/v1/driving/${driverLatLng.longitude},${driverLatLng.latitude};$wasteLng,$wasteLat',
-          queryParameters: {
-            'geometries': 'geojson',
-            'overview': 'full',
-          },
+          queryParameters: {'geometries': 'geojson', 'overview': 'full'},
         );
 
         if (response.statusCode == 200) {
@@ -124,9 +113,9 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
   Future<void> _ambilSampah() async {
     setState(() => _isLoading = true);
 
-    final success = await context
-        .read<PickupHistoryProvider>()
-        .processPickup(widget.data.idSetorSampah);
+    final success = await context.read<PickupHistoryProvider>().processPickup(
+      widget.data.idSetorSampah,
+    );
 
     setState(() => _isLoading = false);
 
@@ -143,11 +132,10 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
           behavior: SnackBarBehavior.floating,
         ),
       );
-      // Refresh list order aktif dan riwayat
+
       context.read<PickupHistoryProvider>().fetchActiveOrders();
       context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 2);
 
-      // Arahkan langsung ke halaman proses penjemputan
       Navigator.pushReplacementNamed(
         context,
         AppRoutes.petugasProsesPenjemputan,
@@ -194,12 +182,15 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
     }
 
     String getJenisSampahName(int? id) {
-      if (id == null) return data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : '-';
+      if (id == null)
+        return data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : '-';
       final cat = categoryProvider.categories.firstWhere(
         (element) => element.idJenisSampah == id,
         orElse: () => JenisSampah(
           idJenisSampah: id,
-          nama: data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : 'Jenis Sampah #$id',
+          nama: data.namaJenisSampah.isNotEmpty
+              ? data.namaJenisSampah
+              : 'Jenis Sampah #$id',
           poinPerKg: data.poinPerKg ?? 0,
         ),
       );
@@ -210,13 +201,23 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
     if (data.createdAt != null) {
       final d = data.createdAt!;
       final months = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
       ];
-      tanggalText = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+      tanggalText =
+          '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     }
 
-    // Tentukan status teks yang ramah pengguna
     String statusTeks = 'Mencari Kurir';
     if (data.status == 'proses') {
       statusTeks = 'Sedang Dijemput';
@@ -237,10 +238,7 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
         ),
         title: Text(
           'Detail Tugas',
-          style: AppFont.bold().copyWith(
-            fontSize: 18,
-            color: AppColor.base100,
-          ),
+          style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.base100),
         ),
         centerTitle: true,
       ),
@@ -269,11 +267,15 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                         borderRadius: BorderRadius.circular(12),
                         child: IgnorePointer(
                           child: FlutterMap(
-                            key: ValueKey('${mapCenter.latitude}_${mapCenter.longitude}_${_routePoints.length}'),
+                            key: ValueKey(
+                              '${mapCenter.latitude}_${mapCenter.longitude}_${_routePoints.length}',
+                            ),
                             options: MapOptions(
                               initialCenter: mapCenter,
                               initialZoom: mapZoom,
-                              interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
+                              interactionOptions: const InteractionOptions(
+                                flags: InteractiveFlag.none,
+                              ),
                             ),
                             children: [
                               TileLayer(
@@ -316,7 +318,10 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                                         decoration: BoxDecoration(
                                           color: Colors.blue,
                                           shape: BoxShape.circle,
-                                          border: Border.all(color: Colors.white, width: 2),
+                                          border: Border.all(
+                                            color: Colors.white,
+                                            width: 2,
+                                          ),
                                           boxShadow: const [
                                             BoxShadow(
                                               color: Colors.black26,
@@ -358,7 +363,11 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 8),
                       ),
-                      icon: const Icon(Icons.map_outlined, color: AppColor.base100, size: 16),
+                      icon: const Icon(
+                        Icons.map_outlined,
+                        color: AppColor.base100,
+                        size: 16,
+                      ),
                       label: Text(
                         'Buka Peta Navigasi',
                         style: AppFont.semibold().copyWith(
@@ -379,20 +388,13 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                 children: [
                   DetailDataRow(
                     label: 'Nama Pelanggan',
-                    value: data.customerName.isNotEmpty ? data.customerName : '-',
+                    value: data.customerName.isNotEmpty
+                        ? data.customerName
+                        : '-',
                   ),
-                  DetailDataRow(
-                    label: 'Status',
-                    value: statusTeks,
-                  ),
-                  DetailDataRow(
-                    label: 'Alamat',
-                    value: data.alamat ?? '-',
-                  ),
-                  DetailDataRow(
-                    label: 'Waktu Pengajuan',
-                    value: tanggalText,
-                  ),
+                  DetailDataRow(label: 'Status', value: statusTeks),
+                  DetailDataRow(label: 'Alamat', value: data.alamat ?? '-'),
+                  DetailDataRow(label: 'Waktu Pengajuan', value: tanggalText),
                   DetailDataRow(
                     label: 'Petugas',
                     value: data.petugasName.isNotEmpty ? data.petugasName : '-',
@@ -423,7 +425,10 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                 children: [
                   GestureDetector(
                     onTap: (data.foto != null && data.foto!.isNotEmpty)
-                        ? () => ZoomableImageDialog.show(context, imageUrl: data.foto)
+                        ? () => ZoomableImageDialog.show(
+                            context,
+                            imageUrl: data.foto,
+                          )
                         : null,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -436,7 +441,11 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                           width: double.infinity,
                           height: 150,
                           color: AppColor.base20,
-                          child: const Icon(Icons.image, size: 50, color: AppColor.font60),
+                          child: const Icon(
+                            Icons.image,
+                            size: 50,
+                            color: AppColor.font60,
+                          ),
                         ),
                       ),
                     ),
@@ -450,11 +459,17 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                         children: [
                           Text(
                             'Jenis Sampah',
-                            style: AppFont.bold().copyWith(fontSize: 14, color: AppColor.font100),
+                            style: AppFont.bold().copyWith(
+                              fontSize: 14,
+                              color: AppColor.font100,
+                            ),
                           ),
                           Text(
                             getJenisSampahName(data.idJenisSampah),
-                            style: AppFont.regular().copyWith(fontSize: 14, color: AppColor.font80),
+                            style: AppFont.regular().copyWith(
+                              fontSize: 14,
+                              color: AppColor.font80,
+                            ),
                           ),
                         ],
                       ),
@@ -463,11 +478,19 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
                         children: [
                           Text(
                             'Berat Sampah',
-                            style: AppFont.bold().copyWith(fontSize: 14, color: AppColor.font100),
+                            style: AppFont.bold().copyWith(
+                              fontSize: 14,
+                              color: AppColor.font100,
+                            ),
                           ),
                           Text(
-                            data.beratSampah != null ? '${data.beratSampah} kg' : '- kg',
-                            style: AppFont.regular().copyWith(fontSize: 14, color: AppColor.font80),
+                            data.beratSampah != null
+                                ? '${data.beratSampah} kg'
+                                : '- kg',
+                            style: AppFont.regular().copyWith(
+                              fontSize: 14,
+                              color: AppColor.font80,
+                            ),
                           ),
                         ],
                       ),
@@ -483,13 +506,15 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
           ? Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              decoration: const BoxDecoration(
-                color: AppColor.putihBackground,
-              ),
+              decoration: const BoxDecoration(color: AppColor.putihBackground),
               child: AsyncButton(
-                text: data.status == 'proses' ? 'Selesaikan Penjemputan' : 'Ambil Sampah',
+                text: data.status == 'proses'
+                    ? 'Selesaikan Penjemputan'
+                    : 'Ambil Sampah',
                 isLoading: _isLoading,
-                onPressed: data.status == 'proses' ? _navigasiKeProses : _ambilSampah,
+                onPressed: data.status == 'proses'
+                    ? _navigasiKeProses
+                    : _ambilSampah,
               ),
             )
           : null,

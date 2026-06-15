@@ -1,11 +1,9 @@
-/// Model data untuk tabel `setor_sampah` berdasarkan ERD Ambilin.
-/// Kolom `pesan_customer` ditambahkan sebagai field tambahan (String).
 class SetorSampah {
   final int idSetorSampah;
   final int? idPetugas;
   final int idCustomer;
   final int? idJenisSampah;
-  final String status; // enum: 'menunggu', 'proses', 'selesai', 'dibatalkan'
+  final String status;
   final String? alamat;
   final double? latitude;
   final double? longitude;
@@ -14,9 +12,8 @@ class SetorSampah {
   final String? fotoBuktiPenjemputan;
   final DateTime? createdAt;
   final DateTime? pickupAt;
-  final String pesanCustomer; // mapped from 'catatan'
+  final String pesanCustomer;
 
-  // Field tambahan dari relasi (untuk kemudahan binding di UI)
   final String customerName;
   final String petugasName;
   final String namaJenisSampah;
@@ -51,18 +48,43 @@ class SetorSampah {
       idJenisSampah: json['id_jenis_sampah'],
       status: json['status'] ?? 'menunggu',
       alamat: json['alamat'],
-      latitude: json['latitude'] != null ? double.tryParse(json['latitude'].toString()) : null,
-      longitude: json['longitude'] != null ? double.tryParse(json['longitude'].toString()) : null,
-      beratSampah: json['berat_sampah'] != null ? double.tryParse(json['berat_sampah'].toString()) : null,
+      latitude: json['latitude'] != null
+          ? double.tryParse(json['latitude'].toString())
+          : null,
+      longitude: json['longitude'] != null
+          ? double.tryParse(json['longitude'].toString())
+          : null,
+      beratSampah: json['berat_sampah'] != null
+          ? double.tryParse(json['berat_sampah'].toString())
+          : null,
       foto: json['foto'],
       fotoBuktiPenjemputan: json['foto_bukti_penjemputan'],
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
-      pickupAt: json['pickup_at'] != null ? DateTime.tryParse(json['pickup_at']) : null,
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      pickupAt: json['pickup_at'] != null
+          ? DateTime.tryParse(json['pickup_at'])
+          : null,
       pesanCustomer: json['catatan'] ?? '',
-      customerName: json['nama_customer'] ?? json['customer_name'] ?? json['Customer']?['nama'] ?? json['Customer']?['User']?['nama'] ?? '',
-      petugasName: json['nama_petugas'] ?? json['petugas_name'] ?? json['Petugas']?['nama'] ?? json['Petugas']?['User']?['nama'] ?? '',
-      namaJenisSampah: json['nama_jenis_sampah'] ?? json['JenisSampah']?['nama_jenis_sampah'] ?? '',
-      poinPerKg: json['poin_per_kg'] != null ? int.tryParse(json['poin_per_kg'].toString()) : json['JenisSampah']?['poin_per_kg'],
+      customerName:
+          json['nama_customer'] ??
+          json['customer_name'] ??
+          json['Customer']?['nama'] ??
+          json['Customer']?['User']?['nama'] ??
+          '',
+      petugasName:
+          json['nama_petugas'] ??
+          json['petugas_name'] ??
+          json['Petugas']?['nama'] ??
+          json['Petugas']?['User']?['nama'] ??
+          '',
+      namaJenisSampah:
+          json['nama_jenis_sampah'] ??
+          json['JenisSampah']?['nama_jenis_sampah'] ??
+          '',
+      poinPerKg: json['poin_per_kg'] != null
+          ? int.tryParse(json['poin_per_kg'].toString())
+          : json['JenisSampah']?['poin_per_kg'],
     );
   }
 
@@ -83,7 +105,6 @@ class SetorSampah {
     };
   }
 
-  /// Data dummy list untuk keperluan data binding.
   static List<SetorSampah> getMockList() {
     return const [
       SetorSampah(

@@ -38,7 +38,9 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
     if (_selectedPaymentMethodId == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Center(child: Text('Pilih metode pembayaran terlebih dahulu')),
+          content: Center(
+            child: Text('Pilih metode pembayaran terlebih dahulu'),
+          ),
           backgroundColor: AppColor.redAllert,
         ),
       );
@@ -49,7 +51,6 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
     final int totalBayar = langganan.harga - pointsUsed;
 
     if (totalBayar == 0) {
-      // Pembayaran penuh dengan poin (lunas)
       setState(() {
         _isLoading = true;
       });
@@ -70,11 +71,13 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
       if (result['status'] == 'success') {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Center(child: Text('Pembayaran Langganan Sukses (Lunas Poin)!')),
+            content: Center(
+              child: Text('Pembayaran Langganan Sukses (Lunas Poin)!'),
+            ),
             backgroundColor: AppColor.base100,
           ),
         );
-        // Refresh dashboard customer
+
         context.read<DashboardProvider>().fetchCustomerDashboard();
         Navigator.pushNamedAndRemoveUntil(
           context,
@@ -91,13 +94,14 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Center(child: Text(result['message'] ?? 'Gagal memproses langganan')),
+            content: Center(
+              child: Text(result['message'] ?? 'Gagal memproses langganan'),
+            ),
             backgroundColor: AppColor.redAllert,
           ),
         );
       }
     } else {
-      // Pembayaran transfer (ada sisa bayar)
       Navigator.pushNamed(
         context,
         AppRoutes.pembayaran,
@@ -132,9 +136,12 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
     final int pointsUsed = _usePoints ? min(userPoints, langganan.harga) : 0;
     final int totalBayar = langganan.harga - pointsUsed;
 
-    final formattedHarga = 'Rp ${langganan.harga.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
-    final formattedPotongan = 'Rp ${pointsUsed.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
-    final formattedTotal = 'Rp ${totalBayar.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
+    final formattedHarga =
+        'Rp ${langganan.harga.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
+    final formattedPotongan =
+        'Rp ${pointsUsed.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
+    final formattedTotal =
+        'Rp ${totalBayar.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -144,7 +151,10 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                 child: CircularProgressIndicator(color: AppColor.base100),
               )
             : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -153,7 +163,11 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.arrow_back, size: 16, color: AppColor.font100),
+                          const Icon(
+                            Icons.arrow_back,
+                            size: 16,
+                            color: AppColor.font100,
+                          ),
                           const SizedBox(width: 4),
                           Text(
                             'Kembali',
@@ -190,7 +204,9 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColor.font60.withOpacity(0.5)),
+                        border: Border.all(
+                          color: AppColor.font60.withOpacity(0.5),
+                        ),
                       ),
                       child: Row(
                         children: [
@@ -248,31 +264,43 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                       value: _selectedPaymentMethodId,
                       hint: Text(
                         'Metode Pembayaran',
-                        style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font80),
+                        style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          color: AppColor.font80,
+                        ),
                       ),
                       decoration: InputDecoration(
                         fillColor: Colors.white,
                         filled: true,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
                         border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: AppColor.font60.withOpacity(0.5)),
+                          borderSide: BorderSide(
+                            color: AppColor.font60.withOpacity(0.5),
+                          ),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
-                          borderSide: BorderSide(color: AppColor.font60.withOpacity(0.5)),
+                          borderSide: BorderSide(
+                            color: AppColor.font60.withOpacity(0.5),
+                          ),
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(10),
                           borderSide: const BorderSide(color: AppColor.base100),
                         ),
                       ),
-                      items: subProvider.paymentMethods.map<DropdownMenuItem<int>>((method) {
-                        return DropdownMenuItem<int>(
-                          value: method['id_metode_pembayaran'] as int?,
-                          child: Text(method['nama']?.toString() ?? '-'),
-                        );
-                      }).toList(),
+                      items: subProvider.paymentMethods
+                          .map<DropdownMenuItem<int>>((method) {
+                            return DropdownMenuItem<int>(
+                              value: method['id_metode_pembayaran'] as int?,
+                              child: Text(method['nama']?.toString() ?? '-'),
+                            );
+                          })
+                          .toList(),
                       onChanged: (value) {
                         final chosen = subProvider.paymentMethods.firstWhere(
                           (m) => m['id_metode_pembayaran'] == value,
@@ -280,8 +308,10 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                         );
                         setState(() {
                           _selectedPaymentMethodId = value;
-                          _selectedPaymentMethodName = chosen?['nama']?.toString();
-                          _selectedPaymentMethodKeterangan = chosen?['keterangan']?.toString();
+                          _selectedPaymentMethodName = chosen?['nama']
+                              ?.toString();
+                          _selectedPaymentMethodKeterangan =
+                              chosen?['keterangan']?.toString();
                         });
                       },
                     ),
@@ -292,7 +322,9 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColor.font60.withOpacity(0.5)),
+                        border: Border.all(
+                          color: AppColor.font60.withOpacity(0.5),
+                        ),
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -306,7 +338,11 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                             ),
                           ),
                           const SizedBox(height: 12),
-                          _buildPriceRow('Harga Langganan', formattedHarga, color: AppColor.base100),
+                          _buildPriceRow(
+                            'Harga Langganan',
+                            formattedHarga,
+                            color: AppColor.base100,
+                          ),
                           const SizedBox(height: 8),
                           _buildPriceRow(
                             'Poin',
@@ -359,7 +395,9 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
                           ),
                           elevation: 0,
                         ),
-                        onPressed: _isLoading ? null : () => _handleSelanjutnya(langganan, userPoints),
+                        onPressed: _isLoading
+                            ? null
+                            : () => _handleSelanjutnya(langganan, userPoints),
                         child: _isLoading
                             ? const SizedBox(
                                 height: 24,
@@ -386,7 +424,12 @@ class _FormPembelianLanggananState extends State<FormPembelianLangganan> {
     );
   }
 
-  Widget _buildPriceRow(String label, String value, {required Color color, bool isBold = false}) {
+  Widget _buildPriceRow(
+    String label,
+    String value, {
+    required Color color,
+    bool isBold = false,
+  }) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [

@@ -5,7 +5,7 @@ import 'package:frontend_ambilin/utils/app_font.dart';
 
 class HomeSubscriptionBanner extends StatelessWidget {
   final bool isMember;
-  final String statusTransaksi; // 'none', 'pending', 'success'
+  final String statusTransaksi;
   final Customer? customer;
   final VoidCallback? onLanggananTap;
   final VoidCallback? onTukarPoinTap;
@@ -21,26 +21,23 @@ class HomeSubscriptionBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // KONDISI 3: Member aktif
     if (isMember && statusTransaksi == 'success') {
       return _buildPremiumMemberCard();
     }
-    // KONDISI 2: Menunggu konfirmasi admin
+
     if (!isMember && statusTransaksi == 'pending') {
       return _buildPendingBanner();
     }
-    // KONDISI 1: Default (belum beli)
+
     return _buildDefaultBanner();
   }
 
-  // ===== KONDISI 1: Banner Default (Belum Beli) =====
   Widget _buildDefaultBanner() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner hijau
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -101,7 +98,6 @@ class HomeSubscriptionBanner extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // Teks pengingat kondisi 1
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -122,14 +118,12 @@ class HomeSubscriptionBanner extends StatelessWidget {
     );
   }
 
-  // ===== KONDISI 2: Banner Pending (Menunggu Konfirmasi Admin) =====
   Widget _buildPendingBanner() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Banner abu-abu
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(16),
@@ -162,13 +156,12 @@ class HomeSubscriptionBanner extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 12),
-                // Tombol disabled
+
                 ElevatedButton(
                   onPressed: null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColor.putih100,
-                    disabledBackgroundColor:
-                        AppColor.putih100.withOpacity(0.5),
+                    disabledBackgroundColor: AppColor.putih100.withOpacity(0.5),
                     elevation: 0,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(8),
@@ -192,7 +185,6 @@ class HomeSubscriptionBanner extends StatelessWidget {
 
           const SizedBox(height: 10),
 
-          // Teks peringatan kondisi 2
           Container(
             width: double.infinity,
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -213,7 +205,6 @@ class HomeSubscriptionBanner extends StatelessWidget {
     );
   }
 
-  // ===== KONDISI 3: Card Premium Member Aktif =====
   Widget _buildPremiumMemberCard() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -221,11 +212,7 @@ class HomeSubscriptionBanner extends StatelessWidget {
         width: double.infinity,
         decoration: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [
-              Color(0xFF006B09), // hijau tua premium
-              AppColor.base100,  // hijau utama
-              Color(0xFF33A03D), // hijau terang
-            ],
+            colors: [Color(0xFF006B09), AppColor.base100, Color(0xFF33A03D)],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
@@ -243,10 +230,8 @@ class HomeSubscriptionBanner extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Baris atas: Ikon + Judul Member
               Row(
                 children: [
-                  // Ikon premium
                   Container(
                     width: 36,
                     height: 36,
@@ -288,11 +273,12 @@ class HomeSubscriptionBanner extends StatelessWidget {
 
               const SizedBox(height: 16),
 
-              // Baris bawah: Poin + Tombol Tukar Poin
               Container(
                 width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 14,
+                  vertical: 12,
+                ),
                 decoration: BoxDecoration(
                   color: AppColor.putih100.withOpacity(0.15),
                   borderRadius: BorderRadius.circular(12),
@@ -300,7 +286,6 @@ class HomeSubscriptionBanner extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // Info Poin
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -322,7 +307,6 @@ class HomeSubscriptionBanner extends StatelessWidget {
                       ],
                     ),
 
-                    // Tombol Tukar Poin
                     ElevatedButton(
                       onPressed: onTukarPoinTap,
                       style: ElevatedButton.styleFrom(

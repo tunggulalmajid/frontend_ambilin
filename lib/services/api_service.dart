@@ -27,7 +27,10 @@ class AppInterceptor extends Interceptor {
   AppInterceptor(this.dio, this.storage);
 
   @override
-  void onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
+  void onRequest(
+    RequestOptions options,
+    RequestInterceptorHandler handler,
+  ) async {
     if (!options.path.contains('/auth/login') &&
         !options.path.contains('/auth/register') &&
         !options.path.contains('/auth/refresh')) {
@@ -46,9 +49,10 @@ class AppInterceptor extends Interceptor {
       if (refreshToken != null) {
         try {
           final refreshDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
-          final response = await refreshDio.post('/auth/refresh', data: {
-            'token': refreshToken,
-          });
+          final response = await refreshDio.post(
+            '/auth/refresh',
+            data: {'token': refreshToken},
+          );
 
           if (response.statusCode == 200) {
             final newAccess = response.data['data']['accessToken'];

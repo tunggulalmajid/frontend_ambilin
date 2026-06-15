@@ -30,7 +30,9 @@ class _EditAkunPageState extends State<EditAkunPage> {
 
     _namaController = TextEditingController(text: widget.user.nama);
     _emailController = TextEditingController(text: widget.user.email);
-    _teleponController = TextEditingController(text: widget.user.nomorTelepon ?? '');
+    _teleponController = TextEditingController(
+      text: widget.user.nomorTelepon ?? '',
+    );
   }
 
   @override
@@ -86,7 +88,6 @@ class _EditAkunPageState extends State<EditAkunPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Row(
                   children: [
                     GestureDetector(
@@ -154,8 +155,12 @@ class _EditAkunPageState extends State<EditAkunPage> {
                 const SizedBox(height: 32),
 
                 WButton(
-                  text: context.watch<UserAccountProvider>().isLoading ? 'Menyimpan...' : 'Simpan',
-                  onPressed: context.watch<UserAccountProvider>().isLoading ? () {} : _handleSimpan,
+                  text: context.watch<UserAccountProvider>().isLoading
+                      ? 'Menyimpan...'
+                      : 'Simpan',
+                  onPressed: context.watch<UserAccountProvider>().isLoading
+                      ? () {}
+                      : _handleSimpan,
                 ),
                 const SizedBox(height: 24),
               ],

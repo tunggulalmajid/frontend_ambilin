@@ -1,4 +1,3 @@
-/// Model data untuk tabel `jenis_sampah` berdasarkan ERD Ambilin.
 class JenisSampah {
   final int idJenisSampah;
   final String nama;
@@ -21,7 +20,10 @@ class JenisSampah {
       idJenisSampah: json['id_jenis_sampah'] ?? 0,
       nama: json['nama_jenis_sampah'] ?? json['nama'] ?? '',
       poinPerKg: json['poin_per_kg'] ?? 0,
-      isDelete: json['is_delete'] == true || json['is_delete'] == 1 || json['is_delete'] == '1',
+      isDelete:
+          json['is_delete'] == true ||
+          json['is_delete'] == 1 ||
+          json['is_delete'] == '1',
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'])
           : null,

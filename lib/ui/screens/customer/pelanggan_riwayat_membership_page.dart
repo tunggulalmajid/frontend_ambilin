@@ -195,7 +195,6 @@ class _PelangganRiwayatMembershipPageState
                   ),
                   const SizedBox(height: 16),
 
-                  // Status
                   _buildDetailRow(
                     'Status',
                     status.toUpperCase(),

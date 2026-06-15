@@ -29,8 +29,7 @@ class WButton extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10),
           ),
-          elevation:
-              0, 
+          elevation: 0,
         ),
         onPressed: onPressed,
         child: Text(

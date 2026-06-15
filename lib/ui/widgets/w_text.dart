@@ -6,8 +6,8 @@ class WText extends StatelessWidget {
   const WText({
     super.key,
     required this.isi,
-    this.fw = FontWeight.normal, // Default: Normal
-    this.color = AppColor.font100, // Default: Normal
+    this.fw = FontWeight.normal,
+    this.color = AppColor.font100,
     this.ukuranFont = 18,
     this.align,
   });

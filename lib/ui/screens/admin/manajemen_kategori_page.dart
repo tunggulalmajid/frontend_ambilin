@@ -37,8 +37,11 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_hasMore && !_isFetchingMore && !context.read<WasteCategoryProvider>().isLoading) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore &&
+          !_isFetchingMore &&
+          !context.read<WasteCategoryProvider>().isLoading) {
         _loadMoreData();
       }
     }
@@ -48,7 +51,11 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
     _currentPage = 1;
     _hasMore = true;
     _isFetchingMore = false;
-    context.read<WasteCategoryProvider>().fetchCategories(page: 1, limit: 10, isLoadMore: false);
+    context.read<WasteCategoryProvider>().fetchCategories(
+      page: 1,
+      limit: 10,
+      isLoadMore: false,
+    );
   }
 
   Future<void> _loadMoreData() async {
@@ -60,7 +67,11 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
     _currentPage++;
     final provider = context.read<WasteCategoryProvider>();
     final int beforeCount = provider.categories.length;
-    await provider.fetchCategories(page: _currentPage, limit: 10, isLoadMore: true);
+    await provider.fetchCategories(
+      page: _currentPage,
+      limit: 10,
+      isLoadMore: true,
+    );
     final int afterCount = provider.categories.length;
 
     if (mounted) {
@@ -135,7 +146,11 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                               nama: category.nama,
                               poin: category.poinPerKg,
                               onEdit: () {
-                                _showEditCategoryDialog(context, category, index);
+                                _showEditCategoryDialog(
+                                  context,
+                                  category,
+                                  index,
+                                );
                               },
                               onDelete: () {
                                 _showDeleteConfirmation(context, index);
@@ -163,11 +178,7 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
         },
         backgroundColor: AppColor.base100,
         shape: const CircleBorder(),
-        child: const Icon(
-          Icons.add,
-          color: Colors.white,
-          size: 32,
-        ),
+        child: const Icon(Icons.add, color: Colors.white, size: 32),
       ),
       bottomNavigationBar: const AdminNavBar(currentIndex: 3),
     );
@@ -202,14 +213,20 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                   controller: namaController,
                   decoration: InputDecoration(
                     labelText: 'Nama Kategori',
-                    labelStyle: GoogleFonts.poppins(fontSize: 14, color: AppColor.font80),
+                    labelStyle: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: AppColor.font80,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: AppColor.font60),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColor.base100, width: 2),
+                      borderSide: const BorderSide(
+                        color: AppColor.base100,
+                        width: 2,
+                      ),
                     ),
                   ),
                   validator: (value) {
@@ -225,14 +242,20 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: 'Poin',
-                    labelStyle: GoogleFonts.poppins(fontSize: 14, color: AppColor.font80),
+                    labelStyle: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: AppColor.font80,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: AppColor.font60),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColor.base100, width: 2),
+                      borderSide: const BorderSide(
+                        color: AppColor.base100,
+                        width: 2,
+                      ),
                     ),
                   ),
                   validator: (value) {
@@ -266,12 +289,14 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                   final nama = namaController.text.trim();
                   final poin = int.parse(poinController.text.trim());
                   context.read<WasteCategoryProvider>().addCategory(
-                        JenisSampah(idJenisSampah: 0, nama: nama, poinPerKg: poin),
-                      );
+                    JenisSampah(idJenisSampah: 0, nama: nama, poinPerKg: poin),
+                  );
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Center(child: Text('Kategori Berhasil Ditambahkan')),
+                      content: Center(
+                        child: Text('Kategori Berhasil Ditambahkan'),
+                      ),
                       backgroundColor: AppColor.base100,
                     ),
                   );
@@ -298,9 +323,15 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
     );
   }
 
-  void _showEditCategoryDialog(BuildContext context, JenisSampah category, int index) {
+  void _showEditCategoryDialog(
+    BuildContext context,
+    JenisSampah category,
+    int index,
+  ) {
     final namaController = TextEditingController(text: category.nama);
-    final poinController = TextEditingController(text: category.poinPerKg.toString());
+    final poinController = TextEditingController(
+      text: category.poinPerKg.toString(),
+    );
     final formKey = GlobalKey<FormState>();
 
     showDialog(
@@ -327,14 +358,20 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                   controller: namaController,
                   decoration: InputDecoration(
                     labelText: 'Nama Kategori',
-                    labelStyle: GoogleFonts.poppins(fontSize: 14, color: AppColor.font80),
+                    labelStyle: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: AppColor.font80,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: AppColor.font60),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColor.base100, width: 2),
+                      borderSide: const BorderSide(
+                        color: AppColor.base100,
+                        width: 2,
+                      ),
                     ),
                   ),
                   validator: (value) {
@@ -350,14 +387,20 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     labelText: 'Poin',
-                    labelStyle: GoogleFonts.poppins(fontSize: 14, color: AppColor.font80),
+                    labelStyle: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: AppColor.font80,
+                    ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
                       borderSide: const BorderSide(color: AppColor.font60),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColor.base100, width: 2),
+                      borderSide: const BorderSide(
+                        color: AppColor.base100,
+                        width: 2,
+                      ),
                     ),
                   ),
                   validator: (value) {
@@ -391,16 +434,19 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                   final nama = namaController.text.trim();
                   final poin = int.parse(poinController.text.trim());
                   context.read<WasteCategoryProvider>().editCategory(
-                        index,
-                        JenisSampah(
-                            idJenisSampah: category.idJenisSampah,
-                            nama: nama,
-                            poinPerKg: poin),
-                      );
+                    index,
+                    JenisSampah(
+                      idJenisSampah: category.idJenisSampah,
+                      nama: nama,
+                      poinPerKg: poin,
+                    ),
+                  );
                   Navigator.pop(context);
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(
-                      content: Center(child: Text('Kategori Berhasil Diperbarui')),
+                      content: Center(
+                        child: Text('Kategori Berhasil Diperbarui'),
+                      ),
                       backgroundColor: AppColor.base100,
                     ),
                   );

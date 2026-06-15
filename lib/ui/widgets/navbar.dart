@@ -9,10 +9,7 @@ import 'package:frontend_ambilin/utils/app_routes.dart';
 class AdminNavBar extends StatelessWidget {
   final int currentIndex;
 
-  const AdminNavBar({
-    super.key,
-    required this.currentIndex,
-  });
+  const AdminNavBar({super.key, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +42,11 @@ class AdminNavBar extends StatelessWidget {
   }
 
   Widget _buildNavItem(
-      BuildContext context, IconData icon, String label, int index) {
+    BuildContext context,
+    IconData icon,
+    String label,
+    int index,
+  ) {
     final bool isActive = currentIndex == index;
     final Color color = isActive ? AppColor.base100 : AppColor.font80;
 
@@ -93,10 +94,7 @@ class AdminNavBar extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               label,
-              style: AppFont.medium().copyWith(
-                fontSize: 12,
-                color: color,
-              ),
+              style: AppFont.medium().copyWith(fontSize: 12, color: color),
             ),
           ],
         ),
@@ -108,10 +106,7 @@ class AdminNavBar extends StatelessWidget {
 class PetugasNavBar extends StatelessWidget {
   final int currentIndex;
 
-  const PetugasNavBar({
-    super.key,
-    required this.currentIndex,
-  });
+  const PetugasNavBar({super.key, required this.currentIndex});
 
   @override
   Widget build(BuildContext context) {
@@ -143,7 +138,11 @@ class PetugasNavBar extends StatelessWidget {
   }
 
   Widget _buildNavItem(
-      BuildContext context, IconData icon, String label, int index) {
+    BuildContext context,
+    IconData icon,
+    String label,
+    int index,
+  ) {
     final bool isActive = currentIndex == index;
     final Color color = isActive ? AppColor.base100 : AppColor.font80;
 
@@ -188,10 +187,7 @@ class PetugasNavBar extends StatelessWidget {
             const SizedBox(height: 2),
             Text(
               label,
-              style: AppFont.medium().copyWith(
-                fontSize: 12,
-                color: color,
-              ),
+              style: AppFont.medium().copyWith(fontSize: 12, color: color),
             ),
           ],
         ),

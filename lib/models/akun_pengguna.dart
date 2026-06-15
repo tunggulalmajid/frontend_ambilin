@@ -5,8 +5,8 @@ class AkunPengguna {
   final int? idUser;
   final String nama;
   final String email;
-  final String peran; // 'Petugas' or 'Pelanggan'
-  final String status; // 'Aktif' or 'Nonaktif'
+  final String peran;
+  final String status;
   final Color warnaAvatar;
   final String? nomorTelepon;
   final String? foto;
@@ -23,9 +23,13 @@ class AkunPengguna {
   });
 
   factory AkunPengguna.fromUserModel(UserModel user, {bool? active}) {
-    final roleName = user.idRole == 2 ? 'Petugas' : (user.idRole == 3 ? 'Pelanggan' : 'Admin');
+    final roleName = user.idRole == 2
+        ? 'Petugas'
+        : (user.idRole == 3 ? 'Pelanggan' : 'Admin');
     final activeStatus = active == false ? 'Nonaktif' : 'Aktif';
-    final avatarColor = user.idRole == 2 ? const Color(0xFF4CAF50) : const Color(0xFFFFC107);
+    final avatarColor = user.idRole == 2
+        ? const Color(0xFF4CAF50)
+        : const Color(0xFFFFC107);
     return AkunPengguna(
       idUser: user.idUser,
       nama: user.nama,
@@ -38,6 +42,5 @@ class AkunPengguna {
     );
   }
 
-  /// Initial letter for avatar
   String get inisial => nama.isNotEmpty ? nama[0].toUpperCase() : '?';
 }

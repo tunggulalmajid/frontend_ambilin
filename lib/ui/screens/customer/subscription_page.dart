@@ -63,80 +63,80 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                  Text(
-                    'Pilih Paket Langganan',
-                    style: AppFont.bold().copyWith(
-                      fontSize: 18,
-                      color: AppColor.font100,
+                    Text(
+                      'Pilih Paket Langganan',
+                      style: AppFont.bold().copyWith(
+                        fontSize: 18,
+                        color: AppColor.font100,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  ...List.generate(plans.length, (index) {
-                    final plan = plans[index];
-                    final isSelected = tempSelected == index;
+                    const SizedBox(height: 20),
+                    ...List.generate(plans.length, (index) {
+                      final plan = plans[index];
+                      final isSelected = tempSelected == index;
 
-                    final formattedHarga =
-                        'Rp ${plan.harga.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
+                      final formattedHarga =
+                          'Rp ${plan.harga.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
 
-                    return GestureDetector(
-                      onTap: () {
-                        setModalState(() {
-                          tempSelected = index;
-                        });
-                      },
-                      child: Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 20,
-                          vertical: 16,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: isSelected
-                                ? AppColor.base100
-                                : AppColor.font60,
-                            width: isSelected ? 2 : 1,
+                      return GestureDetector(
+                        onTap: () {
+                          setModalState(() {
+                            tempSelected = index;
+                          });
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 16,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? AppColor.base100
+                                  : AppColor.font60,
+                              width: isSelected ? 2 : 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                plan.nama,
+                                style: AppFont.semibold().copyWith(
+                                  fontSize: 14,
+                                  color: AppColor.font100,
+                                ),
+                              ),
+                              Text(
+                                formattedHarga,
+                                style: AppFont.medium().copyWith(
+                                  fontSize: 14,
+                                  color: AppColor.font100,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              plan.nama,
-                              style: AppFont.semibold().copyWith(
-                                fontSize: 14,
-                                color: AppColor.font100,
-                              ),
-                            ),
-                            Text(
-                              formattedHarga,
-                              style: AppFont.medium().copyWith(
-                                fontSize: 14,
-                                color: AppColor.font100,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                  const SizedBox(height: 8),
-                  WButton(
-                    text: 'Konfirmasi',
-                    textSize: 16,
-                    onPressed: () {
-                      setState(() {
-                        _selectedPlanIndex = tempSelected;
-                      });
-                      Navigator.pop(context);
-                    },
-                  ),
-                ],
+                      );
+                    }),
+                    const SizedBox(height: 8),
+                    WButton(
+                      text: 'Konfirmasi',
+                      textSize: 16,
+                      onPressed: () {
+                        setState(() {
+                          _selectedPlanIndex = tempSelected;
+                        });
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ],
+                ),
               ),
-            ),
-          );
+            );
           },
         );
       },
@@ -303,11 +303,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
             color: Color(0xFFE8FFF0),
             shape: BoxShape.circle,
           ),
-          child: Icon(
-            icon,
-            color: AppColor.base100,
-            size: 20,
-          ),
+          child: Icon(icon, color: AppColor.base100, size: 20),
         ),
         const SizedBox(width: 16),
         Expanded(

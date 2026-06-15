@@ -20,12 +20,15 @@ class SubscriptionService extends ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getCustomerHistory({int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> getCustomerHistory({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
-      final response = await dio.get('/subscriptions/history', queryParameters: {
-        'page': page,
-        'limit': limit,
-      });
+      final response = await dio.get(
+        '/subscriptions/history',
+        queryParameters: {'page': page, 'limit': limit},
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil riwayat transaksi membership");
@@ -47,24 +50,37 @@ class SubscriptionService extends ApiService {
 
       if (proofPath != null && proofPath.isNotEmpty) {
         final fileName = proofPath.split('/').last;
-        dataMap['bukti_pembayaran'] = await MultipartFile.fromFile(proofPath, filename: fileName);
+        dataMap['bukti_pembayaran'] = await MultipartFile.fromFile(
+          proofPath,
+          filename: fileName,
+        );
       }
 
       final formData = FormData.fromMap(dataMap);
-      final response = await dio.post('/subscriptions/purchase', data: formData);
+      final response = await dio.post(
+        '/subscriptions/purchase',
+        data: formData,
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal membeli paket membership");
     }
   }
 
-  Future<Map<String, dynamic>> getTransactions({String? status, int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> getTransactions({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
-      final response = await dio.get('/subscriptions/transactions', queryParameters: {
-        if (status != null) 'status': status,
-        'page': page,
-        'limit': limit,
-      });
+      final response = await dio.get(
+        '/subscriptions/transactions',
+        queryParameters: {
+          if (status != null) 'status': status,
+          'page': page,
+          'limit': limit,
+        },
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil transaksi masuk");
@@ -73,9 +89,10 @@ class SubscriptionService extends ApiService {
 
   Future<Map<String, dynamic>> confirmTransaction(int id, String status) async {
     try {
-      final response = await dio.put('/subscriptions/transactions/$id/confirm', data: {
-        'status': status,
-      });
+      final response = await dio.put(
+        '/subscriptions/transactions/$id/confirm',
+        data: {'status': status},
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengonfirmasi transaksi");
@@ -91,12 +108,16 @@ class SubscriptionService extends ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> updateSubscription(int id, String nama, int harga) async {
+  Future<Map<String, dynamic>> updateSubscription(
+    int id,
+    String nama,
+    int harga,
+  ) async {
     try {
-      final response = await dio.put('/subscriptions/$id', data: {
-        'nama': nama,
-        'harga': harga,
-      });
+      final response = await dio.put(
+        '/subscriptions/$id',
+        data: {'nama': nama, 'harga': harga},
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal memperbarui harga subscription");

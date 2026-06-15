@@ -1,12 +1,11 @@
-/// Model data untuk tabel `transaksi` berdasarkan ERD Ambilin.
 class Transaksi {
   final int idTransaksi;
   final int idCustomer;
   final int? idAdmin;
   final int idSubscription;
   final String? buktiPembayaran;
-  final String metodePembayaran; // enum: 'BCA', 'BNI', 'Mandiri', 'Dana', 'OVO', 'GoPay', dll.
-  final String status; // enum: 'pending', 'success', 'failed'
+  final String metodePembayaran;
+  final String status;
   final DateTime? createdAt;
   final DateTime? confirmedAt;
 
@@ -25,7 +24,6 @@ class Transaksi {
     this.harga = 0,
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
   static Transaksi getMockData() {
     return Transaksi(
       idTransaksi: 1,
@@ -40,7 +38,6 @@ class Transaksi {
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
   static List<Transaksi> getMockList() {
     return [
       Transaksi(

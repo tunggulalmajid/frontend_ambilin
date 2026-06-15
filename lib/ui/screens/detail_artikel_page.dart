@@ -31,9 +31,9 @@ class _DetailArtikelPageState extends State<DetailArtikelPage> {
       _isLoading = true;
     });
     try {
-      final detail = await context
-          .read<ArticleProvider>()
-          .fetchArticleById(_currentArticle.idArtikel);
+      final detail = await context.read<ArticleProvider>().fetchArticleById(
+        _currentArticle.idArtikel,
+      );
       if (detail != null && mounted) {
         setState(() {
           _currentArticle = detail;
@@ -94,7 +94,8 @@ class _DetailArtikelPageState extends State<DetailArtikelPage> {
                     width: double.infinity,
                     height: 200,
                     color: const Color(0xFF616161),
-                    child: (_currentArticle.fotoThumbnail != null &&
+                    child:
+                        (_currentArticle.fotoThumbnail != null &&
                             _currentArticle.fotoThumbnail!.isNotEmpty)
                         ? Image.network(
                             _currentArticle.fotoThumbnail!,
@@ -136,8 +137,10 @@ class _DetailArtikelPageState extends State<DetailArtikelPage> {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColor.putih100.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(8),

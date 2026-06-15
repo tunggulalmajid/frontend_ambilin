@@ -6,7 +6,7 @@ class RiwayatPenjemputan {
   final String namaPetugas;
   final String tanggal;
   final String berat;
-  final String status; // 'Selesai', 'Diproses', 'Dijemput'
+  final String status;
 
   const RiwayatPenjemputan({
     required this.id,
@@ -26,8 +26,18 @@ class RiwayatPenjemputan {
     String tgl = '';
     if (setor.createdAt != null) {
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
       final d = setor.createdAt!;
       tgl = '${d.day} ${months[d.month - 1]} ${d.year}';
@@ -35,7 +45,9 @@ class RiwayatPenjemputan {
 
     return RiwayatPenjemputan(
       id: 'ID Pemesanan ${setor.idSetorSampah}',
-      namaCustomer: setor.customerName.isNotEmpty ? setor.customerName : 'Pelanggan',
+      namaCustomer: setor.customerName.isNotEmpty
+          ? setor.customerName
+          : 'Pelanggan',
       namaPetugas: setor.petugasName.isNotEmpty ? setor.petugasName : '-',
       tanggal: tgl,
       berat: '${setor.beratSampah ?? 0} kg',

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
@@ -50,7 +49,9 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
         ),
       );
 
-      final success = await context.read<AuthProvider>().updateProfilePhoto(image.path);
+      final success = await context.read<AuthProvider>().updateProfilePhoto(
+        image.path,
+      );
       if (!mounted) return;
 
       if (success) {
@@ -64,7 +65,9 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
         final errMsg = context.read<AuthProvider>().errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil'),
+            content: Text(
+              errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil',
+            ),
             backgroundColor: AppColor.redAllert,
           ),
         );
@@ -88,9 +91,7 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
     if (auth.isProfileLoading || dash.isLoading) {
       return const Scaffold(
         backgroundColor: AppColor.putihBackground,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColor.base100),
-        ),
+        body: Center(child: CircularProgressIndicator(color: AppColor.base100)),
       );
     }
 
@@ -103,12 +104,19 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, color: AppColor.redAllert, size: 48),
+                const Icon(
+                  Icons.error_outline,
+                  color: AppColor.redAllert,
+                  size: 48,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   auth.errorMessage,
                   textAlign: TextAlign.center,
-                  style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                  style: AppFont.regular().copyWith(
+                    color: AppColor.font100,
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -116,8 +124,13 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
                     context.read<AuthProvider>().fetchProfile();
                     context.read<DashboardProvider>().fetchCustomerDashboard();
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
-                  child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.base100,
+                  ),
+                  child: const Text(
+                    'Coba Lagi',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -136,15 +149,23 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
             children: [
               Text(
                 'Data tidak ditemukan',
-                style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                style: AppFont.regular().copyWith(
+                  color: AppColor.font100,
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   context.read<AuthProvider>().fetchProfile();
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
-                child: const Text('Muat Ulang', style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.base100,
+                ),
+                child: const Text(
+                  'Muat Ulang',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -160,20 +181,24 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
         child: Column(
           children: [
             ProfileHeaderFull(
-              backgroundUrl: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop',
+              backgroundUrl:
+                  'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop',
               inisial: inisial,
               nama: user.nama,
               email: user.email,
               fotoUrl: user.foto != null && user.foto!.isNotEmpty
                   ? (user.foto!.startsWith('http')
-                      ? user.foto
-                      : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
+                        ? user.foto
+                        : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
                   : null,
               showBackButton: false,
               onEditPressed: () {
-                Navigator.push(context, MaterialPageRoute(
-                  builder: (_) => PelangganEditProfilPage(user: user),
-                ));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => PelangganEditProfilPage(user: user),
+                  ),
+                );
               },
               onAvatarEditPressed: _changeProfilePhoto,
             ),
@@ -185,18 +210,31 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
                 width: double.infinity,
                 padding: const EdgeInsets.all(18),
                 decoration: BoxDecoration(
-                  color: AppColor.putih100, borderRadius: BorderRadius.circular(16),
+                  color: AppColor.putih100,
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColor.font60),
                 ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Rincian Profil', style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.base100)),
+                    Text(
+                      'Rincian Profil',
+                      style: AppFont.bold().copyWith(
+                        fontSize: 18,
+                        color: AppColor.base100,
+                      ),
+                    ),
                     const SizedBox(height: 16),
                     ProfileInfoRow(label: 'Alamat', value: user.alamat ?? '-'),
-                    ProfileInfoRow(label: 'No Telepon', value: user.nomorTelepon ?? '-'),
+                    ProfileInfoRow(
+                      label: 'No Telepon',
+                      value: user.nomorTelepon ?? '-',
+                    ),
                     ProfileInfoRow(label: 'Poin', value: dash.formattedPoin),
-                    ProfileInfoRow(label: 'Member', value: dash.isMember ? 'Aktif' : 'Tidak Aktif'),
+                    ProfileInfoRow(
+                      label: 'Member',
+                      value: dash.isMember ? 'Aktif' : 'Tidak Aktif',
+                    ),
                     const ProfileInfoRow(label: 'Status', value: 'Aktif'),
                   ],
                 ),
@@ -209,29 +247,60 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
               child: Container(
                 width: double.infinity,
                 decoration: BoxDecoration(
-                  color: AppColor.putih100, borderRadius: BorderRadius.circular(16),
+                  color: AppColor.putih100,
+                  borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: AppColor.font60),
                 ),
                 child: Column(
                   children: [
                     ListTile(
                       leading: const CircleAvatar(
-                        radius: 16, backgroundColor: AppColor.font60,
-                        child: Icon(Icons.lock, size: 16, color: AppColor.font100),
+                        radius: 16,
+                        backgroundColor: AppColor.font60,
+                        child: Icon(
+                          Icons.lock,
+                          size: 16,
+                          color: AppColor.font100,
+                        ),
                       ),
-                      title: Text('Ubah Password', style: AppFont.medium().copyWith(fontSize: 14, color: AppColor.font100)),
-                      trailing: const Icon(Icons.chevron_right, color: AppColor.font80),
+                      title: Text(
+                        'Ubah Password',
+                        style: AppFont.medium().copyWith(
+                          fontSize: 14,
+                          color: AppColor.font100,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: AppColor.font80,
+                      ),
                       onTap: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const PelangganUbahPasswordPage()));
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PelangganUbahPasswordPage(),
+                          ),
+                        );
                       },
                     ),
                     const Divider(height: 1, indent: 16, endIndent: 16),
                     ListTile(
                       leading: const CircleAvatar(
-                        radius: 16, backgroundColor: AppColor.redAllert,
-                        child: Icon(Icons.logout, size: 16, color: AppColor.putih100),
+                        radius: 16,
+                        backgroundColor: AppColor.redAllert,
+                        child: Icon(
+                          Icons.logout,
+                          size: 16,
+                          color: AppColor.putih100,
+                        ),
                       ),
-                      title: Text('Logout', style: AppFont.medium().copyWith(fontSize: 14, color: AppColor.redAllert)),
+                      title: Text(
+                        'Logout',
+                        style: AppFont.medium().copyWith(
+                          fontSize: 14,
+                          color: AppColor.redAllert,
+                        ),
+                      ),
                       onTap: () {
                         showDialog(
                           context: context,

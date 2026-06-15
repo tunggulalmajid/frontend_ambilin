@@ -23,36 +23,58 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
     String categoryName = data.namaJenisSampah.isNotEmpty
         ? data.namaJenisSampah
         : (data.idJenisSampah != null
-            ? categoryProvider.categories
-                .firstWhere(
-                  (c) => c.idJenisSampah == data.idJenisSampah,
-                  orElse: () => JenisSampah(
-                    idJenisSampah: data.idJenisSampah!,
-                    nama: 'Jenis Sampah #${data.idJenisSampah}',
-                    poinPerKg: 0,
-                  ),
-                )
-                .nama
-            : 'Organik');
+              ? categoryProvider.categories
+                    .firstWhere(
+                      (c) => c.idJenisSampah == data.idJenisSampah,
+                      orElse: () => JenisSampah(
+                        idJenisSampah: data.idJenisSampah!,
+                        nama: 'Jenis Sampah #${data.idJenisSampah}',
+                        poinPerKg: 0,
+                      ),
+                    )
+                    .nama
+              : 'Organik');
 
     String formattedCreated = '-';
     if (data.createdAt != null) {
       final d = data.createdAt!;
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
-      formattedCreated = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+      formattedCreated =
+          '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     }
 
     String formattedPickup = '-';
     if (data.pickupAt != null) {
       final d = data.pickupAt!;
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
-      formattedPickup = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+      formattedPickup =
+          '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     }
 
     return Scaffold(
@@ -85,7 +107,9 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
                     options: MapOptions(
                       initialCenter: LatLng(lat, lng),
                       initialZoom: 14.0,
-                      interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
+                      interactionOptions: const InteractionOptions(
+                        flags: InteractiveFlag.none,
+                      ),
                     ),
                     children: [
                       TileLayer(
@@ -122,12 +146,26 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
               title: 'Rincian penjemputan',
               child: Column(
                 children: [
-                  DetailDataRow(label: 'Nama Pelanggan', value: data.customerName.isNotEmpty ? data.customerName : '-'),
+                  DetailDataRow(
+                    label: 'Nama Pelanggan',
+                    value: data.customerName.isNotEmpty
+                        ? data.customerName
+                        : '-',
+                  ),
                   const DetailDataRow(label: 'Status', value: 'Selesai'),
                   DetailDataRow(label: 'Alamat', value: data.alamat ?? '-'),
-                  DetailDataRow(label: 'Waktu Pengajuan', value: formattedCreated),
-                  DetailDataRow(label: 'Driver', value: data.petugasName.isNotEmpty ? data.petugasName : '-'),
-                  DetailDataRow(label: 'Waktu Penjemputan', value: formattedPickup),
+                  DetailDataRow(
+                    label: 'Waktu Pengajuan',
+                    value: formattedCreated,
+                  ),
+                  DetailDataRow(
+                    label: 'Driver',
+                    value: data.petugasName.isNotEmpty ? data.petugasName : '-',
+                  ),
+                  DetailDataRow(
+                    label: 'Waktu Penjemputan',
+                    value: formattedPickup,
+                  ),
                 ],
               ),
             ),
@@ -136,8 +174,13 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
             DetailCardWrapper(
               title: 'Catatan Pelanggan',
               child: Text(
-                data.pesanCustomer.isNotEmpty ? data.pesanCustomer : 'Tidak ada catatan tambahan.',
-                style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 14),
+                data.pesanCustomer.isNotEmpty
+                    ? data.pesanCustomer
+                    : 'Tidak ada catatan tambahan.',
+                style: AppFont.regular().copyWith(
+                  color: AppColor.font80,
+                  fontSize: 14,
+                ),
               ),
             ),
             const SizedBox(height: 16),
@@ -149,7 +192,10 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
                 children: [
                   GestureDetector(
                     onTap: (data.foto != null && data.foto!.isNotEmpty)
-                        ? () => ZoomableImageDialog.show(context, imageUrl: data.foto)
+                        ? () => ZoomableImageDialog.show(
+                            context,
+                            imageUrl: data.foto,
+                          )
                         : null,
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(10),
@@ -162,7 +208,11 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
                           width: double.infinity,
                           height: 150,
                           color: AppColor.base20,
-                          child: const Icon(Icons.image, size: 50, color: AppColor.font60),
+                          child: const Icon(
+                            Icons.image,
+                            size: 50,
+                            color: AppColor.font60,
+                          ),
                         ),
                       ),
                     ),
@@ -174,15 +224,41 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Jenis Sampah', style: AppFont.bold().copyWith(color: AppColor.font100, fontSize: 14)),
-                          Text(categoryName, style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 14)),
+                          Text(
+                            'Jenis Sampah',
+                            style: AppFont.bold().copyWith(
+                              color: AppColor.font100,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            categoryName,
+                            style: AppFont.regular().copyWith(
+                              color: AppColor.font80,
+                              fontSize: 14,
+                            ),
+                          ),
                         ],
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text('Berat Sampah', style: AppFont.bold().copyWith(color: AppColor.font100, fontSize: 14)),
-                          Text(data.beratSampah != null ? '${data.beratSampah} kg' : '- kg', style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 14)),
+                          Text(
+                            'Berat Sampah',
+                            style: AppFont.bold().copyWith(
+                              color: AppColor.font100,
+                              fontSize: 14,
+                            ),
+                          ),
+                          Text(
+                            data.beratSampah != null
+                                ? '${data.beratSampah} kg'
+                                : '- kg',
+                            style: AppFont.regular().copyWith(
+                              color: AppColor.font80,
+                              fontSize: 14,
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -195,8 +271,13 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
             DetailCardWrapper(
               title: 'Bukti Penjemputan',
               child: GestureDetector(
-                onTap: (data.fotoBuktiPenjemputan != null && data.fotoBuktiPenjemputan!.isNotEmpty)
-                    ? () => ZoomableImageDialog.show(context, imageUrl: data.fotoBuktiPenjemputan)
+                onTap:
+                    (data.fotoBuktiPenjemputan != null &&
+                        data.fotoBuktiPenjemputan!.isNotEmpty)
+                    ? () => ZoomableImageDialog.show(
+                        context,
+                        imageUrl: data.fotoBuktiPenjemputan,
+                      )
                     : null,
                 child: ClipRRect(
                   borderRadius: BorderRadius.circular(10),
@@ -209,7 +290,11 @@ class PetugasDetailSelesaiPage extends StatelessWidget {
                       width: double.infinity,
                       height: 150,
                       color: AppColor.base20,
-                      child: const Icon(Icons.receipt, size: 50, color: AppColor.font60),
+                      child: const Icon(
+                        Icons.receipt,
+                        size: 50,
+                        color: AppColor.font60,
+                      ),
                     ),
                   ),
                 ),

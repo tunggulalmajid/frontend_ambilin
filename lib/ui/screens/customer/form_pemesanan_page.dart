@@ -20,7 +20,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
   File? gambar;
   Future ambil(ImageSource sumber) async {
     final gbr = await ImagePicker().pickImage(source: sumber);
-    if (gbr != null){
+    if (gbr != null) {
       setState(() {
         gambar = File(gbr.path);
       });
@@ -219,7 +219,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                     ),
                   ),
                 ),
-                
+
                 if (_selectedKategori.isNotEmpty) ...[
                   const SizedBox(height: 8),
                   Wrap(
@@ -301,7 +301,10 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   height: 48,
                   child: OutlinedButton.icon(
                     onPressed: () {},
-                    icon: const Icon(Icons.location_on, color: AppColor.putih100),
+                    icon: const Icon(
+                      Icons.location_on,
+                      color: AppColor.putih100,
+                    ),
                     label: Text(
                       'Pilih Lokasi Penjemputan',
                       style: AppFont.semibold().copyWith(
@@ -333,18 +336,21 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   child: gambar != null
                       ? Stack(
                           children: [
-                             GestureDetector(
-                               onTap: () => ZoomableImageDialog.show(context, imageFile: gambar!),
-                               child: ClipRRect(
-                                 borderRadius: BorderRadius.circular(8),
-                                 child: Image.file(
-                                   gambar!,
-                                   height: 200,
-                                   width: double.infinity,
-                                   fit: BoxFit.cover,
-                                 ),
-                               ),
-                             ),
+                            GestureDetector(
+                              onTap: () => ZoomableImageDialog.show(
+                                context,
+                                imageFile: gambar!,
+                              ),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: Image.file(
+                                  gambar!,
+                                  height: 200,
+                                  width: double.infinity,
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
                             Positioned(
                               top: 8,
                               right: 8,
@@ -404,11 +410,15 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                                       ),
                                     ),
                                     style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(color: AppColor.base100),
+                                      side: const BorderSide(
+                                        color: AppColor.base100,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -429,11 +439,15 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                                       ),
                                     ),
                                     style: OutlinedButton.styleFrom(
-                                      side: const BorderSide(color: AppColor.base100),
+                                      side: const BorderSide(
+                                        color: AppColor.base100,
+                                      ),
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(10),
                                       ),
-                                      padding: const EdgeInsets.symmetric(vertical: 12),
+                                      padding: const EdgeInsets.symmetric(
+                                        vertical: 12,
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -447,7 +461,7 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
-                    onPressed: () { },
+                    onPressed: () {},
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColor.base100,
                       foregroundColor: AppColor.putih100,

@@ -1,4 +1,3 @@
-/// Model data untuk tabel `customer` berdasarkan ERD Ambilin.
 class Customer {
   final int idCustomer;
   final int idUser;
@@ -9,7 +8,6 @@ class Customer {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  // Field tambahan dari relasi user (untuk kemudahan binding di UI)
   final String nama;
   final String email;
 
@@ -60,18 +58,26 @@ class Customer {
     };
   }
 
-  /// Format masa berlaku member menjadi teks yang mudah dibaca.
   String? get masaBerlaku {
     if (expiredMemberDate == null) return null;
     final months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     final d = expiredMemberDate!;
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
 
-  /// Data dummy tunggal untuk keperluan data binding di dashboard.
   static Customer getMockData() {
     return const Customer(
       idCustomer: 0,
@@ -84,6 +90,5 @@ class Customer {
     );
   }
 
-  /// Alias agar backward-compatible dengan kode lama.
   static Customer getDummyCustomer() => getMockData();
 }

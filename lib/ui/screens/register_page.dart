@@ -138,7 +138,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         ? () {}
                         : () async {
                             if (_formKey.currentState!.validate()) {
-
                               final request = RegisterRequest(
                                 nama: _namaController.text,
                                 email: _emailController.text,

@@ -41,17 +41,11 @@ class DetailCardWrapper extends StatelessWidget {
   }
 }
 
-/// Baris data label–value yang digunakan di dalam [DetailCardWrapper].
-/// Label di kiri (flex 2) dan value di kanan (flex 3, rata kanan).
 class DetailDataRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const DetailDataRow({
-    super.key,
-    required this.label,
-    required this.value,
-  });
+  const DetailDataRow({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {

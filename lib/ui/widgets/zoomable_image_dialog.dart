@@ -26,7 +26,9 @@ class ZoomableImageDialog {
                         loadingBuilder: (context, child, loadingProgress) {
                           if (loadingProgress == null) return child;
                           return const Center(
-                            child: CircularProgressIndicator(color: Colors.white),
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                            ),
                           );
                         },
                         errorBuilder: (context, error, stackTrace) {
@@ -39,11 +41,8 @@ class ZoomableImageDialog {
                         },
                       )
                     : (imageFile != null
-                        ? Image.file(
-                            imageFile,
-                            fit: BoxFit.contain,
-                          )
-                        : const SizedBox.shrink()),
+                          ? Image.file(imageFile, fit: BoxFit.contain)
+                          : const SizedBox.shrink()),
               ),
             ),
             Positioned(
@@ -57,11 +56,7 @@ class ZoomableImageDialog {
                     color: Colors.black54,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 24),
                 ),
               ),
             ),

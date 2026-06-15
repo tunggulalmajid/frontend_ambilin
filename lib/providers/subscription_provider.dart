@@ -33,7 +33,8 @@ class SubscriptionProvider extends ChangeNotifier {
         _subscriptions = data.map((json) => Langganan.fromJson(json)).toList();
         notifyListeners();
       } else {
-        _errorMessage = response['message'] ?? 'Gagal memuat paket subscription';
+        _errorMessage =
+            response['message'] ?? 'Gagal memuat paket subscription';
         notifyListeners();
       }
     } catch (e) {
@@ -67,7 +68,11 @@ class SubscriptionProvider extends ChangeNotifier {
     }
   }
 
-  Future<int> fetchCustomerHistory({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<int> fetchCustomerHistory({
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     if (!isLoadMore) {
       _isLoading = true;
       _errorMessage = '';
@@ -76,7 +81,10 @@ class SubscriptionProvider extends ChangeNotifier {
     }
 
     try {
-      final response = await _subscriptionService.getCustomerHistory(page: page, limit: limit);
+      final response = await _subscriptionService.getCustomerHistory(
+        page: page,
+        limit: limit,
+      );
       if (response['status'] == 'success') {
         final List<dynamic> data = response['data'] ?? [];
         if (isLoadMore) {
@@ -146,7 +154,8 @@ class SubscriptionProvider extends ChangeNotifier {
         _summary = response['data'];
         notifyListeners();
       } else {
-        _errorMessage = response['message'] ?? 'Gagal memuat ringkasan keuangan';
+        _errorMessage =
+            response['message'] ?? 'Gagal memuat ringkasan keuangan';
         notifyListeners();
       }
     } catch (e) {
@@ -163,7 +172,11 @@ class SubscriptionProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _subscriptionService.updateSubscription(id, nama, harga);
+      final response = await _subscriptionService.updateSubscription(
+        id,
+        nama,
+        harga,
+      );
       _isLoading = false;
       if (response['status'] == 'success') {
         await fetchSubscriptions();

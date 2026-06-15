@@ -60,11 +60,7 @@ class AdminStatCard extends StatelessWidget {
                 color: AppColor.base100,
                 borderRadius: BorderRadius.circular(10),
               ),
-              child: Icon(
-                icon,
-                color: Colors.white,
-                size: 24,
-              ),
+              child: Icon(icon, color: Colors.white, size: 24),
             ),
           ],
         ),

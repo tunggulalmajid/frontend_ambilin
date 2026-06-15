@@ -9,7 +9,8 @@ class AdminKonfirmasiPembayaran extends StatefulWidget {
   const AdminKonfirmasiPembayaran({super.key});
 
   @override
-  State<AdminKonfirmasiPembayaran> createState() => _AdminKonfirmasiPembayaranState();
+  State<AdminKonfirmasiPembayaran> createState() =>
+      _AdminKonfirmasiPembayaranState();
 }
 
 class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
@@ -20,7 +21,8 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    _item ??= ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    _item ??=
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
   }
 
   String _formatDateTime(String? dateStr) {
@@ -47,7 +49,11 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
 
   void _handleSetujui() async {
     if (_item == null) return;
-    final id = _item!['id_transaksi'] ?? _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
+    final id =
+        _item!['id_transaksi'] ??
+        _item!['id_riwayat_subscribtion'] ??
+        _item!['id'] ??
+        0;
 
     setState(() {
       _isApproving = true;
@@ -74,7 +80,13 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Center(child: Text(authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal menyetujui pembayaran')),
+            content: Center(
+              child: Text(
+                authProvider.errorMessage.isNotEmpty
+                    ? authProvider.errorMessage
+                    : 'Gagal menyetujui pembayaran',
+              ),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -95,7 +107,11 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
 
   void _handleTolak() async {
     if (_item == null) return;
-    final id = _item!['id_transaksi'] ?? _item!['id_riwayat_subscribtion'] ?? _item!['id'] ?? 0;
+    final id =
+        _item!['id_transaksi'] ??
+        _item!['id_riwayat_subscribtion'] ??
+        _item!['id'] ??
+        0;
 
     setState(() {
       _isRejecting = true;
@@ -122,7 +138,13 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Center(child: Text(authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal menolak pembayaran')),
+            content: Center(
+              child: Text(
+                authProvider.errorMessage.isNotEmpty
+                    ? authProvider.errorMessage
+                    : 'Gagal menolak pembayaran',
+              ),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -189,11 +211,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                     color: Colors.black54,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.close,
-                    color: Colors.white,
-                    size: 24,
-                  ),
+                  child: const Icon(Icons.close, color: Colors.white, size: 24),
                 ),
               ),
             ),
@@ -213,12 +231,24 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
       );
     }
 
-    final userName = item['nama_customer'] ?? item['user']?['nama'] ?? item['nama_user'] ?? item['nama'] ?? 'User';
+    final userName =
+        item['nama_customer'] ??
+        item['user']?['nama'] ??
+        item['nama_user'] ??
+        item['nama'] ??
+        'User';
     final inisial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
-    final transId = item['id_transaksi'] ?? item['id_riwayat_subscribtion'] ?? item['id'] ?? 0;
-    final String status = (item['status'] ?? 'pending').toString().toLowerCase();
+    final transId =
+        item['id_transaksi'] ??
+        item['id_riwayat_subscribtion'] ??
+        item['id'] ??
+        0;
+    final String status = (item['status'] ?? 'pending')
+        .toString()
+        .toLowerCase();
 
-    final String? foto = item['foto'] ??
+    final String? foto =
+        item['foto'] ??
         item['user']?['foto'] ??
         item['Customer']?['User']?['foto'] ??
         item['Customer']?['foto'] ??
@@ -226,20 +256,37 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
         item['foto_user']?.toString();
     final String? fotoUrl = foto != null && foto.isNotEmpty
         ? (foto.startsWith('http')
-            ? foto
-            : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+              ? foto
+              : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
         : null;
-    final subNama = item['nama_paket'] ?? item['subscribtion']?['nama'] ?? item['nama_subscribtion'] ?? '';
-    
-    final int harga = item['harga_paket'] as int? ?? item['subscribtion']?['harga'] as int? ?? item['harga'] as int? ?? 0;
+    final subNama =
+        item['nama_paket'] ??
+        item['subscribtion']?['nama'] ??
+        item['nama_subscribtion'] ??
+        '';
+
+    final int harga =
+        item['harga_paket'] as int? ??
+        item['subscribtion']?['harga'] as int? ??
+        item['harga'] as int? ??
+        0;
     final int poinDigunakan = item['poin_digunakan'] as int? ?? 0;
     final int totalBayar = harga - poinDigunakan;
 
-    final formattedTotal = 'Rp. ${totalBayar.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
-    
-    final paymentMethodName = item['metode_pembayaran']?['nama'] ?? item['nama_metode_pembayaran'] ?? '';
-    final paymentMethodRek = item['metode_pembayaran']?['nomor_rekening'] ?? item['nomor_rekening'] ?? '';
-    final paymentMethod = paymentMethodRek.isNotEmpty ? '$paymentMethodName - $paymentMethodRek' : paymentMethodName;
+    final formattedTotal =
+        'Rp. ${totalBayar.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
+
+    final paymentMethodName =
+        item['metode_pembayaran']?['nama'] ??
+        item['nama_metode_pembayaran'] ??
+        '';
+    final paymentMethodRek =
+        item['metode_pembayaran']?['nomor_rekening'] ??
+        item['nomor_rekening'] ??
+        '';
+    final paymentMethod = paymentMethodRek.isNotEmpty
+        ? '$paymentMethodName - $paymentMethodRek'
+        : paymentMethodName;
 
     final rawDate = item['created_at']?.toString() ?? '';
     final formattedDate = _formatDateTime(rawDate);
@@ -267,10 +314,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
             ),
             Text(
               'Periksa dan konfirmasi pembayaran',
-              style: GoogleFonts.poppins(
-                fontSize: 11,
-                color: AppColor.font80,
-              ),
+              style: GoogleFonts.poppins(fontSize: 11, color: AppColor.font80),
             ),
           ],
         ),
@@ -280,7 +324,6 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(18),
@@ -291,13 +334,14 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
               ),
               child: Column(
                 children: [
-
                   Row(
                     children: [
                       CircleAvatar(
                         radius: 26,
                         backgroundColor: const Color(0xFFE3F2FD),
-                        backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                        backgroundImage: fotoUrl != null
+                            ? NetworkImage(fotoUrl)
+                            : null,
                         child: fotoUrl == null
                             ? Text(
                                 inisial,
@@ -338,7 +382,9 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                     status.toUpperCase(),
                     valueColor: status == 'berhasil'
                         ? const Color(0xFF2E7D32)
-                        : (status == 'gagal' ? Colors.red : const Color(0xFFE65100)),
+                        : (status == 'gagal'
+                              ? Colors.red
+                              : const Color(0xFFE65100)),
                   ),
                 ],
               ),
@@ -382,22 +428,26 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                                     child: Image.network(
                                       buktiUrl,
                                       fit: BoxFit.contain,
-                                      errorBuilder: (context, error, stackTrace) {
-                                        return const Center(
-                                          child: Icon(
-                                            Icons.receipt_long,
-                                            color: AppColor.font80,
-                                            size: 48,
-                                          ),
-                                        );
-                                      },
+                                      errorBuilder:
+                                          (context, error, stackTrace) {
+                                            return const Center(
+                                              child: Icon(
+                                                Icons.receipt_long,
+                                                color: AppColor.font80,
+                                                size: 48,
+                                              ),
+                                            );
+                                          },
                                     ),
                                   ),
                                   Positioned(
                                     bottom: 8,
                                     right: 8,
                                     child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
                                       decoration: BoxDecoration(
                                         color: Colors.black54,
                                         borderRadius: BorderRadius.circular(8),
@@ -405,11 +455,18 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          const Icon(Icons.zoom_in, color: Colors.white, size: 14),
+                                          const Icon(
+                                            Icons.zoom_in,
+                                            color: Colors.white,
+                                            size: 14,
+                                          ),
                                           const SizedBox(width: 4),
                                           Text(
                                             'Ketuk untuk zoom',
-                                            style: GoogleFonts.poppins(color: Colors.white, fontSize: 10),
+                                            style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
                                           ),
                                         ],
                                       ),
@@ -444,7 +501,9 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                           borderRadius: BorderRadius.circular(10),
                         ),
                       ),
-                      onPressed: (_isApproving || _isRejecting) ? null : _handleTolak,
+                      onPressed: (_isApproving || _isRejecting)
+                          ? null
+                          : _handleTolak,
                       child: _isRejecting
                           ? const SizedBox(
                               height: 20,
@@ -475,7 +534,9 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                         ),
                         elevation: 0,
                       ),
-                      onPressed: (_isApproving || _isRejecting) ? null : _handleSetujui,
+                      onPressed: (_isApproving || _isRejecting)
+                          ? null
+                          : _handleSetujui,
                       child: _isApproving
                           ? const SizedBox(
                               height: 20,
@@ -512,10 +573,7 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
         children: [
           Text(
             label,
-            style: GoogleFonts.poppins(
-              fontSize: 13,
-              color: AppColor.font80,
-            ),
+            style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font80),
           ),
           Text(
             value,

@@ -48,7 +48,9 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
         ),
       );
 
-      final success = await context.read<AuthProvider>().updateProfilePhoto(image.path);
+      final success = await context.read<AuthProvider>().updateProfilePhoto(
+        image.path,
+      );
       if (!mounted) return;
 
       if (success) {
@@ -62,7 +64,9 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
         final errMsg = context.read<AuthProvider>().errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil'),
+            content: Text(
+              errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil',
+            ),
             backgroundColor: AppColor.redAllert,
           ),
         );
@@ -86,9 +90,7 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
     if (auth.isProfileLoading || dash.isLoading) {
       return const Scaffold(
         backgroundColor: AppColor.putihBackground,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColor.base100),
-        ),
+        body: Center(child: CircularProgressIndicator(color: AppColor.base100)),
       );
     }
 
@@ -101,12 +103,19 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, color: AppColor.redAllert, size: 48),
+                const Icon(
+                  Icons.error_outline,
+                  color: AppColor.redAllert,
+                  size: 48,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   auth.errorMessage,
                   textAlign: TextAlign.center,
-                  style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                  style: AppFont.regular().copyWith(
+                    color: AppColor.font100,
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
@@ -114,8 +123,13 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                     context.read<AuthProvider>().fetchProfile();
                     context.read<DashboardProvider>().fetchPetugasDashboard();
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
-                  child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.base100,
+                  ),
+                  child: const Text(
+                    'Coba Lagi',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -134,15 +148,23 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
             children: [
               Text(
                 'Data tidak ditemukan',
-                style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                style: AppFont.regular().copyWith(
+                  color: AppColor.font100,
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: () {
                   context.read<AuthProvider>().fetchProfile();
                 },
-                style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
-                child: const Text('Muat Ulang', style: TextStyle(color: Colors.white)),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColor.base100,
+                ),
+                child: const Text(
+                  'Muat Ulang',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -158,14 +180,15 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
         child: Column(
           children: [
             ProfileHeaderFull(
-              backgroundUrl: 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
+              backgroundUrl:
+                  'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
               inisial: inisial,
               nama: user.nama,
               email: user.email,
               fotoUrl: user.foto != null && user.foto!.isNotEmpty
                   ? (user.foto!.startsWith('http')
-                      ? user.foto
-                      : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
+                        ? user.foto
+                        : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
                   : null,
               showBackButton: false,
               onEditPressed: () {
@@ -204,10 +227,7 @@ class _PetugasProfilPageState extends State<PetugasProfilPage> {
                       label: 'Nomor Telepon',
                       value: user.nomorTelepon ?? '-',
                     ),
-                    const ProfileInfoRow(
-                      label: 'Status',
-                      value: 'Aktif',
-                    ),
+                    const ProfileInfoRow(label: 'Status', value: 'Aktif'),
                   ],
                 ),
               ),

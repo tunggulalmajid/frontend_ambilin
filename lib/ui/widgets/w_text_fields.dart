@@ -1,9 +1,8 @@
 library;
+
 import 'package:flutter/material.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
-
-
 
 class WTextFieldPutih extends StatelessWidget {
   final String label;
@@ -33,7 +32,6 @@ class WTextFieldPutih extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Komponen Label Luar
         Text(
           label,
           style: AppFont.semibold().copyWith(
@@ -43,7 +41,6 @@ class WTextFieldPutih extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // Komponen Form Input
         TextFormField(
           controller: controller,
           readOnly: readOnly,
@@ -63,8 +60,10 @@ class WTextFieldPutih extends StatelessWidget {
             ),
             filled: true,
             fillColor: AppColor.putih100,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             suffixIcon: suffixIcon,
             suffixIconConstraints: const BoxConstraints(minHeight: 24),
             enabledBorder: OutlineInputBorder(
@@ -89,10 +88,6 @@ class WTextFieldPutih extends StatelessWidget {
     );
   }
 }
-
-// ============================================================================
-// 2. WPasswordField — Password field dengan toggle visibilitas.
-// ============================================================================
 
 class WPasswordField extends StatefulWidget {
   final String label;
@@ -121,7 +116,6 @@ class _WPasswordFieldState extends State<WPasswordField> {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Label
         Text(
           widget.label,
           style: AppFont.semibold().copyWith(
@@ -131,7 +125,6 @@ class _WPasswordFieldState extends State<WPasswordField> {
         ),
         const SizedBox(height: 8),
 
-        // Password Input
         TextFormField(
           controller: widget.controller,
           obscureText: _obscureText,
@@ -149,8 +142,10 @@ class _WPasswordFieldState extends State<WPasswordField> {
             ),
             filled: true,
             fillColor: AppColor.putih100,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             suffixIcon: IconButton(
               icon: Icon(
                 _obscureText ? Icons.visibility_off : Icons.visibility,
@@ -186,10 +181,6 @@ class _WPasswordFieldState extends State<WPasswordField> {
   }
 }
 
-// ============================================================================
-// 3. WDropdownField — Dropdown field dengan label luar.
-// ============================================================================
-
 class WDropdownField extends StatelessWidget {
   final String label;
   final String hintText;
@@ -214,7 +205,6 @@ class WDropdownField extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
       children: [
-        // Label
         Text(
           label,
           style: AppFont.semibold().copyWith(
@@ -224,7 +214,6 @@ class WDropdownField extends StatelessWidget {
         ),
         const SizedBox(height: 8),
 
-        // Dropdown
         DropdownButtonFormField<String>(
           value: value,
           hint: Text(
@@ -244,8 +233,10 @@ class WDropdownField extends StatelessWidget {
           decoration: InputDecoration(
             filled: true,
             fillColor: AppColor.putih100,
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 14,
+            ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
               borderSide: const BorderSide(color: AppColor.font60),
@@ -264,10 +255,10 @@ class WDropdownField extends StatelessWidget {
             ),
           ),
           items: items
-              .map((item) => DropdownMenuItem<String>(
-                    value: item,
-                    child: Text(item),
-                  ))
+              .map(
+                (item) =>
+                    DropdownMenuItem<String>(value: item, child: Text(item)),
+              )
               .toList(),
           onChanged: onChanged,
         ),

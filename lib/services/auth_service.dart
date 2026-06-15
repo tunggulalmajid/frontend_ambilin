@@ -17,8 +17,7 @@ class AuthService extends ApiService {
 
   Future<Map<String, dynamic>> register(RegisterRequest request) async {
     try {
-      final response =
-          await dio.post('/auth/register', data: request.toJson());
+      final response = await dio.post('/auth/register', data: request.toJson());
       return response.data;
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e, "Gagal registrasi"));
@@ -29,14 +28,17 @@ class AuthService extends ApiService {
 
   Future<Map<String, dynamic>> loginWithGoogle(String idToken) async {
     try {
-      final response =
-          await dio.post('/auth/google', data: {'idToken': idToken});
+      final response = await dio.post(
+        '/auth/google',
+        data: {'idToken': idToken},
+      );
       return response.data;
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e, "Gagal login dengan Google"));
     } catch (e) {
       throw Exception(
-          "Gagal login dengan Google: tidak dapat terhubung ke server");
+        "Gagal login dengan Google: tidak dapat terhubung ke server",
+      );
     }
   }
 
@@ -54,9 +56,10 @@ class AuthService extends ApiService {
   Future<Map<String, dynamic>> refreshToken(String refreshToken) async {
     try {
       final refreshDio = Dio(BaseOptions(baseUrl: dio.options.baseUrl));
-      final response = await refreshDio.post('/auth/refresh', data: {
-        'token': refreshToken,
-      });
+      final response = await refreshDio.post(
+        '/auth/refresh',
+        data: {'token': refreshToken},
+      );
       return response.data;
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e, "Gagal memperbarui token"));
@@ -79,25 +82,30 @@ class AuthService extends ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getPendingTransactions({int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> getPendingTransactions({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
       final response = await dio.get(
         '/subscriptions/transactions',
-        queryParameters: {
-          'status': 'menunggu',
-          'page': page,
-          'limit': limit,
-        },
+        queryParameters: {'status': 'menunggu', 'page': page, 'limit': limit},
       );
       return response.data;
     } on DioException catch (e) {
-      throw Exception(_extractErrorMessage(e, "Gagal mengambil daftar antrean verifikasi"));
+      throw Exception(
+        _extractErrorMessage(e, "Gagal mengambil daftar antrean verifikasi"),
+      );
     } catch (e) {
       throw Exception("Gagal mengambil daftar antrean verifikasi");
     }
   }
 
-  Future<Map<String, dynamic>> getTransactions({String? status, int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> getTransactions({
+    String? status,
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
       final response = await dio.get(
         '/subscriptions/transactions',
@@ -109,7 +117,9 @@ class AuthService extends ApiService {
       );
       return response.data;
     } on DioException catch (e) {
-      throw Exception(_extractErrorMessage(e, "Gagal mengambil daftar transaksi"));
+      throw Exception(
+        _extractErrorMessage(e, "Gagal mengambil daftar transaksi"),
+      );
     } catch (e) {
       throw Exception("Gagal mengambil daftar transaksi");
     }
@@ -123,7 +133,9 @@ class AuthService extends ApiService {
       );
       return response.data;
     } on DioException catch (e) {
-      throw Exception(_extractErrorMessage(e, "Gagal memproses verifikasi transaksi"));
+      throw Exception(
+        _extractErrorMessage(e, "Gagal memproses verifikasi transaksi"),
+      );
     } catch (e) {
       throw Exception("Gagal memproses verifikasi transaksi");
     }
@@ -138,14 +150,17 @@ class AuthService extends ApiService {
     double? longitude,
   }) async {
     try {
-      final response = await dio.put('/profile', data: {
-        'nama': nama,
-        'email': email,
-        if (alamat != null) 'alamat': alamat,
-        if (nomorTelepon != null) 'nomor_telepon': nomorTelepon,
-        if (latitude != null) 'latitude': latitude,
-        if (longitude != null) 'longitude': longitude,
-      });
+      final response = await dio.put(
+        '/profile',
+        data: {
+          'nama': nama,
+          'email': email,
+          if (alamat != null) 'alamat': alamat,
+          if (nomorTelepon != null) 'nomor_telepon': nomorTelepon,
+          if (latitude != null) 'latitude': latitude,
+          if (longitude != null) 'longitude': longitude,
+        },
+      );
       return response.data;
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e, "Gagal mengubah profil"));
@@ -163,23 +178,26 @@ class AuthService extends ApiService {
       final response = await dio.put('/profile/photo', data: formData);
       return response.data;
     } on DioException catch (e) {
-      throw Exception(
-          _extractErrorMessage(e, "Gagal mengunggah foto profil"));
+      throw Exception(_extractErrorMessage(e, "Gagal mengunggah foto profil"));
     } catch (e) {
       throw Exception("Gagal mengunggah foto profil");
     }
   }
+
   Future<Map<String, dynamic>> updatePassword({
     required String passwordLama,
     required String passwordBaru,
     required String konfirmasiPassword,
   }) async {
     try {
-      final response = await dio.put('/auth/update-password', data: {
-        'password_lama': passwordLama,
-        'password_baru': passwordBaru,
-        'konfirmasi_password': konfirmasiPassword,
-      });
+      final response = await dio.put(
+        '/auth/update-password',
+        data: {
+          'password_lama': passwordLama,
+          'password_baru': passwordBaru,
+          'konfirmasi_password': konfirmasiPassword,
+        },
+      );
       return response.data;
     } on DioException catch (e) {
       throw Exception(_extractErrorMessage(e, "Gagal mengubah password"));

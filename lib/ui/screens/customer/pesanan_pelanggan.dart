@@ -1,8 +1,3 @@
-// ----- FILE: lib/ui/screens/customer/pesanan_pelanggan.dart -----
-// Halaman Riwayat & Aktivitas Pesanan Pelanggan — menampilkan data dari API:
-// - Riwayat penjemputan sampah customer dari PickupHistoryProvider
-// Semua data dummy telah dihapus dan diganti dengan data real dari API.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../utils/app_color.dart';
@@ -25,7 +20,7 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
   @override
   void initState() {
     super.initState();
-    // Fetch data riwayat penjemputan customer saat halaman diinisialisasi
+
     Future.microtask(() {
       context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 3);
     });
@@ -66,9 +61,12 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
     final pickupProvider = context.watch<PickupHistoryProvider>();
     final history = pickupProvider.setorHistory;
 
-    // Filter list berdasarkan status
-    final onGoingList = history.where((e) => e.status == 'menunggu' || e.status == 'proses').toList();
-    final selesaiList = history.where((e) => e.status == 'selesai' || e.status == 'dibatalkan').toList();
+    final onGoingList = history
+        .where((e) => e.status == 'menunggu' || e.status == 'proses')
+        .toList();
+    final selesaiList = history
+        .where((e) => e.status == 'selesai' || e.status == 'dibatalkan')
+        .toList();
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
@@ -96,10 +94,12 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // On Going Section
                         Text(
                           'Dalam Proses',
-                          style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100),
+                          style: AppFont.bold().copyWith(
+                            fontSize: 18,
+                            color: AppColor.font100,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         if (onGoingList.isEmpty)
@@ -108,19 +108,26 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                             child: Center(
                               child: Text(
                                 'Tidak ada penjemputan aktif.',
-                                style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 13),
+                                style: AppFont.regular().copyWith(
+                                  color: AppColor.font80,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
                           )
                         else
-                          ...onGoingList.map((data) => _buildCard(data, isOnGoing: true)),
+                          ...onGoingList.map(
+                            (data) => _buildCard(data, isOnGoing: true),
+                          ),
 
                         const SizedBox(height: 24),
 
-                        // Selesai Section
                         Text(
                           'Selesai & Riwayat',
-                          style: AppFont.bold().copyWith(fontSize: 18, color: AppColor.font100),
+                          style: AppFont.bold().copyWith(
+                            fontSize: 18,
+                            color: AppColor.font100,
+                          ),
                         ),
                         const SizedBox(height: 10),
                         if (selesaiList.isEmpty)
@@ -129,12 +136,17 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                             child: Center(
                               child: Text(
                                 'Belum ada riwayat penjemputan.',
-                                style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 13),
+                                style: AppFont.regular().copyWith(
+                                  color: AppColor.font80,
+                                  fontSize: 13,
+                                ),
                               ),
                             ),
                           )
                         else
-                          ...selesaiList.map((data) => _buildCard(data, isOnGoing: false)),
+                          ...selesaiList.map(
+                            (data) => _buildCard(data, isOnGoing: false),
+                          ),
                       ],
                     ),
                   ),
@@ -146,15 +158,25 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
   }
 
   Widget _buildCard(SetorSampah data, {required bool isOnGoing}) {
-    // Format tanggal
     String tanggalText = '';
     if (data.createdAt != null) {
       final d = data.createdAt!;
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
-      tanggalText = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+      tanggalText =
+          '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     }
 
     return Container(
@@ -173,16 +195,22 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
             children: [
               Text(
                 tanggalText.isNotEmpty ? tanggalText : '-',
-                style: AppFont.regular().copyWith(color: AppColor.font80, fontSize: 12),
+                style: AppFont.regular().copyWith(
+                  color: AppColor.font80,
+                  fontSize: 12,
+                ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: data.status == 'selesai'
                       ? const Color(0xFFE8F5E9)
                       : data.status == 'dibatalkan'
-                          ? const Color(0xFFFFEBEE)
-                          : const Color(0xFFFFF8E1),
+                      ? const Color(0xFFFFEBEE)
+                      : const Color(0xFFFFF8E1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -192,8 +220,8 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                     color: data.status == 'selesai'
                         ? const Color(0xFF2E7D32)
                         : data.status == 'dibatalkan'
-                            ? const Color(0xFFC62828)
-                            : const Color(0xFFE65100),
+                        ? const Color(0xFFC62828)
+                        : const Color(0xFFE65100),
                   ),
                 ),
               ),
@@ -224,7 +252,10 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
                   children: [
                     Text(
                       'Pelanggan : ${data.customerName.isNotEmpty ? data.customerName : "-"}',
-                      style: AppFont.medium().copyWith(fontSize: 12, color: AppColor.font100),
+                      style: AppFont.medium().copyWith(
+                        fontSize: 12,
+                        color: AppColor.font100,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
@@ -254,16 +285,21 @@ class _PesananPelangganPageState extends State<PesananPelangganPage> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColor.base100,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
                 minimumSize: const Size(80, 35),
               ),
               onPressed: () => _navigateToDetail(context, data),
               child: Text(
                 'Lihat Detail',
-                style: AppFont.medium().copyWith(color: AppColor.putih100, fontSize: 12),
+                style: AppFont.medium().copyWith(
+                  color: AppColor.putih100,
+                  fontSize: 12,
+                ),
               ),
             ),
-          )
+          ),
         ],
       ),
     );

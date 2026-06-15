@@ -71,7 +71,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       backgroundColor: AppColor.putihBackground,
 
       body: SafeArea(
@@ -85,7 +84,6 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 Stack(
                   alignment: Alignment.centerLeft,
                   children: [
-
                     Center(
                       child: Text(
                         'Tambah Pengguna',
@@ -205,8 +203,12 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
                 const SizedBox(height: 32),
 
                 WButton(
-                  text: context.watch<UserAccountProvider>().isLoading ? 'Menyimpan...' : 'Simpan',
-                  onPressed: context.watch<UserAccountProvider>().isLoading ? () {} : _handleSimpan,
+                  text: context.watch<UserAccountProvider>().isLoading
+                      ? 'Menyimpan...'
+                      : 'Simpan',
+                  onPressed: context.watch<UserAccountProvider>().isLoading
+                      ? () {}
+                      : _handleSimpan,
                 ),
                 const SizedBox(height: 24),
               ],
@@ -216,5 +218,4 @@ class _TambahAkunPageState extends State<TambahAkunPage> {
       ),
     );
   }
-
 }

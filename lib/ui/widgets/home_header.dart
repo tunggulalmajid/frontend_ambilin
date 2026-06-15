@@ -5,10 +5,7 @@ import 'package:frontend_ambilin/utils/app_font.dart';
 class HomeHeader extends StatelessWidget {
   final String namaUser;
 
-  const HomeHeader({
-    super.key,
-    this.namaUser = 'User',
-  });
+  const HomeHeader({super.key, this.namaUser = 'User'});
 
   @override
   Widget build(BuildContext context) {

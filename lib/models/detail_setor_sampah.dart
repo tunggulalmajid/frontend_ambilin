@@ -1,4 +1,3 @@
-/// Model data untuk tabel `detail_setor_sampah` berdasarkan ERD Ambilin.
 class DetailSetorSampah {
   final int idDetailSetorSampah;
   final int idSetorSampah;
@@ -7,7 +6,6 @@ class DetailSetorSampah {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  // Field tambahan dari relasi (untuk kemudahan binding di UI)
   final String namaJenisSampah;
 
   const DetailSetorSampah({
@@ -20,7 +18,6 @@ class DetailSetorSampah {
     this.namaJenisSampah = '',
   });
 
-  /// Data dummy tunggal untuk keperluan data binding.
   static DetailSetorSampah getMockData() {
     return DetailSetorSampah(
       idDetailSetorSampah: 1,
@@ -33,7 +30,6 @@ class DetailSetorSampah {
     );
   }
 
-  /// Data dummy list untuk keperluan data binding.
   static List<DetailSetorSampah> getMockList() {
     return [
       DetailSetorSampah(

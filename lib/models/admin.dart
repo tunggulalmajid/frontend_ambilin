@@ -1,11 +1,9 @@
-/// Model data untuk tabel `admin` berdasarkan ERD Ambilin.
 class Admin {
   final int idAdmin;
   final int idUser;
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  // Field tambahan dari relasi user (untuk kemudahan binding di UI)
   final String nama;
   final String email;
 

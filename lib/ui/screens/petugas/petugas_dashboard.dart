@@ -1,10 +1,3 @@
-// ----- FILE: lib/ui/screens/petugas/petugas_dashboard.dart -----
-// Dashboard utama Petugas — menampilkan data dari API:
-// - Statistik performa dari DashboardProvider (total tugas, total sampah)
-// - Daftar order aktif (antrean penjemputan) dari PickupHistoryProvider
-// - Nama user dari AuthProvider
-// Semua data dummy telah dihapus dan diganti dengan data real dari API.
-
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
@@ -70,22 +63,28 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
         return;
       }
 
-      // Ambil posisi pertama kali
       final position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
       );
       if (mounted) {
-        await context.read<AuthProvider>().updateLocationSilent(position.latitude, position.longitude);
+        await context.read<AuthProvider>().updateLocationSilent(
+          position.latitude,
+          position.longitude,
+        );
       }
 
-      // Update berkala setiap 30 detik
-      _locationTimer = Timer.periodic(const Duration(seconds: 30), (timer) async {
+      _locationTimer = Timer.periodic(const Duration(seconds: 30), (
+        timer,
+      ) async {
         try {
           final pos = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high,
           );
           if (mounted) {
-            await context.read<AuthProvider>().updateLocationSilent(pos.latitude, pos.longitude);
+            await context.read<AuthProvider>().updateLocationSilent(
+              pos.latitude,
+              pos.longitude,
+            );
           }
         } catch (e) {
           debugPrint("Gagal memperbarui lokasi berkala: $e");
@@ -97,8 +96,11 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_hasMore && !_isFetchingMore && !context.read<PickupHistoryProvider>().isLoading) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore &&
+          !_isFetchingMore &&
+          !context.read<PickupHistoryProvider>().isLoading) {
         _loadMoreData();
       }
     }
@@ -109,7 +111,11 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     _hasMore = true;
     _isFetchingMore = false;
     context.read<DashboardProvider>().fetchPetugasDashboard();
-    context.read<PickupHistoryProvider>().fetchActiveOrders(page: 1, limit: 10, isLoadMore: false);
+    context.read<PickupHistoryProvider>().fetchActiveOrders(
+      page: 1,
+      limit: 10,
+      isLoadMore: false,
+    );
   }
 
   Future<void> _loadMoreData() async {
@@ -121,7 +127,11 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     _currentPage++;
     final provider = context.read<PickupHistoryProvider>();
     final int beforeCount = provider.activeOrders.length;
-    await provider.fetchActiveOrders(page: _currentPage, limit: 10, isLoadMore: true);
+    await provider.fetchActiveOrders(
+      page: _currentPage,
+      limit: 10,
+      isLoadMore: true,
+    );
     final int afterCount = provider.activeOrders.length;
 
     if (mounted) {
@@ -156,14 +166,13 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
               child: SingleChildScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ============================================
-                    // HEADER: Greeting
-                    // ============================================
                     Text(
                       'Halo, $userName',
                       style: AppFont.bold().copyWith(
@@ -181,15 +190,13 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                     ),
                     const SizedBox(height: 20),
 
-                    // ============================================
-                    // STATISTIK PERFORMA (dari API Dashboard)
-                    // ============================================
                     if (dashProvider.isLoading)
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 16),
                           child: CircularProgressIndicator(
-                              color: AppColor.base100),
+                            color: AppColor.base100,
+                          ),
                         ),
                       )
                     else
@@ -218,9 +225,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                       ),
                     const SizedBox(height: 24),
 
-                    // ============================================
-                    // ERROR STATE
-                    // ============================================
                     if (dashProvider.errorMessage.isNotEmpty ||
                         pickupProvider.errorMessage.isNotEmpty)
                       Container(
@@ -242,9 +246,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                         ),
                       ),
 
-                    // ============================================
-                    // DAFTAR ORDER AKTIF (Antrean Penjemputan dari API)
-                    // ============================================
                     Text(
                       'Daftar Ambil Sampah',
                       style: AppFont.bold().copyWith(
@@ -259,7 +260,8 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 32),
                           child: CircularProgressIndicator(
-                              color: AppColor.base100),
+                            color: AppColor.base100,
+                          ),
                         ),
                       )
                     else if (daftarTugas.isEmpty)
@@ -268,8 +270,11 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                         padding: const EdgeInsets.symmetric(vertical: 40),
                         child: Column(
                           children: [
-                            const Icon(Icons.inbox_rounded,
-                                size: 48, color: AppColor.font60),
+                            const Icon(
+                              Icons.inbox_rounded,
+                              size: 48,
+                              color: AppColor.font60,
+                            ),
                             const SizedBox(height: 12),
                             Text(
                               'Belum ada order masuk saat ini.',
@@ -290,20 +295,21 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                           return _buildCardTugas(daftarTugas[index]);
                         },
                       ),
-                      if (_isFetchingMore)
-                        const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 16),
-                          child: Center(
-                            child: CircularProgressIndicator(color: AppColor.base100),
+                    if (_isFetchingMore)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: CircularProgressIndicator(
+                            color: AppColor.base100,
                           ),
                         ),
+                      ),
                   ],
                 ),
               ),
             ),
           ),
 
-          // Overlay loading saat navigasi
           if (_isNavigating)
             Container(
               color: Colors.black.withOpacity(0.2),
@@ -316,10 +322,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
       bottomNavigationBar: const PetugasNavBar(currentIndex: 0),
     );
   }
-
-  // ================================================================
-  // WIDGET BUILDER: Performa Card
-  // ================================================================
 
   Widget _buildPerformaCard({
     required IconData icon,
@@ -378,9 +380,6 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
     );
   }
 
-  // ================================================================
-  // WIDGET BUILDER: Card Tugas (Order Aktif)
-  // ================================================================
   Future<void> _lihatDetail(SetorSampah tugas) async {
     setState(() => _isNavigating = true);
     await Future.delayed(const Duration(milliseconds: 300));
@@ -407,13 +406,22 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
   }
 
   Widget _buildCardTugas(SetorSampah tugas) {
-    // Format tanggal dari API
     String tanggalText = '';
     if (tugas.createdAt != null) {
       final d = tugas.createdAt!;
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
       tanggalText =
           '${d.day} ${months[d.month - 1]}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
@@ -441,8 +449,10 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                 ),
               ),
               Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: AppColor.yellowLight,
                   borderRadius: BorderRadius.circular(20),
@@ -473,8 +483,7 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                     width: 80,
                     height: 80,
                     color: AppColor.base20,
-                    child:
-                        const Icon(Icons.delete, color: AppColor.font80),
+                    child: const Icon(Icons.delete, color: AppColor.font80),
                   ),
                 ),
               ),
@@ -486,13 +495,17 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                     Text(
                       'Pelanggan: ${tugas.customerName.isNotEmpty ? tugas.customerName : '-'}',
                       style: AppFont.medium().copyWith(
-                          fontSize: 13, color: AppColor.font100),
+                        fontSize: 13,
+                        color: AppColor.font100,
+                      ),
                     ),
                     const SizedBox(height: 2),
                     Text(
                       'Alamat : ${tugas.alamat ?? '-'}',
                       style: AppFont.regular().copyWith(
-                          fontSize: 12, color: AppColor.font100),
+                        fontSize: 12,
+                        color: AppColor.font100,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -500,7 +513,9 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                     Text(
                       'Catatan : ${tugas.pesanCustomer.isNotEmpty ? tugas.pesanCustomer : '-'}',
                       style: AppFont.regular().copyWith(
-                          fontSize: 12, color: AppColor.font80),
+                        fontSize: 12,
+                        color: AppColor.font80,
+                      ),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -508,7 +523,9 @@ class _PetugasDashboardState extends State<PetugasDashboard> {
                     Text(
                       'Driver : ${tugas.petugasName.isNotEmpty ? tugas.petugasName : '-'}',
                       style: AppFont.regular().copyWith(
-                          fontSize: 12, color: AppColor.font80),
+                        fontSize: 12,
+                        color: AppColor.font80,
+                      ),
                     ),
                   ],
                 ),

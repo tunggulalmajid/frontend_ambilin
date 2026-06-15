@@ -5,10 +5,7 @@ import 'package:frontend_ambilin/utils/app_font.dart';
 class RiwayatHeader extends StatelessWidget {
   final VoidCallback? onLihatSemua;
 
-  const RiwayatHeader({
-    super.key,
-    this.onLihatSemua,
-  });
+  const RiwayatHeader({super.key, this.onLihatSemua});
 
   @override
   Widget build(BuildContext context) {

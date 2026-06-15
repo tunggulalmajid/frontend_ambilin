@@ -39,8 +39,11 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_hasMore && !_isFetchingMore && !context.read<ArticleProvider>().isLoading) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore &&
+          !_isFetchingMore &&
+          !context.read<ArticleProvider>().isLoading) {
         _loadMoreData();
       }
     }
@@ -50,7 +53,11 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
     _currentPage = 1;
     _hasMore = true;
     _isFetchingMore = false;
-    context.read<ArticleProvider>().fetchArticles(page: 1, limit: 10, isLoadMore: false);
+    context.read<ArticleProvider>().fetchArticles(
+      page: 1,
+      limit: 10,
+      isLoadMore: false,
+    );
   }
 
   Future<void> _loadMoreData() async {
@@ -62,7 +69,11 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
     _currentPage++;
     final provider = context.read<ArticleProvider>();
     final int beforeCount = provider.allArticles.length;
-    await provider.fetchArticles(page: _currentPage, limit: 10, isLoadMore: true);
+    await provider.fetchArticles(
+      page: _currentPage,
+      limit: 10,
+      isLoadMore: true,
+    );
     final int afterCount = provider.allArticles.length;
 
     if (mounted) {
@@ -115,9 +126,7 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 32),
-                      child: CircularProgressIndicator(
-                        color: AppColor.base100,
-                      ),
+                      child: CircularProgressIndicator(color: AppColor.base100),
                     ),
                   )
                 else
@@ -131,9 +140,8 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => DetailArtikelPage(
-                                article: articles[index],
-                              ),
+                              builder: (context) =>
+                                  DetailArtikelPage(article: articles[index]),
                             ),
                           );
                         },
@@ -165,20 +173,12 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const TambahArtikelPage(),
-            ),
+            MaterialPageRoute(builder: (context) => const TambahArtikelPage()),
           );
         },
         backgroundColor: AppColor.base100,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: const Icon(
-          Icons.add,
-          color: AppColor.putih100,
-          size: 30,
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        child: const Icon(Icons.add, color: AppColor.putih100, size: 30),
       ),
       bottomNavigationBar: const AdminNavBar(currentIndex: 2),
     );
@@ -197,7 +197,7 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                 ListTile(
+                ListTile(
                   leading: const Icon(Icons.edit_outlined),
                   title: Text(
                     'Edit Artikel',

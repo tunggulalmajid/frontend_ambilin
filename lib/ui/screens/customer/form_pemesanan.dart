@@ -26,7 +26,7 @@ class _FormPemesananState extends State<FormPemesanan> {
   double? _longitude;
   File? _fotoSampah;
   final ImagePicker _picker = ImagePicker();
-  
+
   final TextEditingController _notesController = TextEditingController();
   bool _isLoading = false;
 
@@ -42,7 +42,10 @@ class _FormPemesananState extends State<FormPemesanan> {
 
   Future<void> _ambilDariKamera() async {
     try {
-      final XFile? photo = await _picker.pickImage(source: ImageSource.camera, imageQuality: 80);
+      final XFile? photo = await _picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 80,
+      );
       if (photo != null) {
         setState(() {
           _fotoSampah = File(photo.path);
@@ -50,14 +53,20 @@ class _FormPemesananState extends State<FormPemesanan> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: AppColor.redAllert),
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColor.redAllert,
+        ),
       );
     }
   }
 
   Future<void> _ambilDariGaleri() async {
     try {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery, imageQuality: 80);
+      final XFile? image = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 80,
+      );
       if (image != null) {
         setState(() {
           _fotoSampah = File(image.path);
@@ -65,7 +74,10 @@ class _FormPemesananState extends State<FormPemesanan> {
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e'), backgroundColor: AppColor.redAllert),
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColor.redAllert,
+        ),
       );
     }
   }
@@ -84,7 +96,9 @@ class _FormPemesananState extends State<FormPemesanan> {
     if (_selectedAddress == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Center(child: Text('Pilih lokasi penjemputan terlebih dahulu')),
+          content: Center(
+            child: Text('Pilih lokasi penjemputan terlebih dahulu'),
+          ),
           backgroundColor: AppColor.redAllert,
         ),
       );
@@ -132,7 +146,10 @@ class _FormPemesananState extends State<FormPemesanan> {
             ),
             title: Text(
               'Berhasil',
-              style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColor.base100),
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                color: AppColor.base100,
+              ),
             ),
             content: Text(
               'Penjemputan Sampah Berhasil Diajukan!',
@@ -141,12 +158,15 @@ class _FormPemesananState extends State<FormPemesanan> {
             actions: [
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // close dialog
-                  Navigator.pop(context); // back to dashboard
+                  Navigator.pop(context);
+                  Navigator.pop(context);
                 },
                 child: Text(
                   'OK',
-                  style: GoogleFonts.poppins(fontWeight: FontWeight.bold, color: AppColor.base100),
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: AppColor.base100,
+                  ),
                 ),
               ),
             ],
@@ -156,7 +176,13 @@ class _FormPemesananState extends State<FormPemesanan> {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Center(child: Text(pickupProvider.errorMessage.isNotEmpty ? pickupProvider.errorMessage : 'Gagal mengajukan penjemputan sampah')),
+          content: Center(
+            child: Text(
+              pickupProvider.errorMessage.isNotEmpty
+                  ? pickupProvider.errorMessage
+                  : 'Gagal mengajukan penjemputan sampah',
+            ),
+          ),
           backgroundColor: AppColor.redAllert,
         ),
       );
@@ -186,7 +212,11 @@ class _FormPemesananState extends State<FormPemesanan> {
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(Icons.arrow_back, size: 16, color: AppColor.font100),
+                    const Icon(
+                      Icons.arrow_back,
+                      size: 16,
+                      color: AppColor.font100,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       'Kembali',
@@ -231,19 +261,29 @@ class _FormPemesananState extends State<FormPemesanan> {
                 isDense: true,
                 hint: Text(
                   'Masukkan kategori sampah',
-                  style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font80),
+                  style: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: AppColor.font80,
+                  ),
                 ),
                 decoration: InputDecoration(
                   fillColor: Colors.white,
                   filled: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 10,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: AppColor.font60.withOpacity(0.5)),
+                    borderSide: BorderSide(
+                      color: AppColor.font60.withOpacity(0.5),
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: AppColor.font60.withOpacity(0.5)),
+                    borderSide: BorderSide(
+                      color: AppColor.font60.withOpacity(0.5),
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -255,7 +295,10 @@ class _FormPemesananState extends State<FormPemesanan> {
                     value: cat.idJenisSampah,
                     child: Text(
                       cat.nama,
-                      style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font100),
+                      style: GoogleFonts.poppins(
+                        fontSize: 13,
+                        color: AppColor.font100,
+                      ),
                     ),
                   );
                 }).toList(),
@@ -294,9 +337,14 @@ class _FormPemesananState extends State<FormPemesanan> {
                         child: FlutterMap(
                           key: ValueKey('${_latitude}_${_longitude}'),
                           options: MapOptions(
-                            initialCenter: LatLng(_latitude ?? -8.1724, _longitude ?? 113.7005),
+                            initialCenter: LatLng(
+                              _latitude ?? -8.1724,
+                              _longitude ?? 113.7005,
+                            ),
                             initialZoom: _latitude != null ? 15.0 : 12.0,
-                            interactionOptions: const InteractionOptions(flags: InteractiveFlag.none),
+                            interactionOptions: const InteractionOptions(
+                              flags: InteractiveFlag.none,
+                            ),
                           ),
                           children: [
                             TileLayer(
@@ -344,10 +392,12 @@ class _FormPemesananState extends State<FormPemesanan> {
                       width: double.infinity,
                       child: ElevatedButton.icon(
                         onPressed: () async {
-                          final result = await Navigator.pushNamed(
-                            context,
-                            AppRoutes.pelangganPilihMap,
-                          ) as Map<String, dynamic>?;
+                          final result =
+                              await Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.pelangganPilihMap,
+                                  )
+                                  as Map<String, dynamic>?;
 
                           if (result != null) {
                             setState(() {
@@ -365,7 +415,11 @@ class _FormPemesananState extends State<FormPemesanan> {
                           ),
                           elevation: 0,
                         ),
-                        icon: const Icon(Icons.location_on, color: Colors.white, size: 18),
+                        icon: const Icon(
+                          Icons.location_on,
+                          color: Colors.white,
+                          size: 18,
+                        ),
                         label: Text(
                           'Pilih Lokasi Penjemputan',
                           style: GoogleFonts.poppins(
@@ -393,17 +447,27 @@ class _FormPemesananState extends State<FormPemesanan> {
                 controller: _notesController,
                 decoration: InputDecoration(
                   hintText: 'Tambahkan Pesan',
-                  hintStyle: GoogleFonts.poppins(fontSize: 13, color: AppColor.font80),
+                  hintStyle: GoogleFonts.poppins(
+                    fontSize: 13,
+                    color: AppColor.font80,
+                  ),
                   fillColor: Colors.white,
                   filled: true,
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 14,
+                  ),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: AppColor.font60.withOpacity(0.5)),
+                    borderSide: BorderSide(
+                      color: AppColor.font60.withOpacity(0.5),
+                    ),
                   ),
                   enabledBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
-                    borderSide: BorderSide(color: AppColor.font60.withOpacity(0.5)),
+                    borderSide: BorderSide(
+                      color: AppColor.font60.withOpacity(0.5),
+                    ),
                   ),
                   focusedBorder: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
@@ -436,7 +500,10 @@ class _FormPemesananState extends State<FormPemesanan> {
                   children: [
                     _fotoSampah != null
                         ? GestureDetector(
-                            onTap: () => ZoomableImageDialog.show(context, imageFile: _fotoSampah!),
+                            onTap: () => ZoomableImageDialog.show(
+                              context,
+                              imageFile: _fotoSampah!,
+                            ),
                             child: ClipRRect(
                               borderRadius: BorderRadius.circular(8),
                               child: Image.file(
@@ -476,7 +543,11 @@ class _FormPemesananState extends State<FormPemesanan> {
                               ),
                               elevation: 0,
                             ),
-                            icon: const Icon(Icons.camera_alt, color: Colors.white, size: 16),
+                            icon: const Icon(
+                              Icons.camera_alt,
+                              color: Colors.white,
+                              size: 16,
+                            ),
                             label: Text(
                               'Kamera',
                               style: GoogleFonts.poppins(
@@ -492,13 +563,20 @@ class _FormPemesananState extends State<FormPemesanan> {
                           child: OutlinedButton.icon(
                             onPressed: _ambilDariGaleri,
                             style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: AppColor.base100, width: 1.5),
+                              side: const BorderSide(
+                                color: AppColor.base100,
+                                width: 1.5,
+                              ),
                               padding: const EdgeInsets.symmetric(vertical: 10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(8),
                               ),
                             ),
-                            icon: const Icon(Icons.photo_library, color: AppColor.base100, size: 16),
+                            icon: const Icon(
+                              Icons.photo_library,
+                              color: AppColor.base100,
+                              size: 16,
+                            ),
                             label: Text(
                               'Galeri',
                               style: GoogleFonts.poppins(

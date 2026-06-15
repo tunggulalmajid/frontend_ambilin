@@ -14,7 +14,11 @@ class WasteCategoryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
-  Future<void> fetchCategories({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<void> fetchCategories({
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     if (!isLoadMore) {
       _isLoading = true;
       _categories = [];
@@ -23,12 +27,17 @@ class WasteCategoryProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _categoryService.getAllJenisSampah(page: page, limit: limit);
+      final response = await _categoryService.getAllJenisSampah(
+        page: page,
+        limit: limit,
+      );
       _isLoading = false;
 
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
-        final List<JenisSampah> loaded = data.map((json) => JenisSampah.fromJson(json)).toList();
+        final List<JenisSampah> loaded = data
+            .map((json) => JenisSampah.fromJson(json))
+            .toList();
         if (isLoadMore) {
           _categories.addAll(loaded);
         } else {

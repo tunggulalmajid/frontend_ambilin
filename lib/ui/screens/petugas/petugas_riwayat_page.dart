@@ -1,9 +1,3 @@
-// ----- FILE: lib/ui/screens/petugas/petugas_riwayat_page.dart -----
-// Halaman Riwayat & Aktivitas Tugas Petugas — menampilkan data dari API:
-// - Daftar tugas/order penjemputan petugas (proses & selesai) dari PickupHistoryProvider
-// - Nama jenis sampah dari WasteCategoryProvider
-// Semua data dummy telah dihapus dan diganti dengan data real dari API.
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../models/setor_sampah.dart';
@@ -47,8 +41,11 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_hasMore && !_isFetchingMore && !context.read<PickupHistoryProvider>().isLoading) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore &&
+          !_isFetchingMore &&
+          !context.read<PickupHistoryProvider>().isLoading) {
         _loadMoreData();
       }
     }
@@ -58,7 +55,12 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     _currentPage = 1;
     _hasMore = true;
     _isFetchingMore = false;
-    context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 2, page: 1, limit: 10, isLoadMore: false);
+    context.read<PickupHistoryProvider>().fetchPickupHistory(
+      roleId: 2,
+      page: 1,
+      limit: 10,
+      isLoadMore: false,
+    );
     context.read<WasteCategoryProvider>().fetchCategories();
   }
 
@@ -71,7 +73,12 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     _currentPage++;
     final provider = context.read<PickupHistoryProvider>();
     final int beforeCount = provider.setorHistory.length;
-    await provider.fetchPickupHistory(roleId: 2, page: _currentPage, limit: 10, isLoadMore: true);
+    await provider.fetchPickupHistory(
+      roleId: 2,
+      page: _currentPage,
+      limit: 10,
+      isLoadMore: true,
+    );
     final int afterCount = provider.setorHistory.length;
 
     if (mounted) {
@@ -115,18 +122,24 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     final categoryProvider = context.watch<WasteCategoryProvider>();
     final history = pickupProvider.setorHistory;
 
-    // Filter list berdasarkan status
-    final dataSedangProses = history.where((e) => e.status == 'proses').toList();
-    final dataSelesai = history.where((e) => e.status == 'selesai' || e.status == 'dibatalkan').toList();
+    final dataSedangProses = history
+        .where((e) => e.status == 'proses')
+        .toList();
+    final dataSelesai = history
+        .where((e) => e.status == 'selesai' || e.status == 'dibatalkan')
+        .toList();
 
     String getJenisSampahName(SetorSampah tugas) {
       final id = tugas.idJenisSampah;
-      if (id == null) return tugas.namaJenisSampah.isNotEmpty ? tugas.namaJenisSampah : '-';
+      if (id == null)
+        return tugas.namaJenisSampah.isNotEmpty ? tugas.namaJenisSampah : '-';
       final cat = categoryProvider.categories.firstWhere(
         (element) => element.idJenisSampah == id,
         orElse: () => JenisSampah(
           idJenisSampah: id,
-          nama: tugas.namaJenisSampah.isNotEmpty ? tugas.namaJenisSampah : 'Jenis Sampah #$id',
+          nama: tugas.namaJenisSampah.isNotEmpty
+              ? tugas.namaJenisSampah
+              : 'Jenis Sampah #$id',
           poinPerKg: tugas.poinPerKg ?? 0,
         ),
       );
@@ -144,7 +157,10 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
               child: SingleChildScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 20,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -157,9 +173,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                     ),
                     const SizedBox(height: 24),
 
-                    // ============================================
-                    // SEDANG PROSES SECTION
-                    // ============================================
                     Text(
                       'Sedang Proses',
                       style: AppFont.bold().copyWith(
@@ -174,7 +187,9 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 20),
-                          child: CircularProgressIndicator(color: AppColor.base100),
+                          child: CircularProgressIndicator(
+                            color: AppColor.base100,
+                          ),
                         ),
                       )
                     else if (dataSedangProses.isEmpty)
@@ -207,9 +222,6 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                       ),
                     const SizedBox(height: 24),
 
-                    // ============================================
-                    // SELESAI & RIWAYAT SECTION
-                    // ============================================
                     Text(
                       'Riwayat Selesai',
                       style: AppFont.bold().copyWith(
@@ -224,7 +236,9 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 20),
-                          child: CircularProgressIndicator(color: AppColor.base100),
+                          child: CircularProgressIndicator(
+                            color: AppColor.base100,
+                          ),
                         ),
                       )
                     else if (dataSelesai.isEmpty)
@@ -259,7 +273,9 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Center(
-                          child: CircularProgressIndicator(color: AppColor.base100),
+                          child: CircularProgressIndicator(
+                            color: AppColor.base100,
+                          ),
                         ),
                       ),
                     const SizedBox(height: 20),
@@ -279,7 +295,9 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                 decoration: BoxDecoration(
                   color: AppColor.redLight,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppColor.redAllert.withOpacity(0.3)),
+                  border: Border.all(
+                    color: AppColor.redAllert.withOpacity(0.3),
+                  ),
                 ),
                 child: Text(
                   pickupProvider.errorMessage,
@@ -298,25 +316,31 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
     );
   }
 
-  // ================================================================
-  // WIDGET BUILDER: Card Riwayat
-  // ================================================================
-
   Widget _buildCardRiwayat({
     required SetorSampah tugas,
     required String jenisSampahName,
     required bool isSelesai,
     required VoidCallback onTapLihat,
   }) {
-    // Format tanggal
     String tanggalText = '';
     if (tugas.createdAt != null) {
       final d = tugas.createdAt!;
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des',
       ];
-      tanggalText = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+      tanggalText =
+          '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     }
 
     return Container(
@@ -341,13 +365,16 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: tugas.status == 'selesai'
                       ? const Color(0xFFE8F5E9)
                       : tugas.status == 'dibatalkan'
-                          ? const Color(0xFFFFEBEE)
-                          : const Color(0xFFFFF8E1),
+                      ? const Color(0xFFFFEBEE)
+                      : const Color(0xFFFFF8E1),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: Text(
@@ -357,8 +384,8 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                     color: tugas.status == 'selesai'
                         ? const Color(0xFF2E7D32)
                         : tugas.status == 'dibatalkan'
-                            ? const Color(0xFFC62828)
-                            : const Color(0xFFE65100),
+                        ? const Color(0xFFC62828)
+                        : const Color(0xFFE65100),
                   ),
                 ),
               ),
@@ -380,7 +407,11 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                     width: 80,
                     height: 80,
                     color: AppColor.base20,
-                    child: const Icon(Icons.image, size: 30, color: AppColor.font80),
+                    child: const Icon(
+                      Icons.image,
+                      size: 30,
+                      color: AppColor.font80,
+                    ),
                   ),
                 ),
               ),

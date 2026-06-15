@@ -24,17 +24,12 @@ class FilterChips extends StatelessWidget {
           child: GestureDetector(
             onTap: () => onFilterChanged(filter),
             child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 8,
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: isSelected ? AppColor.font100 : AppColor.putih100,
                 borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: isSelected
-                      ? AppColor.font100
-                      : AppColor.font60,
+                  color: isSelected ? AppColor.font100 : AppColor.font60,
                 ),
               ),
               child: Text(

@@ -10,12 +10,9 @@ import '../../providers/dashboard_provider.dart';
 import 'profile_header.dart';
 
 class CustomProfileScreen extends StatefulWidget {
-  final String role; // 'customer', 'petugas', or 'admin'
+  final String role;
 
-  const CustomProfileScreen({
-    super.key,
-    required this.role,
-  });
+  const CustomProfileScreen({super.key, required this.role});
 
   @override
   State<CustomProfileScreen> createState() => _CustomProfileScreenState();
@@ -57,7 +54,9 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
         ),
       );
 
-      final success = await context.read<AuthProvider>().updateProfilePhoto(image.path);
+      final success = await context.read<AuthProvider>().updateProfilePhoto(
+        image.path,
+      );
       if (!mounted) return;
 
       if (success) {
@@ -71,7 +70,9 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
         final errMsg = context.read<AuthProvider>().errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil'),
+            content: Text(
+              errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil',
+            ),
             backgroundColor: AppColor.redAllert,
           ),
         );
@@ -95,9 +96,7 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
     if (auth.isProfileLoading || dash.isLoading) {
       return const Scaffold(
         backgroundColor: AppColor.putihBackground,
-        body: Center(
-          child: CircularProgressIndicator(color: AppColor.base100),
-        ),
+        body: Center(child: CircularProgressIndicator(color: AppColor.base100)),
       );
     }
 
@@ -110,20 +109,32 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Icon(Icons.error_outline, color: AppColor.redAllert, size: 48),
+                const Icon(
+                  Icons.error_outline,
+                  color: AppColor.redAllert,
+                  size: 48,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   auth.errorMessage,
                   textAlign: TextAlign.center,
-                  style: AppFont.regular().copyWith(color: AppColor.font100, fontSize: 14),
+                  style: AppFont.regular().copyWith(
+                    color: AppColor.font100,
+                    fontSize: 14,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     context.read<AuthProvider>().fetchProfile();
                   },
-                  style: ElevatedButton.styleFrom(backgroundColor: AppColor.base100),
-                  child: const Text('Coba Lagi', style: TextStyle(color: Colors.white)),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColor.base100,
+                  ),
+                  child: const Text(
+                    'Coba Lagi',
+                    style: TextStyle(color: Colors.white),
+                  ),
                 ),
               ],
             ),
@@ -134,9 +145,7 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
 
     final user = auth.user;
     if (user == null) {
-      return const Scaffold(
-        body: Center(child: Text('Data tidak ditemukan')),
-      );
+      return const Scaffold(body: Center(child: Text('Data tidak ditemukan')));
     }
 
     String backgroundUrl = '';
@@ -146,9 +155,11 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
     if (widget.role == 'admin') {
       backgroundUrl = 'assets/gambar_profile.png';
     } else if (widget.role == 'petugas') {
-      backgroundUrl = 'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop';
+      backgroundUrl =
+          'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop';
     } else {
-      backgroundUrl = 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop';
+      backgroundUrl =
+          'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop';
     }
 
     final inisialVal = nama.isNotEmpty ? nama[0].toUpperCase() : 'R';
@@ -158,7 +169,6 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ========== Header Profil ==========
             if (widget.role == 'admin')
               _buildAdminHeader(context, inisialVal, nama, email, user)
             else
@@ -169,15 +179,23 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
                 email: email,
                 fotoUrl: user.foto != null && user.foto!.isNotEmpty
                     ? (user.foto!.startsWith('http')
-                        ? user.foto
-                        : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
+                          ? user.foto
+                          : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
                     : null,
                 showBackButton: false,
                 onEditPressed: () {
                   if (widget.role == 'petugas') {
-                    Navigator.pushNamed(context, AppRoutes.petugasEditProfil, arguments: user);
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.petugasEditProfil,
+                      arguments: user,
+                    );
                   } else {
-                    Navigator.pushNamed(context, AppRoutes.pelangganEditProfil, arguments: user);
+                    Navigator.pushNamed(
+                      context,
+                      AppRoutes.pelangganEditProfil,
+                      arguments: user,
+                    );
                   }
                 },
                 onAvatarEditPressed: _changeProfilePhoto,
@@ -185,7 +203,6 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
 
             const SizedBox(height: 70),
 
-            // ========== Rincian Profil ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: widget.role == 'admin'
@@ -195,7 +212,6 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
 
             const SizedBox(height: 16),
 
-            // ========== Menu Aksi ==========
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
               child: _buildActionMenu(context, auth),
@@ -207,12 +223,18 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
     );
   }
 
-  Widget _buildAdminHeader(BuildContext context, String inisial, String nama, String email, UserModel user) {
+  Widget _buildAdminHeader(
+    BuildContext context,
+    String inisial,
+    String nama,
+    String email,
+    UserModel user,
+  ) {
     double headerHeight = 280;
     final String? fotoUrl = user.foto != null && user.foto!.isNotEmpty
         ? (user.foto!.startsWith('http')
-            ? user.foto
-            : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
+              ? user.foto
+              : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
         : null;
 
     return Stack(
@@ -228,11 +250,9 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
               fit: BoxFit.cover,
             ),
           ),
-          child: Container(
-            color: Colors.black45,
-          ),
+          child: Container(color: Colors.black45),
         ),
-        // Tombol Back
+
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
           left: 16,
@@ -253,13 +273,17 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
             ),
           ),
         ),
-        // Tombol Edit
+
         Positioned(
           top: MediaQuery.of(context).padding.top + 14,
           right: 20,
           child: GestureDetector(
             onTap: () {
-              Navigator.pushNamed(context, AppRoutes.adminEditProfil, arguments: user);
+              Navigator.pushNamed(
+                context,
+                AppRoutes.adminEditProfil,
+                arguments: user,
+              );
             },
             child: Text(
               'Edit',
@@ -270,7 +294,7 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
             ),
           ),
         ),
-        // Avatar + Nama + Email
+
         Positioned(
           top: 90,
           child: Column(
@@ -282,7 +306,9 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
                     CircleAvatar(
                       radius: 50,
                       backgroundColor: const Color(0xFFFFCDD2),
-                      backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                      backgroundImage: fotoUrl != null
+                          ? NetworkImage(fotoUrl)
+                          : null,
                       child: fotoUrl == null
                           ? Text(
                               inisial,
@@ -408,13 +434,22 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
           ),
           const SizedBox(height: 16),
           if (widget.role == 'petugas') ...[
-            ProfileInfoRow(label: 'Nomor Telepon', value: user.nomorTelepon ?? '-'),
+            ProfileInfoRow(
+              label: 'Nomor Telepon',
+              value: user.nomorTelepon ?? '-',
+            ),
             const ProfileInfoRow(label: 'Status', value: 'Aktif'),
           ] else ...[
             ProfileInfoRow(label: 'Alamat', value: user.alamat ?? '-'),
-            ProfileInfoRow(label: 'No Telepon', value: user.nomorTelepon ?? '-'),
+            ProfileInfoRow(
+              label: 'No Telepon',
+              value: user.nomorTelepon ?? '-',
+            ),
             ProfileInfoRow(label: 'Poin', value: dash.formattedPoin),
-            ProfileInfoRow(label: 'Member', value: dash.isMember ? 'Aktif' : 'Tidak Aktif'),
+            ProfileInfoRow(
+              label: 'Member',
+              value: dash.isMember ? 'Aktif' : 'Tidak Aktif',
+            ),
             const ProfileInfoRow(label: 'Status', value: 'Aktif'),
           ],
         ],
@@ -504,9 +539,7 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
                       },
                       child: Text(
                         'Logout',
-                        style: AppFont.medium().copyWith(
-                          color: Colors.red,
-                        ),
+                        style: AppFont.medium().copyWith(color: Colors.red),
                       ),
                     ),
                   ],

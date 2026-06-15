@@ -1,8 +1,3 @@
-// ----- FILE: lib/ui/screens/petugas/petugas_proses_penjemputan_page.dart -----
-// Halaman Input Timbangan & Foto Bukti Penjemputan — mengirim data ke API:
-// - Mengirim data berat_sampah dan foto_bukti_penjemputan via PickupHistoryProvider.completePickup()
-// - Menghapus semua hardcoded dummy states.
-
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -33,7 +28,7 @@ class _PetugasProsesPenjemputanPageState
   final _formKey = GlobalKey<FormState>();
   final _beratController = TextEditingController();
   final ImagePicker _picker = ImagePicker();
-  
+
   File? _fotoBukti;
   bool _isLoading = false;
 
@@ -60,8 +55,10 @@ class _PetugasProsesPenjemputanPageState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Foto bukti berhasil diambil!',
-              style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Foto bukti berhasil diambil!',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: AppColor.base100,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 1),
@@ -96,8 +93,10 @@ class _PetugasProsesPenjemputanPageState
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Foto bukti berhasil dipilih!',
-              style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Foto bukti berhasil dipilih!',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: AppColor.base100,
           behavior: SnackBarBehavior.floating,
           duration: const Duration(seconds: 1),
@@ -121,8 +120,10 @@ class _PetugasProsesPenjemputanPageState
     if (_fotoBukti == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Wajib mengunggah foto bukti penjemputan.',
-              style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Wajib mengunggah foto bukti penjemputan.',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: AppColor.redAllert,
           behavior: SnackBarBehavior.floating,
         ),
@@ -134,8 +135,10 @@ class _PetugasProsesPenjemputanPageState
     if (berat == null || berat <= 0) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Input berat sampah tidak valid.',
-              style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Input berat sampah tidak valid.',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: AppColor.redAllert,
           behavior: SnackBarBehavior.floating,
         ),
@@ -146,10 +149,10 @@ class _PetugasProsesPenjemputanPageState
     setState(() => _isLoading = true);
 
     final success = await context.read<PickupHistoryProvider>().completePickup(
-          id: widget.data.idSetorSampah,
-          beratSampah: berat,
-          imagePath: _fotoBukti!.path,
-        );
+      id: widget.data.idSetorSampah,
+      beratSampah: berat,
+      imagePath: _fotoBukti!.path,
+    );
 
     setState(() => _isLoading = false);
 
@@ -158,18 +161,18 @@ class _PetugasProsesPenjemputanPageState
     if (success) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Penjemputan Berhasil Diselesaikan!',
-              style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Penjemputan Berhasil Diselesaikan!',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: AppColor.base100,
           behavior: SnackBarBehavior.floating,
         ),
       );
 
-      // Refresh list order aktif & riwayat petugas
       context.read<PickupHistoryProvider>().fetchActiveOrders();
       context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 2);
 
-      // Kembali ke dashboard petugas
       Navigator.popUntil(context, (route) => route.isFirst);
     } else {
       final error = context.read<PickupHistoryProvider>().errorMessage;
@@ -192,12 +195,15 @@ class _PetugasProsesPenjemputanPageState
     final categoryProvider = context.watch<WasteCategoryProvider>();
 
     String getJenisSampahName(int? id) {
-      if (id == null) return data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : '-';
+      if (id == null)
+        return data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : '-';
       final cat = categoryProvider.categories.firstWhere(
         (element) => element.idJenisSampah == id,
         orElse: () => JenisSampah(
           idJenisSampah: id,
-          nama: data.namaJenisSampah.isNotEmpty ? data.namaJenisSampah : 'Jenis Sampah #$id',
+          nama: data.namaJenisSampah.isNotEmpty
+              ? data.namaJenisSampah
+              : 'Jenis Sampah #$id',
           poinPerKg: data.poinPerKg ?? 0,
         ),
       );
@@ -208,10 +214,21 @@ class _PetugasProsesPenjemputanPageState
     if (data.createdAt != null) {
       final d = data.createdAt!;
       final months = [
-        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember',
       ];
-      tanggalText = '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
+      tanggalText =
+          '${d.day} ${months[d.month - 1]} ${d.year}, ${d.hour.toString().padLeft(2, '0')}:${d.minute.toString().padLeft(2, '0')}';
     }
 
     return Scaffold(
@@ -239,11 +256,21 @@ class _PetugasProsesPenjemputanPageState
                 title: 'Rincian penjemputan',
                 child: Column(
                   children: [
-                    DetailDataRow(label: 'Nama Pelanggan', value: data.customerName.isNotEmpty ? data.customerName : '-'),
+                    DetailDataRow(
+                      label: 'Nama Pelanggan',
+                      value: data.customerName.isNotEmpty
+                          ? data.customerName
+                          : '-',
+                    ),
                     DetailDataRow(label: 'Status', value: 'Sedang Dijemput'),
                     DetailDataRow(label: 'Alamat', value: data.alamat ?? '-'),
                     DetailDataRow(label: 'Waktu Pengajuan', value: tanggalText),
-                    DetailDataRow(label: 'Petugas', value: data.petugasName.isNotEmpty ? data.petugasName : '-'),
+                    DetailDataRow(
+                      label: 'Petugas',
+                      value: data.petugasName.isNotEmpty
+                          ? data.petugasName
+                          : '-',
+                    ),
                   ],
                 ),
               ),
@@ -251,8 +278,13 @@ class _PetugasProsesPenjemputanPageState
               DetailCardWrapper(
                 title: 'Catatan Pelanggan',
                 child: Text(
-                  data.pesanCustomer.isNotEmpty ? data.pesanCustomer : 'Tidak ada catatan tambahan.',
-                  style: AppFont.regular().copyWith(fontSize: 14, color: AppColor.font80),
+                  data.pesanCustomer.isNotEmpty
+                      ? data.pesanCustomer
+                      : 'Tidak ada catatan tambahan.',
+                  style: AppFont.regular().copyWith(
+                    fontSize: 14,
+                    color: AppColor.font80,
+                  ),
                 ),
               ),
               const SizedBox(height: 16),
@@ -263,7 +295,10 @@ class _PetugasProsesPenjemputanPageState
                   children: [
                     GestureDetector(
                       onTap: (data.foto != null && data.foto!.isNotEmpty)
-                          ? () => ZoomableImageDialog.show(context, imageUrl: data.foto)
+                          ? () => ZoomableImageDialog.show(
+                              context,
+                              imageUrl: data.foto,
+                            )
                           : null,
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
@@ -276,7 +311,11 @@ class _PetugasProsesPenjemputanPageState
                             width: double.infinity,
                             height: 150,
                             color: AppColor.base20,
-                            child: const Icon(Icons.image, size: 50, color: AppColor.font60),
+                            child: const Icon(
+                              Icons.image,
+                              size: 50,
+                              color: AppColor.font60,
+                            ),
                           ),
                         ),
                       ),
@@ -290,11 +329,17 @@ class _PetugasProsesPenjemputanPageState
                           children: [
                             Text(
                               'Jenis Sampah',
-                              style: AppFont.bold().copyWith(fontSize: 14, color: AppColor.font100),
+                              style: AppFont.bold().copyWith(
+                                fontSize: 14,
+                                color: AppColor.font100,
+                              ),
                             ),
                             Text(
                               getJenisSampahName(data.idJenisSampah),
-                              style: AppFont.regular().copyWith(fontSize: 14, color: AppColor.font80),
+                              style: AppFont.regular().copyWith(
+                                fontSize: 14,
+                                color: AppColor.font80,
+                              ),
                             ),
                           ],
                         ),
@@ -303,11 +348,17 @@ class _PetugasProsesPenjemputanPageState
                           children: [
                             Text(
                               'Berat Sampah',
-                              style: AppFont.bold().copyWith(fontSize: 14, color: AppColor.font100),
+                              style: AppFont.bold().copyWith(
+                                fontSize: 14,
+                                color: AppColor.font100,
+                              ),
                             ),
                             Text(
                               '- kg',
-                              style: AppFont.regular().copyWith(fontSize: 14, color: AppColor.font80),
+                              style: AppFont.regular().copyWith(
+                                fontSize: 14,
+                                color: AppColor.font80,
+                              ),
                             ),
                           ],
                         ),
@@ -341,7 +392,10 @@ class _PetugasProsesPenjemputanPageState
         children: [
           Text(
             'Foto Timbangan / Sampah Terangkut',
-            style: AppFont.semibold().copyWith(fontSize: 14, color: AppColor.font100),
+            style: AppFont.semibold().copyWith(
+              fontSize: 14,
+              color: AppColor.font100,
+            ),
           ),
           const SizedBox(height: 12),
           Container(
@@ -356,7 +410,10 @@ class _PetugasProsesPenjemputanPageState
               children: [
                 _fotoBuktiDipilih
                     ? GestureDetector(
-                        onTap: () => ZoomableImageDialog.show(context, imageFile: _fotoBukti!),
+                        onTap: () => ZoomableImageDialog.show(
+                          context,
+                          imageFile: _fotoBukti!,
+                        ),
                         child: ClipRRect(
                           borderRadius: BorderRadius.circular(8),
                           child: Image.file(
@@ -367,13 +424,20 @@ class _PetugasProsesPenjemputanPageState
                           ),
                         ),
                       )
-                    : const Icon(Icons.image_outlined, size: 48, color: AppColor.font60),
+                    : const Icon(
+                        Icons.image_outlined,
+                        size: 48,
+                        color: AppColor.font60,
+                      ),
                 const SizedBox(height: 10),
                 Text(
                   _fotoBuktiDipilih
                       ? 'Foto Bukti Sudah Dipilih'
                       : 'Upload Bukti Penjemputan Anda',
-                  style: AppFont.regular().copyWith(fontSize: 13, color: AppColor.font80),
+                  style: AppFont.regular().copyWith(
+                    fontSize: 13,
+                    color: AppColor.font80,
+                  ),
                 ),
                 const SizedBox(height: 16),
                 Row(
@@ -382,27 +446,54 @@ class _PetugasProsesPenjemputanPageState
                     ElevatedButton.icon(
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppColor.base100,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                       ),
-                      icon: const Icon(Icons.camera_alt, color: AppColor.putih100, size: 18),
+                      icon: const Icon(
+                        Icons.camera_alt,
+                        color: AppColor.putih100,
+                        size: 18,
+                      ),
                       label: Text(
                         'Kamera',
-                        style: AppFont.semibold().copyWith(fontSize: 13, color: AppColor.putih100),
+                        style: AppFont.semibold().copyWith(
+                          fontSize: 13,
+                          color: AppColor.putih100,
+                        ),
                       ),
                       onPressed: _ambilDariKamera,
                     ),
                     const SizedBox(width: 12),
                     OutlinedButton.icon(
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColor.base100, width: 1.5),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        side: const BorderSide(
+                          color: AppColor.base100,
+                          width: 1.5,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 10,
+                        ),
                       ),
-                      icon: const Icon(Icons.photo_library, color: AppColor.base100, size: 18),
+                      icon: const Icon(
+                        Icons.photo_library,
+                        color: AppColor.base100,
+                        size: 18,
+                      ),
                       label: Text(
                         'Galeri',
-                        style: AppFont.semibold().copyWith(fontSize: 13, color: AppColor.base100),
+                        style: AppFont.semibold().copyWith(
+                          fontSize: 13,
+                          color: AppColor.base100,
+                        ),
                       ),
                       onPressed: _ambilDariGaleri,
                     ),

@@ -36,14 +36,18 @@ class _AdminDashboardState extends State<AdminDashboard> {
     final dashProvider = context.watch<DashboardProvider>();
 
     final String adminName = authProvider.user?.nama ?? 'Admin';
-    final String totalPendapatanText = dashProvider.formatRupiah(dashProvider.totalPendapatan);
-    final String totalPendingText = '${dashProvider.totalPendingVerifikasi} Pengguna';
+    final String totalPendapatanText = dashProvider.formatRupiah(
+      dashProvider.totalPendapatan,
+    );
+    final String totalPendingText =
+        '${dashProvider.totalPendingVerifikasi} Pengguna';
     final double totalSampah = dashProvider.totalSampahTerkumpul;
     final String totalSampahText = totalSampah % 1 == 0
         ? '${totalSampah.toInt()} kg'
         : '${totalSampah.toStringAsFixed(1)} kg';
     final String totalArtikelText = '${dashProvider.totalArtikel} Artikel';
-    final List<Map<String, dynamic>> transactions = dashProvider.recentTransactions
+    final List<Map<String, dynamic>> transactions = dashProvider
+        .recentTransactions
         .where((trx) {
           final status = (trx['status'] ?? 'pending').toString().toLowerCase();
           return status != 'berhasil' && status != 'gagal';
@@ -121,7 +125,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         value: totalPendingText,
                         icon: Icons.people_outline_rounded,
                         onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.adminManajemenKonfirmasi);
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.adminManajemenKonfirmasi,
+                          );
                         },
                       ),
                       AdminStatCard(
@@ -129,7 +136,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         value: totalPendapatanText,
                         icon: Icons.monetization_on_outlined,
                         onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.adminManajemenSubscription);
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.adminManajemenSubscription,
+                          );
                         },
                       ),
                       AdminStatCard(
@@ -142,7 +152,10 @@ class _AdminDashboardState extends State<AdminDashboard> {
                         value: totalArtikelText,
                         icon: Icons.article_outlined,
                         onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.manajemenArtikel);
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.manajemenArtikel,
+                          );
                         },
                       ),
                       const SizedBox(height: 24),
@@ -210,7 +223,9 @@ class _AdminDashboardState extends State<AdminDashboard> {
                           ),
                         )
                       else
-                        ...transactions.map((trx) => AdminTransactionCard(trx: trx)),
+                        ...transactions.map(
+                          (trx) => AdminTransactionCard(trx: trx),
+                        ),
 
                       const SizedBox(height: 24),
                     ],

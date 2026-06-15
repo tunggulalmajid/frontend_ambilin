@@ -1,4 +1,3 @@
-/// Model data untuk tabel `artikel` berdasarkan ERD Ambilin.
 class Artikel {
   final int idArtikel;
   final int idAdmin;
@@ -10,9 +9,8 @@ class Artikel {
   final DateTime? createdAt;
   final DateTime? updatedAt;
 
-  // Field tambahan dari relasi (untuk kemudahan binding di UI)
-  final String kategori; // nama jenis artikel
-  final String status;   // 'Aktif' / 'Nonaktif' berdasarkan isDelete
+  final String kategori;
+  final String status;
 
   const Artikel({
     required this.idArtikel,
@@ -29,7 +27,10 @@ class Artikel {
   });
 
   factory Artikel.fromJson(Map<String, dynamic> json) {
-    final isDel = json['is_delete'] == true || json['is_delete'] == 1 || json['is_delete'] == '1';
+    final isDel =
+        json['is_delete'] == true ||
+        json['is_delete'] == 1 ||
+        json['is_delete'] == '1';
     return Artikel(
       idArtikel: json['id_artikel'] ?? 0,
       idAdmin: json['id_admin'] ?? 0,
@@ -38,9 +39,17 @@ class Artikel {
       fotoThumbnail: json['foto_thumbnail'],
       isi: json['isi'] ?? '',
       isDelete: isDel,
-      createdAt: json['created_at'] != null ? DateTime.tryParse(json['created_at']) : null,
-      updatedAt: json['updated_at'] != null ? DateTime.tryParse(json['updated_at']) : null,
-      kategori: json['nama_kategori'] ?? json['kategori_nama'] ?? json['JenisArtikel']?['nama'] ?? '',
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.tryParse(json['updated_at'])
+          : null,
+      kategori:
+          json['nama_kategori'] ??
+          json['kategori_nama'] ??
+          json['JenisArtikel']?['nama'] ??
+          '',
       status: isDel ? 'Nonaktif' : 'Aktif',
     );
   }
@@ -57,18 +66,26 @@ class Artikel {
     };
   }
 
-  /// Format tanggal menjadi teks yang mudah dibaca.
   String get tanggalFormatted {
     if (createdAt == null) return '';
     final months = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     final d = createdAt!;
     return '${d.day} ${months[d.month - 1]} ${d.year}';
   }
 
-  /// Data dummy list untuk keperluan data binding.
   static List<Artikel> getMockList() {
     return const [
       Artikel(

@@ -10,7 +10,8 @@ class AdminManajemenKonfirmasi extends StatefulWidget {
   const AdminManajemenKonfirmasi({super.key});
 
   @override
-  State<AdminManajemenKonfirmasi> createState() => _AdminManajemenKonfirmasiState();
+  State<AdminManajemenKonfirmasi> createState() =>
+      _AdminManajemenKonfirmasiState();
 }
 
 class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
@@ -40,8 +41,11 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_hasMore && !_isFetchingMore && !context.read<AuthProvider>().isTransactionsLoading) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore &&
+          !_isFetchingMore &&
+          !context.read<AuthProvider>().isTransactionsLoading) {
         _loadMoreData();
       }
     }
@@ -52,10 +56,18 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
     _hasMore = true;
     _isFetchingMore = false;
     String? status;
-    if (_selectedFilter == 'Menunggu') status = 'menunggu';
-    else if (_selectedFilter == 'Berhasil') status = 'berhasil';
-    else if (_selectedFilter == 'Gagal') status = 'gagal';
-    context.read<AuthProvider>().fetchTransactions(status: status, page: 1, limit: 10, isLoadMore: false);
+    if (_selectedFilter == 'Menunggu')
+      status = 'menunggu';
+    else if (_selectedFilter == 'Berhasil')
+      status = 'berhasil';
+    else if (_selectedFilter == 'Gagal')
+      status = 'gagal';
+    context.read<AuthProvider>().fetchTransactions(
+      status: status,
+      page: 1,
+      limit: 10,
+      isLoadMore: false,
+    );
   }
 
   Future<void> _loadMoreData() async {
@@ -66,13 +78,21 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
 
     _currentPage++;
     String? status;
-    if (_selectedFilter == 'Menunggu') status = 'menunggu';
-    else if (_selectedFilter == 'Berhasil') status = 'berhasil';
-    else if (_selectedFilter == 'Gagal') status = 'gagal';
+    if (_selectedFilter == 'Menunggu')
+      status = 'menunggu';
+    else if (_selectedFilter == 'Berhasil')
+      status = 'berhasil';
+    else if (_selectedFilter == 'Gagal')
+      status = 'gagal';
 
     final authProvider = context.read<AuthProvider>();
     final int beforeCount = authProvider.allTransactions.length;
-    await authProvider.fetchTransactions(status: status, page: _currentPage, limit: 10, isLoadMore: true);
+    await authProvider.fetchTransactions(
+      status: status,
+      page: _currentPage,
+      limit: 10,
+      isLoadMore: true,
+    );
     final int afterCount = authProvider.allTransactions.length;
 
     if (mounted) {
@@ -122,7 +142,10 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
               child: SingleChildScrollView(
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 16,
+                ),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -168,20 +191,38 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                             itemCount: transactionList.length,
                             itemBuilder: (context, index) {
                               final item = transactionList[index];
-                              final userName = item['nama_customer'] ?? item['user']?['nama'] ?? item['nama_user'] ?? item['nama'] ?? 'User';
-                              final inisial = userName.isNotEmpty ? userName[0].toUpperCase() : '?';
-                              final transId = item['id_transaksi'] ?? item['id_riwayat_subscribtion'] ?? item['id'] ?? 0;
-                              final subNama = item['nama_paket'] ?? item['subscribtion']?['nama'] ?? item['nama_subscribtion'] ?? item['paket'] ?? '';
-                              final String? foto = item['foto'] ??
+                              final userName =
+                                  item['nama_customer'] ??
+                                  item['user']?['nama'] ??
+                                  item['nama_user'] ??
+                                  item['nama'] ??
+                                  'User';
+                              final inisial = userName.isNotEmpty
+                                  ? userName[0].toUpperCase()
+                                  : '?';
+                              final transId =
+                                  item['id_transaksi'] ??
+                                  item['id_riwayat_subscribtion'] ??
+                                  item['id'] ??
+                                  0;
+                              final subNama =
+                                  item['nama_paket'] ??
+                                  item['subscribtion']?['nama'] ??
+                                  item['nama_subscribtion'] ??
+                                  item['paket'] ??
+                                  '';
+                              final String? foto =
+                                  item['foto'] ??
                                   item['user']?['foto'] ??
                                   item['Customer']?['User']?['foto'] ??
                                   item['Customer']?['foto'] ??
                                   item['customer_foto'] ??
                                   item['foto_user']?.toString();
-                              final String? fotoUrl = foto != null && foto.isNotEmpty
+                              final String? fotoUrl =
+                                  foto != null && foto.isNotEmpty
                                   ? (foto.startsWith('http')
-                                      ? foto
-                                      : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+                                        ? foto
+                                        : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
                                   : null;
 
                               return GestureDetector(
@@ -199,14 +240,20 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     borderRadius: BorderRadius.circular(12),
-                                    border: Border.all(color: AppColor.font60.withOpacity(0.5)),
+                                    border: Border.all(
+                                      color: AppColor.font60.withOpacity(0.5),
+                                    ),
                                   ),
                                   child: Row(
                                     children: [
                                       CircleAvatar(
                                         radius: 24,
-                                        backgroundColor: const Color(0xFFFFCDD2),
-                                        backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                                        backgroundColor: const Color(
+                                          0xFFFFCDD2,
+                                        ),
+                                        backgroundImage: fotoUrl != null
+                                            ? NetworkImage(fotoUrl)
+                                            : null,
                                         child: fotoUrl == null
                                             ? Text(
                                                 inisial,
@@ -221,7 +268,8 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                                       const SizedBox(width: 14),
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               userName,
@@ -264,7 +312,9 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                       const Padding(
                         padding: EdgeInsets.symmetric(vertical: 16),
                         child: Center(
-                          child: CircularProgressIndicator(color: AppColor.base100),
+                          child: CircularProgressIndicator(
+                            color: AppColor.base100,
+                          ),
                         ),
                       ),
                   ],

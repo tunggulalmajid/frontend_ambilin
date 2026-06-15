@@ -11,12 +11,15 @@ class ArticleService extends ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getAllArticles({int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> getAllArticles({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
-      final response = await dio.get('/articles', queryParameters: {
-        'page': page,
-        'limit': limit,
-      });
+      final response = await dio.get(
+        '/articles',
+        queryParameters: {'page': page, 'limit': limit},
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil daftar artikel");
@@ -44,7 +47,10 @@ class ArticleService extends ApiService {
         'judul': judul,
         'id_jenis_artikel': idJenisArtikel,
         'isi': isi,
-        'foto_thumbnail': await MultipartFile.fromFile(thumbnailPath, filename: fileName),
+        'foto_thumbnail': await MultipartFile.fromFile(
+          thumbnailPath,
+          filename: fileName,
+        ),
       });
 
       final response = await dio.post('/articles', data: formData);
@@ -70,7 +76,10 @@ class ArticleService extends ApiService {
 
       if (thumbnailPath != null && thumbnailPath.isNotEmpty) {
         final fileName = thumbnailPath.split('/').last;
-        dataMap['foto_thumbnail'] = await MultipartFile.fromFile(thumbnailPath, filename: fileName);
+        dataMap['foto_thumbnail'] = await MultipartFile.fromFile(
+          thumbnailPath,
+          filename: fileName,
+        );
       }
 
       final formData = FormData.fromMap(dataMap);

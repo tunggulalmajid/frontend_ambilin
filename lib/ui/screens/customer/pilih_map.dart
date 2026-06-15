@@ -16,7 +16,7 @@ class PilihMapPage extends StatefulWidget {
 
 class _PilihMapPageState extends State<PilihMapPage> {
   final MapController _mapController = MapController();
-  LatLng _currentLatLng = const LatLng(-8.1724, 113.7005); // Default Jember
+  LatLng _currentLatLng = const LatLng(-8.1724, 113.7005);
   bool _isLoading = false;
   String _currentAddress = 'Mencari alamat...';
   bool _isLocationFound = false;
@@ -24,7 +24,7 @@ class _PilihMapPageState extends State<PilihMapPage> {
   @override
   void initState() {
     super.initState();
-    // Geocode default position on open
+
     _reverseGeocode(_currentLatLng.latitude, _currentLatLng.longitude);
   }
 
@@ -45,9 +45,7 @@ class _PilihMapPageState extends State<PilihMapPage> {
           'accept-language': 'id',
         },
         options: Options(
-          headers: {
-            'User-Agent': 'AmbilinApp/1.0 (contact@ambilin.com)',
-          },
+          headers: {'User-Agent': 'AmbilinApp/1.0 (contact@ambilin.com)'},
         ),
       );
 
@@ -83,7 +81,8 @@ class _PilihMapPageState extends State<PilihMapPage> {
       if (!serviceEnabled) {
         setState(() {
           _isLoading = false;
-          _currentAddress = 'Layanan GPS dinonaktifkan. Silakan aktifkan GPS Anda.';
+          _currentAddress =
+              'Layanan GPS dinonaktifkan. Silakan aktifkan GPS Anda.';
           _isLocationFound = true;
         });
         return;
@@ -111,10 +110,8 @@ class _PilihMapPageState extends State<PilihMapPage> {
         return;
       }
 
-      // 1. Coba ambil lokasi terakhir yang diketahui (sangat cepat & andal)
       Position? position = await Geolocator.getLastKnownPosition();
 
-      // 2. Jika tidak ada, request lokasi baru dengan akurasi medium & batas waktu
       position ??= await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.medium,
         timeLimit: const Duration(seconds: 6),
@@ -126,9 +123,7 @@ class _PilihMapPageState extends State<PilihMapPage> {
         _currentLatLng = newLatLng;
       });
       await _reverseGeocode(position.latitude, position.longitude);
-
     } catch (e) {
-      // 3. Fallback jika akurasi medium gagal/timeout: coba akurasi rendah
       try {
         final position = await Geolocator.getCurrentPosition(
           desiredAccuracy: LocationAccuracy.low,
@@ -234,8 +229,8 @@ class _PilihMapPageState extends State<PilihMapPage> {
                     color: Colors.black12,
                     blurRadius: 10,
                     offset: Offset(0, -2),
-                  )
-                ]
+                  ),
+                ],
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -249,7 +244,10 @@ class _PilihMapPageState extends State<PilihMapPage> {
                         Expanded(
                           child: Text(
                             _currentAddress,
-                            style: AppFont.medium().copyWith(color: AppColor.font100, fontSize: 13),
+                            style: AppFont.medium().copyWith(
+                              color: AppColor.font100,
+                              fontSize: 13,
+                            ),
                             maxLines: 3,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -279,7 +277,10 @@ class _PilihMapPageState extends State<PilihMapPage> {
                             },
                       child: Text(
                         'Simpan Lokasi',
-                        style: AppFont.semibold().copyWith(color: AppColor.putih100, fontSize: 16),
+                        style: AppFont.semibold().copyWith(
+                          color: AppColor.putih100,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),

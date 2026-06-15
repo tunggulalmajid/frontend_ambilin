@@ -5,10 +5,7 @@ import 'package:frontend_ambilin/utils/app_font.dart';
 class KelolaSampahTile extends StatelessWidget {
   final VoidCallback? onTap;
 
-  const KelolaSampahTile({
-    super.key,
-    this.onTap,
-  });
+  const KelolaSampahTile({super.key, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +27,6 @@ class KelolaSampahTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Icon container
             Container(
               width: 40,
               height: 40,
@@ -54,11 +50,7 @@ class KelolaSampahTile extends StatelessWidget {
                 ),
               ),
             ),
-            const Icon(
-              Icons.star_rounded,
-              color: AppColor.font80,
-              size: 24,
-            ),
+            const Icon(Icons.star_rounded, color: AppColor.font80, size: 24),
           ],
         ),
       ),

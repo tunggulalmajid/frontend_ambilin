@@ -64,8 +64,10 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Profil Petugas Berhasil Diperbarui',
-                style: AppFont.medium().copyWith(color: AppColor.putih100)),
+            content: Text(
+              'Profil Petugas Berhasil Diperbarui',
+              style: AppFont.medium().copyWith(color: AppColor.putih100),
+            ),
             backgroundColor: AppColor.base100,
             behavior: SnackBarBehavior.floating,
           ),
@@ -75,7 +77,9 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal memperbarui profil',
+              authProvider.errorMessage.isNotEmpty
+                  ? authProvider.errorMessage
+                  : 'Gagal memperbarui profil',
               style: AppFont.medium().copyWith(color: AppColor.putih100),
             ),
             backgroundColor: Colors.red,
@@ -88,7 +92,10 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Terjadi kesalahan: $e', style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Terjadi kesalahan: $e',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
@@ -100,23 +107,23 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
   Widget build(BuildContext context) {
     final auth = context.watch<AuthProvider>();
     final currentUser = auth.user ?? widget.user;
-    final inisial =
-        currentUser.nama.isNotEmpty ? currentUser.nama[0].toUpperCase() : '?';
+    final inisial = currentUser.nama.isNotEmpty
+        ? currentUser.nama[0].toUpperCase()
+        : '?';
 
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             ProfileHeaderEdit(
               backgroundUrl:
                   'https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=800&auto=format&fit=crop',
               inisial: inisial,
               fotoUrl: currentUser.foto != null && currentUser.foto!.isNotEmpty
                   ? (currentUser.foto!.startsWith('http')
-                      ? currentUser.foto
-                      : 'https://ambilin.kodetalma.my.id/${currentUser.foto!.startsWith('/') ? currentUser.foto!.substring(1) : currentUser.foto}')
+                        ? currentUser.foto
+                        : 'https://ambilin.kodetalma.my.id/${currentUser.foto!.startsWith('/') ? currentUser.foto!.substring(1) : currentUser.foto}')
                   : null,
               onBackPressed: () => Navigator.pop(context),
               onAvatarEditPressed: () async {
@@ -135,7 +142,9 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
                       duration: Duration(seconds: 2),
                     ),
                   );
-                  final success = await context.read<AuthProvider>().updateProfilePhoto(image.path);
+                  final success = await context
+                      .read<AuthProvider>()
+                      .updateProfilePhoto(image.path);
                   if (!mounted) return;
                   if (success) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -148,7 +157,11 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
                     final errMsg = context.read<AuthProvider>().errorMessage;
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                        content: Text(errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil'),
+                        content: Text(
+                          errMsg.isNotEmpty
+                              ? errMsg
+                              : 'Gagal memperbarui foto profil',
+                        ),
                         backgroundColor: AppColor.redAllert,
                       ),
                     );
@@ -186,9 +199,13 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
                       validator: (v) {
-                        if (v == null || v.trim().isEmpty) return 'Email wajib diisi';
-                        final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-                        if (!emailRegex.hasMatch(v)) return 'Format email tidak sesuai';
+                        if (v == null || v.trim().isEmpty)
+                          return 'Email wajib diisi';
+                        final emailRegex = RegExp(
+                          r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$',
+                        );
+                        if (!emailRegex.hasMatch(v))
+                          return 'Format email tidak sesuai';
                         return null;
                       },
                     ),
@@ -198,7 +215,9 @@ class _PetugasEditProfilPageState extends State<PetugasEditProfilPage> {
                       hintText: 'Masukkan Nomor Telepon',
                       controller: _teleponController,
                       keyboardType: TextInputType.phone,
-                      validator: (v) => (v == null || v.trim().isEmpty) ? 'Nomor telepon wajib diisi' : null,
+                      validator: (v) => (v == null || v.trim().isEmpty)
+                          ? 'Nomor telepon wajib diisi'
+                          : null,
                     ),
                     const SizedBox(height: 18),
                     AsyncButton(

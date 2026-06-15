@@ -11,7 +11,8 @@ class PelangganUbahPasswordPage extends StatefulWidget {
   const PelangganUbahPasswordPage({super.key});
 
   @override
-  State<PelangganUbahPasswordPage> createState() => _PelangganUbahPasswordPageState();
+  State<PelangganUbahPasswordPage> createState() =>
+      _PelangganUbahPasswordPageState();
 }
 
 class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
@@ -50,7 +51,10 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Password berhasil diubah', style: AppFont.medium().copyWith(color: AppColor.putih100)),
+            content: Text(
+              'Password berhasil diubah',
+              style: AppFont.medium().copyWith(color: AppColor.putih100),
+            ),
             backgroundColor: AppColor.base100,
             behavior: SnackBarBehavior.floating,
           ),
@@ -60,7 +64,9 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal memperbarui password',
+              authProvider.errorMessage.isNotEmpty
+                  ? authProvider.errorMessage
+                  : 'Gagal memperbarui password',
               style: AppFont.medium().copyWith(color: AppColor.putih100),
             ),
             backgroundColor: Colors.red,
@@ -73,7 +79,10 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Terjadi kesalahan: $e', style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Terjadi kesalahan: $e',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
@@ -88,9 +97,9 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-
             ProfileHeaderSimple(
-              backgroundUrl: 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop',
+              backgroundUrl:
+                  'https://images.unsplash.com/photo-1518780664697-55e3ad937233?w=800&auto=format&fit=crop',
               onBackPressed: () => Navigator.pop(context),
             ),
             const SizedBox(height: 30),
@@ -105,7 +114,9 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
                       label: 'Password lama',
                       hintText: 'Masukkan Password Lama',
                       controller: _passwordLamaController,
-                      validator: (v) => (v == null || v.isEmpty) ? 'Password lama wajib diisi' : null,
+                      validator: (v) => (v == null || v.isEmpty)
+                          ? 'Password lama wajib diisi'
+                          : null,
                     ),
                     const SizedBox(height: 18),
                     WPasswordField(
@@ -113,7 +124,8 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
                       hintText: 'Masukkan Password Baru',
                       controller: _passwordBaruController,
                       validator: (v) {
-                        if (v == null || v.isEmpty) return 'Password baru wajib diisi';
+                        if (v == null || v.isEmpty)
+                          return 'Password baru wajib diisi';
                         if (v.length < 6) return 'Minimal 6 karakter';
                         return null;
                       },
@@ -124,8 +136,10 @@ class _PelangganUbahPasswordPageState extends State<PelangganUbahPasswordPage> {
                       hintText: 'Konfirmasi Password Baru',
                       controller: _konfirmasiPasswordController,
                       validator: (v) {
-                        if (v == null || v.isEmpty) return 'Konfirmasi wajib diisi';
-                        if (v != _passwordBaruController.text) return 'Password tidak cocok';
+                        if (v == null || v.isEmpty)
+                          return 'Konfirmasi wajib diisi';
+                        if (v != _passwordBaruController.text)
+                          return 'Password tidak cocok';
                         return null;
                       },
                     ),

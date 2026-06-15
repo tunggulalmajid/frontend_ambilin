@@ -86,10 +86,6 @@ class ArticleCard extends StatelessWidget {
   }
 }
 
-// ============================================================================
-// 2. PromoCard — Kartu promo untuk halaman pilih promo.
-// ============================================================================
-
 class PromoCard extends StatelessWidget {
   final String namaPromo;
   final String berlaku;
@@ -126,7 +122,6 @@ class PromoCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Ikon promo bulat merah
           Container(
             width: 40,
             height: 40,
@@ -137,7 +132,6 @@ class PromoCard extends StatelessWidget {
           ),
           const SizedBox(width: 14),
 
-          // Nama promo & masa berlaku
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,14 +155,14 @@ class PromoCard extends StatelessWidget {
             ),
           ),
 
-          // Tombol "Pakai"
           SizedBox(
             height: 34,
             child: ElevatedButton(
               onPressed: onPakai,
               style: ElevatedButton.styleFrom(
-                backgroundColor:
-                    isSelected ? AppColor.base60 : AppColor.base100,
+                backgroundColor: isSelected
+                    ? AppColor.base60
+                    : AppColor.base100,
                 foregroundColor: AppColor.putih100,
                 padding: const EdgeInsets.symmetric(horizontal: 18),
                 shape: RoundedRectangleBorder(
@@ -190,10 +184,6 @@ class PromoCard extends StatelessWidget {
     );
   }
 }
-
-// ============================================================================
-// 3. PaymentMethodCard — Kartu metode pembayaran.
-// ============================================================================
 
 class PaymentMethodCard extends StatelessWidget {
   final String title;
@@ -235,7 +225,6 @@ class PaymentMethodCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            // Icon container
             Container(
               width: 44,
               height: 44,
@@ -247,7 +236,6 @@ class PaymentMethodCard extends StatelessWidget {
             ),
             const SizedBox(width: 14),
 
-            // Title & subtitle
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -271,12 +259,7 @@ class PaymentMethodCard extends StatelessWidget {
               ),
             ),
 
-            // Chevron
-            const Icon(
-              Icons.chevron_right,
-              size: 24,
-              color: AppColor.font80,
-            ),
+            const Icon(Icons.chevron_right, size: 24, color: AppColor.font80),
           ],
         ),
       ),
@@ -284,27 +267,19 @@ class PaymentMethodCard extends StatelessWidget {
   }
 }
 
-// ============================================================================
-// 4. UserAccountCard — Kartu akun pengguna untuk halaman manajemen akun.
-// ============================================================================
-
 class UserAccountCard extends StatelessWidget {
   final AkunPengguna user;
   final VoidCallback? onMenuTap;
 
-  const UserAccountCard({
-    super.key,
-    required this.user,
-    this.onMenuTap,
-  });
+  const UserAccountCard({super.key, required this.user, this.onMenuTap});
 
   @override
   Widget build(BuildContext context) {
     final String? foto = user.foto;
     final String? fotoUrl = foto != null && foto.isNotEmpty
         ? (foto.startsWith('http')
-            ? foto
-            : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+              ? foto
+              : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
         : null;
 
     return Container(
@@ -324,7 +299,6 @@ class UserAccountCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          // Avatar circle with initial
           CircleAvatar(
             radius: 22,
             backgroundColor: user.warnaAvatar.withOpacity(0.15),
@@ -341,7 +315,6 @@ class UserAccountCard extends StatelessWidget {
           ),
           const SizedBox(width: 12),
 
-          // Name, email, badges
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -362,7 +335,7 @@ class UserAccountCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 6),
-                // Role + Status badges
+
                 Row(
                   children: [
                     _buildBadge(
@@ -382,7 +355,6 @@ class UserAccountCard extends StatelessWidget {
             ),
           ),
 
-          // Three-dot menu
           GestureDetector(
             onTap: onMenuTap,
             child: const Icon(
@@ -396,13 +368,12 @@ class UserAccountCard extends StatelessWidget {
     );
   }
 
-  // --- Role badge colors ---
   Color _roleTextColor() {
     switch (user.peran) {
       case 'Petugas':
-        return const Color(0xFFE65100); // deep orange
+        return const Color(0xFFE65100);
       case 'Pelanggan':
-        return const Color(0xFF1565C0); // blue
+        return const Color(0xFF1565C0);
       default:
         return AppColor.font80;
     }
@@ -411,21 +382,20 @@ class UserAccountCard extends StatelessWidget {
   Color _roleBackgroundColor() {
     switch (user.peran) {
       case 'Petugas':
-        return const Color(0xFFFFF3E0); // light orange
+        return const Color(0xFFFFF3E0);
       case 'Pelanggan':
-        return const Color(0xFFE3F2FD); // light blue
+        return const Color(0xFFE3F2FD);
       default:
         return AppColor.font60;
     }
   }
 
-  // --- Status badge colors ---
   Color _statusTextColor() {
     switch (user.status) {
       case 'Aktif':
         return AppColor.base100;
       case 'Nonaktif':
-        return const Color(0xFFD32F2F); // red
+        return const Color(0xFFD32F2F);
       default:
         return AppColor.font80;
     }
@@ -436,13 +406,12 @@ class UserAccountCard extends StatelessWidget {
       case 'Aktif':
         return AppColor.base20;
       case 'Nonaktif':
-        return const Color(0xFFFFEBEE); // light red
+        return const Color(0xFFFFEBEE);
       default:
         return AppColor.font60;
     }
   }
 
-  // --- Badge builder ---
   Widget _buildBadge({
     required String label,
     required Color textColor,
@@ -456,18 +425,11 @@ class UserAccountCard extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppFont.medium().copyWith(
-          fontSize: 10,
-          color: textColor,
-        ),
+        style: AppFont.medium().copyWith(fontSize: 10, color: textColor),
       ),
     );
   }
 }
-
-// ============================================================================
-// 5. ArticleManagementCard — Kartu artikel untuk halaman manajemen artikel.
-// ============================================================================
 
 class ArticleManagementCard extends StatelessWidget {
   final Artikel article;
@@ -505,7 +467,9 @@ class ArticleManagementCard extends StatelessWidget {
               width: 95,
               height: 65,
               color: const Color(0xFFE0E0E0),
-              child: (article.fotoThumbnail != null && article.fotoThumbnail!.isNotEmpty)
+              child:
+                  (article.fotoThumbnail != null &&
+                      article.fotoThumbnail!.isNotEmpty)
                   ? Image.network(
                       article.fotoThumbnail!,
                       fit: BoxFit.cover,
@@ -517,22 +481,16 @@ class ArticleManagementCard extends StatelessWidget {
                         );
                       },
                     )
-                  : const Icon(
-                      Icons.image,
-                      color: AppColor.font80,
-                      size: 24,
-                    ),
+                  : const Icon(Icons.image, color: AppColor.font80, size: 24),
             ),
           ),
           const SizedBox(width: 12),
 
-          // Area Konten: Judul, Badges, Tanggal
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                // Judul Artikel
                 Text(
                   article.judul,
                   style: AppFont.bold().copyWith(
@@ -544,10 +502,8 @@ class ArticleManagementCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
 
-                // Baris Badges Kategori & Status
                 Row(
                   children: [
-                    // Badge Kategori
                     _buildBadge(
                       label: article.kategori,
                       textColor: _categoryTextColor(),
@@ -555,7 +511,7 @@ class ArticleManagementCard extends StatelessWidget {
                       borderColor: _categoryTextColor(),
                     ),
                     const SizedBox(width: 6),
-                    // Badge Status
+
                     _buildBadge(
                       label: article.status,
                       textColor: _statusTextColor(),
@@ -565,7 +521,6 @@ class ArticleManagementCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 6),
 
-                // Tanggal Pembuatan
                 Text(
                   article.tanggalFormatted,
                   style: AppFont.regular().copyWith(
@@ -578,16 +533,11 @@ class ArticleManagementCard extends StatelessWidget {
           ),
           const SizedBox(width: 4),
 
-          // Menu Titik Tiga
           GestureDetector(
             onTap: onMenuTap,
             child: const Padding(
               padding: EdgeInsets.only(top: 2),
-              child: Icon(
-                Icons.more_vert,
-                color: AppColor.font80,
-                size: 20,
-              ),
+              child: Icon(Icons.more_vert, color: AppColor.font80, size: 20),
             ),
           ),
         ],
@@ -595,7 +545,6 @@ class ArticleManagementCard extends StatelessWidget {
     );
   }
 
-  // --- Pewarnaan Teks Kategori ---
   Color _categoryTextColor() {
     switch (article.kategori) {
       case 'Tips':
@@ -611,7 +560,6 @@ class ArticleManagementCard extends StatelessWidget {
     }
   }
 
-  // --- Pewarnaan Teks Status ---
   Color _statusTextColor() {
     switch (article.status) {
       case 'Aktif':
@@ -623,7 +571,6 @@ class ArticleManagementCard extends StatelessWidget {
     }
   }
 
-  // --- Pewarnaan Latar Belakang Status ---
   Color _statusBackgroundColor() {
     switch (article.status) {
       case 'Aktif':
@@ -635,7 +582,6 @@ class ArticleManagementCard extends StatelessWidget {
     }
   }
 
-  // --- Pembentuk Badge Fleksibel ---
   Widget _buildBadge({
     required String label,
     required Color textColor,
@@ -653,26 +599,16 @@ class ArticleManagementCard extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: AppFont.medium().copyWith(
-          fontSize: 9,
-          color: textColor,
-        ),
+        style: AppFont.medium().copyWith(fontSize: 9, color: textColor),
       ),
     );
   }
 }
 
-// ============================================================================
-// 6. PickupHistoryCard — Kartu riwayat penjemputan.
-// ============================================================================
-
 class PickupHistoryCard extends StatelessWidget {
   final RiwayatPenjemputan pickup;
 
-  const PickupHistoryCard({
-    super.key,
-    required this.pickup,
-  });
+  const PickupHistoryCard({super.key, required this.pickup});
 
   Color _statusColor() {
     switch (pickup.status) {
@@ -764,28 +700,26 @@ class PickupHistoryCard extends StatelessWidget {
           ),
 
           const SizedBox(height: 10),
-          // Divider
+
           Divider(color: AppColor.font60.withOpacity(0.5), height: 1),
           const SizedBox(height: 10),
 
-          // Bottom row: Petugas, Tanggal, Berat
           Row(
             children: [
-              // Petugas
               _buildInfoColumn(
                 icon: Icons.star_rounded,
                 label: 'Petugas',
                 value: pickup.namaPetugas,
               ),
               const SizedBox(width: 20),
-              // Tanggal
+
               _buildInfoColumn(
                 icon: Icons.star_rounded,
                 label: 'Tanggal',
                 value: pickup.tanggal,
               ),
               const Spacer(),
-              // Berat
+
               _buildInfoColumn(
                 icon: Icons.star_rounded,
                 label: 'Berat',

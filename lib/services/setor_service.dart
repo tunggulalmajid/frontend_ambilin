@@ -28,36 +28,45 @@ class SetorService extends ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> dapatkanRiwayatCustomer({int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> dapatkanRiwayatCustomer({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
-      final response = await dio.get('/setor/history/customer', queryParameters: {
-        'page': page,
-        'limit': limit,
-      });
+      final response = await dio.get(
+        '/setor/history/customer',
+        queryParameters: {'page': page, 'limit': limit},
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil riwayat customer");
     }
   }
 
-  Future<Map<String, dynamic>> dapatkanOrderAktif({int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> dapatkanOrderAktif({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
-      final response = await dio.get('/setor/active', queryParameters: {
-        'page': page,
-        'limit': limit,
-      });
+      final response = await dio.get(
+        '/setor/active',
+        queryParameters: {'page': page, 'limit': limit},
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil antrean penjemputan");
     }
   }
 
-  Future<Map<String, dynamic>> dapatkanRiwayatPetugas({int page = 1, int limit = 10}) async {
+  Future<Map<String, dynamic>> dapatkanRiwayatPetugas({
+    int page = 1,
+    int limit = 10,
+  }) async {
     try {
-      final response = await dio.get('/setor/history/petugas', queryParameters: {
-        'page': page,
-        'limit': limit,
-      });
+      final response = await dio.get(
+        '/setor/history/petugas',
+        queryParameters: {'page': page, 'limit': limit},
+      );
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil riwayat petugas");
@@ -91,7 +100,10 @@ class SetorService extends ApiService {
       final fileName = imagePath.split('/').last;
       final formData = FormData.fromMap({
         'berat_sampah': beratSampah.toString(),
-        'foto_bukti_penjemputan': await MultipartFile.fromFile(imagePath, filename: fileName),
+        'foto_bukti_penjemputan': await MultipartFile.fromFile(
+          imagePath,
+          filename: fileName,
+        ),
       });
 
       final response = await dio.put('/setor/$id/complete', data: formData);

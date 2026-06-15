@@ -18,7 +18,9 @@ class ArticleProvider extends ChangeNotifier {
 
   int _categoryIdFromName(String name) {
     final cat = _categories.firstWhere(
-      (c) => c['nama']?.toString().trim().toLowerCase() == name.trim().toLowerCase(),
+      (c) =>
+          c['nama']?.toString().trim().toLowerCase() ==
+          name.trim().toLowerCase(),
       orElse: () => null,
     );
     if (cat != null) {
@@ -28,11 +30,16 @@ class ArticleProvider extends ChangeNotifier {
       }
     }
     switch (name.trim()) {
-      case 'Tips': return 1;
-      case 'Edukasi': return 2;
-      case 'Inspirasi': return 3;
-      case 'Berita': return 4;
-      default: return 1;
+      case 'Tips':
+        return 1;
+      case 'Edukasi':
+        return 2;
+      case 'Inspirasi':
+        return 3;
+      case 'Berita':
+        return 4;
+      default:
+        return 1;
     }
   }
 
@@ -53,7 +60,11 @@ class ArticleProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchArticles({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<void> fetchArticles({
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     if (!isLoadMore) {
       _isLoading = true;
       _errorMessage = '';
@@ -69,11 +80,16 @@ class ArticleProvider extends ChangeNotifier {
         }
       }
 
-      final artRes = await _articleService.getAllArticles(page: page, limit: limit);
+      final artRes = await _articleService.getAllArticles(
+        page: page,
+        limit: limit,
+      );
 
       if (artRes['status'] == "success") {
         final List<dynamic> data = artRes['data'] ?? [];
-        final List<Artikel> loaded = data.map((json) => Artikel.fromJson(json)).toList();
+        final List<Artikel> loaded = data
+            .map((json) => Artikel.fromJson(json))
+            .toList();
         if (isLoadMore) {
           _allArticles.addAll(loaded);
         } else {
@@ -100,7 +116,7 @@ class ArticleProvider extends ChangeNotifier {
     try {
       final categoryId = _categoryIdFromName(article.kategori);
       final path = imagePath ?? article.fotoThumbnail ?? '';
-      
+
       final response = await _articleService.createArticle(
         judul: article.judul,
         idJenisArtikel: categoryId,
@@ -124,7 +140,11 @@ class ArticleProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> editArticle(int index, Artikel updatedArticle, {String? imagePath}) async {
+  Future<bool> editArticle(
+    int index,
+    Artikel updatedArticle, {
+    String? imagePath,
+  }) async {
     if (index < 0 || index >= _allArticles.length) return false;
     final id = _allArticles[index].idArtikel;
 

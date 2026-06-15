@@ -82,10 +82,7 @@ class _MainPageState extends State<MainPage> {
               SizedBox(height: 16),
               Text(
                 "Memverifikasi sesi...",
-                style: TextStyle(
-                  color: AppColor.font80,
-                  fontSize: 14,
-                ),
+                style: TextStyle(color: AppColor.font80, fontSize: 14),
               ),
             ],
           ),
@@ -105,11 +102,7 @@ class _MainPageState extends State<MainPage> {
       });
       return const Scaffold(
         backgroundColor: AppColor.putihBackground,
-        body: Center(
-          child: CircularProgressIndicator(
-            color: AppColor.base100,
-          ),
-        ),
+        body: Center(child: CircularProgressIndicator(color: AppColor.base100)),
       );
     }
 
@@ -134,9 +127,7 @@ class _MainPageState extends State<MainPage> {
         return const Scaffold(
           backgroundColor: AppColor.putihBackground,
           body: Center(
-            child: CircularProgressIndicator(
-              color: AppColor.base100,
-            ),
+            child: CircularProgressIndicator(color: AppColor.base100),
           ),
         );
     }

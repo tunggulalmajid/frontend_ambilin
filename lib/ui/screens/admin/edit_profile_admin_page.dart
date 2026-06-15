@@ -31,7 +31,9 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
     super.initState();
     _namaController = TextEditingController(text: widget.user.nama);
     _emailController = TextEditingController(text: widget.user.email);
-    _teleponController = TextEditingController(text: widget.user.nomorTelepon ?? '');
+    _teleponController = TextEditingController(
+      text: widget.user.nomorTelepon ?? '',
+    );
     _alamatController = TextEditingController(text: widget.user.alamat ?? '');
   }
 
@@ -62,7 +64,9 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
         ),
       );
 
-      final success = await context.read<AuthProvider>().updateProfilePhoto(image.path);
+      final success = await context.read<AuthProvider>().updateProfilePhoto(
+        image.path,
+      );
       if (!mounted) return;
 
       if (success) {
@@ -76,7 +80,9 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
         final errMsg = context.read<AuthProvider>().errorMessage;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil'),
+            content: Text(
+              errMsg.isNotEmpty ? errMsg : 'Gagal memperbarui foto profil',
+            ),
             backgroundColor: AppColor.redAllert,
           ),
         );
@@ -119,7 +125,10 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
       if (success) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Profil berhasil diperbarui', style: AppFont.medium().copyWith(color: AppColor.putih100)),
+            content: Text(
+              'Profil berhasil diperbarui',
+              style: AppFont.medium().copyWith(color: AppColor.putih100),
+            ),
             backgroundColor: AppColor.base100,
             behavior: SnackBarBehavior.floating,
           ),
@@ -129,7 +138,9 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              authProvider.errorMessage.isNotEmpty ? authProvider.errorMessage : 'Gagal memperbarui profil',
+              authProvider.errorMessage.isNotEmpty
+                  ? authProvider.errorMessage
+                  : 'Gagal memperbarui profil',
               style: AppFont.medium().copyWith(color: AppColor.putih100),
             ),
             backgroundColor: Colors.red,
@@ -144,7 +155,10 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Terjadi kesalahan: $e', style: AppFont.medium().copyWith(color: AppColor.putih100)),
+          content: Text(
+            'Terjadi kesalahan: $e',
+            style: AppFont.medium().copyWith(color: AppColor.putih100),
+          ),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ),
@@ -161,7 +175,6 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
       backgroundColor: AppColor.putihBackground,
       body: Column(
         children: [
-
           _buildHeader(context, currentUser),
 
           const SizedBox(height: 55),
@@ -174,7 +187,6 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-
                     WTextFieldPutih(
                       label: 'Nama Lengkap',
                       hintText: 'Masukkan nama',
@@ -274,13 +286,16 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
   }
 
   Widget _buildHeader(BuildContext context, UserModel currentUser) {
-    final String? fotoUrl = currentUser.foto != null && currentUser.foto!.isNotEmpty
+    final String? fotoUrl =
+        currentUser.foto != null && currentUser.foto!.isNotEmpty
         ? (currentUser.foto!.startsWith('http')
-            ? currentUser.foto
-            : 'https://ambilin.kodetalma.my.id/${currentUser.foto!.startsWith('/') ? currentUser.foto!.substring(1) : currentUser.foto}')
+              ? currentUser.foto
+              : 'https://ambilin.kodetalma.my.id/${currentUser.foto!.startsWith('/') ? currentUser.foto!.substring(1) : currentUser.foto}')
         : null;
 
-    final String inisial = currentUser.nama.isNotEmpty ? currentUser.nama[0].toUpperCase() : 'R';
+    final String inisial = currentUser.nama.isNotEmpty
+        ? currentUser.nama[0].toUpperCase()
+        : 'R';
 
     return Stack(
       clipBehavior: Clip.none,
@@ -295,9 +310,7 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
               fit: BoxFit.cover,
             ),
           ),
-          child: Container(
-            color: Colors.black.withOpacity(0.45),
-          ),
+          child: Container(color: Colors.black.withOpacity(0.45)),
         ),
 
         Positioned(
@@ -330,7 +343,9 @@ class _EditProfileAdminPageState extends State<EditProfileAdminPage> {
                 CircleAvatar(
                   radius: 50,
                   backgroundColor: const Color(0xFFFFCDD2),
-                  backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                  backgroundImage: fotoUrl != null
+                      ? NetworkImage(fotoUrl)
+                      : null,
                   child: fotoUrl == null
                       ? Text(
                           inisial,

@@ -51,8 +51,14 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Konfirmasi Hapus', style: AppFont.bold().copyWith(fontSize: 16)),
-        content: Text('Apakah Anda yakin ingin menghapus akun ini?', style: AppFont.regular().copyWith(fontSize: 14)),
+        title: Text(
+          'Konfirmasi Hapus',
+          style: AppFont.bold().copyWith(fontSize: 16),
+        ),
+        content: Text(
+          'Apakah Anda yakin ingin menghapus akun ini?',
+          style: AppFont.regular().copyWith(fontSize: 14),
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
@@ -72,7 +78,10 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
       _isDeleting = true;
     });
 
-    final success = await context.read<UserAccountProvider>().deleteUserById(widget.user.idUser!, 2);
+    final success = await context.read<UserAccountProvider>().deleteUserById(
+      widget.user.idUser!,
+      2,
+    );
 
     if (mounted) {
       setState(() {
@@ -104,18 +113,19 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
     double headerHeight = 280;
     final inisial = widget.user.inisial;
 
-    // Resolve fotoUrl
     final String? foto = _userDetail?['foto'];
     final String? fotoUrl = foto != null && foto.isNotEmpty
         ? (foto.startsWith('http')
-            ? foto
-            : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
+              ? foto
+              : 'https://ambilin.kodetalma.my.id/${foto.startsWith('/') ? foto.substring(1) : foto}')
         : null;
 
     final String wilayahTugas = _userDetail?['alamat'] ?? '-';
-    final String telepon = _userDetail?['nomor_telepon'] ?? widget.user.nomorTelepon ?? '-';
+    final String telepon =
+        _userDetail?['nomor_telepon'] ?? widget.user.nomorTelepon ?? '-';
 
-    final bool isAktif = _userDetail?['petugas_profile']?['is_aktif'] == 1 ||
+    final bool isAktif =
+        _userDetail?['petugas_profile']?['is_aktif'] == 1 ||
         _userDetail?['petugas_profile']?['is_aktif'] == true;
     final String statusAkun = isAktif ? 'Aktif' : 'Nonaktif';
 
@@ -139,9 +149,7 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
                       fit: BoxFit.cover,
                     ),
                   ),
-                  child: Container(
-                    color: Colors.black.withOpacity(0.55),
-                  ),
+                  child: Container(color: Colors.black.withOpacity(0.55)),
                 ),
                 Positioned(
                   top: MediaQuery.of(context).padding.top + 8,
@@ -170,7 +178,9 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
                       CircleAvatar(
                         radius: 50,
                         backgroundColor: widget.user.warnaAvatar,
-                        backgroundImage: fotoUrl != null ? NetworkImage(fotoUrl) : null,
+                        backgroundImage: fotoUrl != null
+                            ? NetworkImage(fotoUrl)
+                            : null,
                         child: fotoUrl == null
                             ? Text(
                                 inisial,
@@ -211,7 +221,9 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
                   ? const Center(
                       child: Padding(
                         padding: EdgeInsets.symmetric(vertical: 40),
-                        child: CircularProgressIndicator(color: AppColor.base100),
+                        child: CircularProgressIndicator(
+                          color: AppColor.base100,
+                        ),
                       ),
                     )
                   : Column(
@@ -291,18 +303,11 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Icon(
-              icon,
-              color: AppColor.base100,
-              size: 20,
-            ),
+            Icon(icon, color: AppColor.base100, size: 20),
             const Spacer(),
             Text(
               title,
-              style: GoogleFonts.poppins(
-                fontSize: 11,
-                color: AppColor.font80,
-              ),
+              style: GoogleFonts.poppins(fontSize: 11, color: AppColor.font80),
             ),
             const SizedBox(height: 2),
             Text(
@@ -327,10 +332,7 @@ class _AdminDetailPetugasPageState extends State<AdminDetailPetugasPage> {
       children: [
         Text(
           label,
-          style: GoogleFonts.poppins(
-            fontSize: 13,
-            color: AppColor.font80,
-          ),
+          style: GoogleFonts.poppins(fontSize: 13, color: AppColor.font80),
         ),
         Text(
           value,

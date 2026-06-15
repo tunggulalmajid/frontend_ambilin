@@ -13,16 +13,16 @@ class AppRoutes {
   static const String pembayaran = '/pembayaran';
   static const String transaksiBerhasil = '/transaksiberhasil';
 
-  //Customer
   static const String pelangganPilihMap = '/pelanggan/pilih-map';
-  static const String pelangganProsesPenjemputan = '/pelanggan/proses-penjemputan';
+  static const String pelangganProsesPenjemputan =
+      '/pelanggan/proses-penjemputan';
   static const String pelangganDetailSelesai = '/pelanggan/detail-selesai';
   static const String detailArtikel = '/detail-artikel';
   static const String pelangganEditProfil = '/pelanggan/edit-profil';
   static const String pelangganUbahPassword = '/pelanggan/ubah-password';
-  static const String pelangganRiwayatMembership = '/pelanggan/riwayat-membership';
+  static const String pelangganRiwayatMembership =
+      '/pelanggan/riwayat-membership';
 
-  //Petugas
   static const String petugasHome = '/petugas/home';
   static const String petugasRiwayat = '/petugas/riwayat';
   static const String petugasDetailTugas = '/petugas/detail-tugas';
@@ -33,15 +33,15 @@ class AppRoutes {
   static const String petugasUbahPassword = '/petugas/ubah-password';
   static const String petugasProfil = '/petugas/profil';
 
-  //Admin
   static const String adminProfil = '/admin/profil';
   static const String adminEditProfil = '/admin/edit-profil';
   static const String adminUbahPassword = '/admin/ubah-password';
   static const String adminDetailPelanggan = '/admin/detail-pelanggan';
   static const String adminDetailPetugas = '/admin/detail-petugas';
-  static const String adminKonfirmasiPembayaran = '/admin/konfirmasi-pembayaran';
+  static const String adminKonfirmasiPembayaran =
+      '/admin/konfirmasi-pembayaran';
   static const String adminManajemenKonfirmasi = '/admin/manajemen-konfirmasi';
   static const String adminDetailKonfirmasi = '/admin/detail-konfirmasi';
-  static const String adminManajemenSubscription = '/admin/manajemen-subscription';
-
+  static const String adminManajemenSubscription =
+      '/admin/manajemen-subscription';
 }

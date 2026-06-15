@@ -41,8 +41,11 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
   }
 
   void _scrollListener() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
-      if (_hasMore && !_isFetchingMore && !context.read<ArticleProvider>().isLoading) {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore &&
+          !_isFetchingMore &&
+          !context.read<ArticleProvider>().isLoading) {
         _loadMoreData();
       }
     }
@@ -52,7 +55,11 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
     _currentPage = 1;
     _hasMore = true;
     _isFetchingMore = false;
-    context.read<ArticleProvider>().fetchArticles(page: 1, limit: 10, isLoadMore: false);
+    context.read<ArticleProvider>().fetchArticles(
+      page: 1,
+      limit: 10,
+      isLoadMore: false,
+    );
   }
 
   Future<void> _loadMoreData() async {
@@ -64,7 +71,11 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
     _currentPage++;
     final provider = context.read<ArticleProvider>();
     final int beforeCount = provider.allArticles.length;
-    await provider.fetchArticles(page: _currentPage, limit: 10, isLoadMore: true);
+    await provider.fetchArticles(
+      page: _currentPage,
+      limit: 10,
+      isLoadMore: true,
+    );
     final int afterCount = provider.allArticles.length;
 
     if (mounted) {
@@ -96,7 +107,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
   @override
   Widget build(BuildContext context) {
     final articleProvider = context.watch<ArticleProvider>();
-    
+
     final List<String> daftarKategori = [
       'Semua',
       ...articleProvider.categories
@@ -211,13 +222,16 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                       : ListView.builder(
                           controller: _scrollController,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          itemCount: artikelTampil.length + (_isFetchingMore ? 1 : 0),
+                          itemCount:
+                              artikelTampil.length + (_isFetchingMore ? 1 : 0),
                           itemBuilder: (context, index) {
                             if (index == artikelTampil.length) {
                               return const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 16),
                                 child: Center(
-                                  child: CircularProgressIndicator(color: AppColor.base100),
+                                  child: CircularProgressIndicator(
+                                    color: AppColor.base100,
+                                  ),
                                 ),
                               );
                             }

@@ -58,7 +58,9 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     try {
       final provider = context.read<ArticleProvider>();
       await provider.fetchCategories();
-      final fullArticle = await provider.fetchArticleById(widget.article.idArtikel);
+      final fullArticle = await provider.fetchArticleById(
+        widget.article.idArtikel,
+      );
       if (fullArticle != null && mounted) {
         setState(() {
           _judulController.text = fullArticle.judul;
@@ -68,7 +70,6 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
         });
       }
     } catch (e) {
-      // ignore
     } finally {
       if (mounted) {
         setState(() {
@@ -111,10 +112,10 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       );
 
       final success = await context.read<ArticleProvider>().editArticle(
-            widget.articleIndex,
-            updatedArticle,
-            imagePath: _selectedImage?.path,
-          );
+        widget.articleIndex,
+        updatedArticle,
+        imagePath: _selectedImage?.path,
+      );
 
       if (!mounted) return;
       if (success) {
@@ -151,156 +152,156 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                 child: CircularProgressIndicator(color: AppColor.base100),
               )
             : SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 24,
+                ),
                 child: Form(
-            key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+                  key: _formKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Stack(
+                        alignment: Alignment.centerLeft,
+                        children: [
+                          Center(
+                            child: Text(
+                              'Edit Artikel',
+                              style: AppFont.bold().copyWith(
+                                fontSize: 22,
+                                color: AppColor.font100,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () => Navigator.pop(context),
+                            child: const Icon(
+                              Icons.chevron_left,
+                              size: 35,
+                              color: AppColor.font100,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 24),
 
-                Stack(
-                  alignment: Alignment.centerLeft,
-                  children: [
-                    Center(
-                      child: Text(
-                        'Edit Artikel',
-                        style: AppFont.bold().copyWith(
-                          fontSize: 22,
+                      WTextFieldPutih(
+                        label: 'Judul Artikel',
+                        hintText: 'Masukkan Judul',
+                        controller: _judulController,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Judul artikel tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      WDropdownField(
+                        label: 'Kategori',
+                        hintText: 'Pilih Kategori Artikel',
+                        value: kategoriList.contains(_selectedKategori)
+                            ? _selectedKategori
+                            : null,
+                        items: kategoriList,
+                        onChanged: (value) {
+                          setState(() {
+                            _selectedKategori = value;
+                          });
+                        },
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Pilih kategori artikel';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 16),
+
+                      Text(
+                        'Foto Sampah',
+                        style: AppFont.semibold().copyWith(
+                          fontSize: 14,
                           color: AppColor.font100,
                         ),
                       ),
-                    ),
-                    GestureDetector(
-                      onTap: () => Navigator.pop(context),
-                      child: const Icon(
-                        Icons.chevron_left,
-                        size: 35,
-                        color: AppColor.font100,
+                      const SizedBox(height: 8),
+                      _buildImagePicker(),
+                      const SizedBox(height: 16),
+
+                      Text(
+                        'Isi Artikel',
+                        style: AppFont.semibold().copyWith(
+                          fontSize: 14,
+                          color: AppColor.font100,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-
-                WTextFieldPutih(
-                  label: 'Judul Artikel',
-                  hintText: 'Masukkan Judul',
-                  controller: _judulController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Judul artikel tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                WDropdownField(
-                  label: 'Kategori',
-                  hintText: 'Pilih Kategori Artikel',
-                  value: kategoriList.contains(_selectedKategori)
-                      ? _selectedKategori
-                      : null,
-                  items: kategoriList,
-                  onChanged: (value) {
-                    setState(() {
-                      _selectedKategori = value;
-                    });
-                  },
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Pilih kategori artikel';
-                    }
-                    return null;
-                  },
-                ),
-                const SizedBox(height: 16),
-
-                Text(
-                  'Foto Sampah',
-                  style: AppFont.semibold().copyWith(
-                    fontSize: 14,
-                    color: AppColor.font100,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                _buildImagePicker(),
-                const SizedBox(height: 16),
-
-                Text(
-                  'Isi Artikel',
-                  style: AppFont.semibold().copyWith(
-                    fontSize: 14,
-                    color: AppColor.font100,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                TextFormField(
-                  controller: _isiController,
-                  maxLines: 8,
-                  style: AppFont.regular().copyWith(
-                    fontSize: 14,
-                    color: AppColor.font100,
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Isi artikel tidak boleh kosong';
-                    }
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    hintText: 'Masukkan Isi Artikel',
-                    hintStyle: AppFont.regular().copyWith(
-                      fontSize: 14,
-                      color: AppColor.font80,
-                    ),
-                    filled: true,
-                    fillColor: AppColor.putih100,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 14,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: AppColor.font60),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: AppColor.base100,
-                        width: 2,
+                      const SizedBox(height: 8),
+                      TextFormField(
+                        controller: _isiController,
+                        maxLines: 8,
+                        style: AppFont.regular().copyWith(
+                          fontSize: 14,
+                          color: AppColor.font100,
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Isi artikel tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          hintText: 'Masukkan Isi Artikel',
+                          hintStyle: AppFont.regular().copyWith(
+                            fontSize: 14,
+                            color: AppColor.font80,
+                          ),
+                          filled: true,
+                          fillColor: AppColor.putih100,
+                          contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 14,
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColor.font60,
+                            ),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: AppColor.base100,
+                              width: 2,
+                            ),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Colors.red),
+                          ),
+                          focusedErrorBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(
+                              color: Colors.red,
+                              width: 2,
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                    errorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                    focusedErrorBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Colors.red,
-                        width: 2,
-                      ),
-                    ),
+                      const SizedBox(height: 32),
+
+                      WButton(text: 'Simpan', onPressed: _handleSimpan),
+                      const SizedBox(height: 24),
+                    ],
                   ),
                 ),
-                const SizedBox(height: 32),
-
-                WButton(
-                  text: 'Simpan',
-                  onPressed: _handleSimpan,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
 
   Widget _buildImagePicker() {
-
     if (_selectedImage != null) {
       return _buildImagePreview(
         child: Image.file(
@@ -402,10 +403,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
       ),
       child: Stack(
         children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(11),
-            child: child,
-          ),
+          ClipRRect(borderRadius: BorderRadius.circular(11), child: child),
 
           Positioned(
             top: 8,
@@ -423,11 +421,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
                   shape: BoxShape.circle,
                 ),
                 padding: const EdgeInsets.all(4),
-                child: const Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 16,
-                ),
+                child: const Icon(Icons.close, color: Colors.white, size: 16),
               ),
             ),
           ),

@@ -50,7 +50,6 @@ class AuthProvider extends ChangeNotifier {
           final payload = response['data'];
           _user = UserModel.fromJson(payload);
 
-          // Memetakan role dengan aman menggunakan pertahanan tipe data ganda
           final String role = _mapIdRoleToString(_user!.idRole);
           await _storage.write(key: "role", value: role);
 
@@ -82,21 +81,22 @@ class AuthProvider extends ChangeNotifier {
       if (response['status'] == "success") {
         final payload = response['data'];
 
+        await _storage.write(key: "accessToken", value: payload['accessToken']);
         await _storage.write(
-            key: "accessToken", value: payload['accessToken']);
-        await _storage.write(
-            key: "refreshToken", value: payload['refreshToken']);
+          key: "refreshToken",
+          value: payload['refreshToken'],
+        );
 
         _user = UserModel.fromJson(payload['user']);
 
-        String role =
-            (payload['user']['nama_role'] ?? '').toString().toLowerCase();
-        
+        String role = (payload['user']['nama_role'] ?? '')
+            .toString()
+            .toLowerCase();
+
         if (role.isEmpty) {
           role = _mapIdRoleToString(_user!.idRole);
         }
 
-        // Antisipasi berlapis untuk mendeteksi role petugas (idRole == 2)
         if (_user!.idRole.toString() == '2') {
           role = 'petugas';
         }
@@ -132,19 +132,22 @@ class AuthProvider extends ChangeNotifier {
       if (response['status'] == "success") {
         final payload = response['data'];
 
+        await _storage.write(key: "accessToken", value: payload['accessToken']);
         await _storage.write(
-            key: "accessToken", value: payload['accessToken']);
-        await _storage.write(
-            key: "refreshToken", value: payload['refreshToken']);
+          key: "refreshToken",
+          value: payload['refreshToken'],
+        );
 
         _user = UserModel.fromJson(payload['user']);
 
-        final String namaRole =
-            (payload['user']['nama_role'] ?? '').toString().toLowerCase();
-        
-        String role =
-            namaRole.isNotEmpty ? namaRole : _mapIdRoleToString(_user!.idRole);
-            
+        final String namaRole = (payload['user']['nama_role'] ?? '')
+            .toString()
+            .toLowerCase();
+
+        String role = namaRole.isNotEmpty
+            ? namaRole
+            : _mapIdRoleToString(_user!.idRole);
+
         if (_user!.idRole.toString() == '2') {
           role = 'petugas';
         }
@@ -371,11 +374,15 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _authService.getPendingTransactions(page: page, limit: limit);
+      final response = await _authService.getPendingTransactions(
+        page: page,
+        limit: limit,
+      );
       if (response['status'] == "success") {
         _pendingTransactions = response['data'] ?? [];
       } else {
-        _errorMessage = response['message'] ?? "Gagal mengambil antrean verifikasi";
+        _errorMessage =
+            response['message'] ?? "Gagal mengambil antrean verifikasi";
       }
     } catch (e) {
       log("fetchPendingTransactions Error: $e");
@@ -386,7 +393,12 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchTransactions({String? status, int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<void> fetchTransactions({
+    String? status,
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     if (!isLoadMore) {
       _isTransactionsLoading = true;
       _allTransactions = [];
@@ -395,7 +407,11 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _authService.getTransactions(status: status, page: page, limit: limit);
+      final response = await _authService.getTransactions(
+        status: status,
+        page: page,
+        limit: limit,
+      );
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
         if (isLoadMore) {
@@ -404,7 +420,8 @@ class AuthProvider extends ChangeNotifier {
           _allTransactions = data;
         }
       } else {
-        _errorMessage = response['message'] ?? "Gagal mengambil daftar transaksi";
+        _errorMessage =
+            response['message'] ?? "Gagal mengambil daftar transaksi";
       }
     } catch (e) {
       log("fetchTransactions Error: $e");
@@ -439,7 +456,6 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  // MODIFIKASI KRUSIAL: Pengecekan berbasis konversi String untuk menangani ketidakcocokan tipe data (int vs string)
   String _mapIdRoleToString(dynamic idRole) {
     final String roleIdStr = idRole.toString();
     switch (roleIdStr) {

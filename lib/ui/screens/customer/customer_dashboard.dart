@@ -1,10 +1,3 @@
-// ----- FILE: lib/ui/screens/customer/customer_dashboard.dart -----
-// Dashboard utama Customer — menampilkan data dari API:
-// - Status member & poin dari DashboardProvider
-// - Nama user dari AuthProvider
-// - Artikel terbaru dari DashboardProvider
-// Semua data dummy telah dihapus dan diganti dengan data real dari API.
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
@@ -31,7 +24,7 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
   @override
   void initState() {
     super.initState();
-    // Fetch data dashboard customer dari API saat pertama kali masuk
+
     Future.microtask(() {
       context.read<DashboardProvider>().fetchCustomerDashboard();
     });
@@ -72,8 +65,10 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
                   content: Center(
-                      child: Text(
-                          'Silakan aktifkan langganan Anda terlebih dahulu')),
+                    child: Text(
+                      'Silakan aktifkan langganan Anda terlebih dahulu',
+                    ),
+                  ),
                   backgroundColor: AppColor.redAllert,
                 ),
               );
@@ -134,9 +129,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                   children: [
                     const SizedBox(height: 24),
 
-                    // ============================================
-                    // HEADER: Greeting
-                    // ============================================
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Column(
@@ -163,14 +155,14 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     ),
                     const SizedBox(height: 20),
 
-                    // ============================================
-                    // CARD: Member & Poin Info
-                    // ============================================
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: GestureDetector(
                         onTap: () {
-                          Navigator.pushNamed(context, AppRoutes.pelangganRiwayatMembership);
+                          Navigator.pushNamed(
+                            context,
+                            AppRoutes.pelangganRiwayatMembership,
+                          );
                         },
                         child: Container(
                           width: double.infinity,
@@ -219,8 +211,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                                               : 'Nikmati layanan premium dan diskon khusus',
                                           style: GoogleFonts.poppins(
                                             fontSize: 11,
-                                            color:
-                                                Colors.white.withOpacity(0.85),
+                                            color: Colors.white.withOpacity(
+                                              0.85,
+                                            ),
                                           ),
                                         ),
                                       ],
@@ -231,7 +224,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                               const SizedBox(height: 16),
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 14, vertical: 10),
+                                  horizontal: 14,
+                                  vertical: 10,
+                                ),
                                 decoration: BoxDecoration(
                                   color: Colors.white.withOpacity(0.15),
                                   borderRadius: BorderRadius.circular(12),
@@ -248,8 +243,9 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                                           'Poin Anda',
                                           style: GoogleFonts.poppins(
                                             fontSize: 12,
-                                            color:
-                                                Colors.white.withOpacity(0.9),
+                                            color: Colors.white.withOpacity(
+                                              0.9,
+                                            ),
                                           ),
                                         ),
                                         Text(
@@ -265,17 +261,22 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                                     ElevatedButton(
                                       onPressed: () {
                                         Navigator.pushNamed(
-                                            context, AppRoutes.subscription);
+                                          context,
+                                          AppRoutes.subscription,
+                                        );
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.white,
                                         foregroundColor: AppColor.base100,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(8),
+                                          borderRadius: BorderRadius.circular(
+                                            8,
+                                          ),
                                         ),
                                         padding: const EdgeInsets.symmetric(
-                                            horizontal: 20, vertical: 8),
+                                          horizontal: 20,
+                                          vertical: 8,
+                                        ),
                                         minimumSize: Size.zero,
                                         tapTargetSize:
                                             MaterialTapTargetSize.shrinkWrap,
@@ -298,9 +299,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                       ),
                     ),
 
-                    // ============================================
-                    // BANNER: Info status membership
-                    // ============================================
                     if (!isMember) ...[
                       const SizedBox(height: 12),
                       Padding(
@@ -308,13 +306,15 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                         child: Container(
                           width: double.infinity,
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 14, vertical: 10),
+                            horizontal: 14,
+                            vertical: 10,
+                          ),
                           decoration: BoxDecoration(
                             color: const Color(0xFFFFF8E1),
                             borderRadius: BorderRadius.circular(10),
                             border: Border.all(
-                                color:
-                                    AppColor.yellowAllert.withOpacity(0.6)),
+                              color: AppColor.yellowAllert.withOpacity(0.6),
+                            ),
                           ),
                           child: Text(
                             'Silakan aktifkan langganan Anda untuk mulai melakukan pemesanan.',
@@ -329,9 +329,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     ],
                     const SizedBox(height: 24),
 
-                    // ============================================
-                    // SECTION: Artikel Terbaru dari API
-                    // ============================================
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
@@ -362,7 +359,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                     ),
                     const SizedBox(height: 12),
 
-                    // Error state
                     if (dashProvider.errorMessage.isNotEmpty)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -383,13 +379,16 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
                         ),
                       ),
 
-                    // Artikel cards
                     if (articles.isNotEmpty)
-                      ...articles.map((artikel) => Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 6),
-                            child: _buildArtikelCard(artikel),
-                          ))
+                      ...articles.map(
+                        (artikel) => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 20,
+                            vertical: 6,
+                          ),
+                          child: _buildArtikelCard(artikel),
+                        ),
+                      )
                     else if (!dashProvider.isLoading &&
                         dashProvider.errorMessage.isEmpty)
                       Padding(
@@ -412,10 +411,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
             ),
     );
   }
-
-  // ================================================================
-  // WIDGET BUILDER: Artikel Card
-  // ================================================================
 
   String _getImageUrl(String? path) {
     if (path == null || path.isEmpty) return '';
@@ -497,10 +492,6 @@ class _CustomerDashboardState extends State<CustomerDashboard> {
       ),
     );
   }
-
-  // ================================================================
-  // WIDGET BUILDER: Bottom Nav Item
-  // ================================================================
 
   Widget _buildNavItem(IconData icon, String label, int index) {
     final bool isActive = _currentIndex == index;

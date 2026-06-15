@@ -10,10 +10,9 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
   Future<void> _onSelesaiPressed(BuildContext context) async {
     try {
-      await Navigator.of(context).pushNamedAndRemoveUntil(
-        AppRoutes.main,
-        (route) => false,
-      );
+      await Navigator.of(
+        context,
+      ).pushNamedAndRemoveUntil(AppRoutes.main, (route) => false);
     } catch (e) {
       debugPrint('Navigasi error: $e');
     }
@@ -21,14 +20,18 @@ class TransaksiBerhasilPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
+    final args =
+        ModalRoute.of(context)?.settings.arguments as Map<String, dynamic>?;
 
     final int idTransaksi = args?['id_transaksi'] as int? ?? 1;
-    final String metodePembayaran = args?['metode_pembayaran']?.toString() ?? 'BCA';
-    final String namaPaket = args?['nama_paket']?.toString() ?? 'Gold Membership 30 Hari';
+    final String metodePembayaran =
+        args?['metode_pembayaran']?.toString() ?? 'BCA';
+    final String namaPaket =
+        args?['nama_paket']?.toString() ?? 'Gold Membership 30 Hari';
     final int harga = args?['harga'] as int? ?? 15000;
 
-    final formattedHarga = 'Rp ${harga.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
+    final formattedHarga =
+        'Rp ${harga.toString().replaceAllMapped(RegExp(r"(\d{1,3})(?=(\d{3})+(?!\d))"), (Match m) => "${m[1]}.")}';
 
     return Scaffold(
       backgroundColor: AppColor.base100,
@@ -91,7 +94,6 @@ class TransaksiBerhasilPage extends StatelessWidget {
                   ),
                   child: Column(
                     children: [
-
                       Text(
                         'Transaksi berhasil!',
                         style: AppFont.bold().copyWith(
@@ -103,20 +105,11 @@ class TransaksiBerhasilPage extends StatelessWidget {
                       const Divider(height: 1, color: AppColor.font60),
                       const SizedBox(height: 16),
 
-                      _buildDetailRow(
-                        'ID Transaksi',
-                        idTransaksi.toString(),
-                      ),
+                      _buildDetailRow('ID Transaksi', idTransaksi.toString()),
                       const SizedBox(height: 12),
-                      _buildDetailRow(
-                        'Metode Pembayaran',
-                        metodePembayaran,
-                      ),
+                      _buildDetailRow('Metode Pembayaran', metodePembayaran),
                       const SizedBox(height: 12),
-                      _buildDetailRow(
-                        'Harga',
-                        formattedHarga,
-                      ),
+                      _buildDetailRow('Harga', formattedHarga),
                     ],
                   ),
                 ),

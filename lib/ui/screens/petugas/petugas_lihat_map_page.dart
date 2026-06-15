@@ -21,10 +21,10 @@ class PetugasLihatMapPage extends StatefulWidget {
 
 class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
   final MapController _mapController = MapController();
-  
+
   List<LatLng> _routePoints = [];
   LatLng? _driverLocation;
-  
+
   bool _isLoading = false;
   double? _distanceKm;
   double? _durationMin;
@@ -45,14 +45,14 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
     try {
       LatLng? driverLatLng;
 
-      // 1. Dapatkan lokasi driver saat ini menggunakan Geolocator
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (serviceEnabled) {
         LocationPermission permission = await Geolocator.checkPermission();
         if (permission == LocationPermission.denied) {
           permission = await Geolocator.requestPermission();
         }
-        if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
+        if (permission == LocationPermission.whileInUse ||
+            permission == LocationPermission.always) {
           final position = await Geolocator.getCurrentPosition(
             desiredAccuracy: LocationAccuracy.high,
           );
@@ -60,7 +60,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
         }
       }
 
-      // Fallback ke data koordinat driver dari profil (jika GPS gagal)
       if (driverLatLng == null) {
         final user = context.read<AuthProvider>().user;
         if (user != null && user.latitude != null && user.longitude != null) {
@@ -73,16 +72,12 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
           _driverLocation = driverLatLng;
         });
 
-        // 2. Fetch data rute dari OSRM
         final double wasteLat = widget.data.latitude ?? -8.1724;
         final double wasteLng = widget.data.longitude ?? 113.7005;
 
         final response = await Dio().get(
           'https://router.project-osrm.org/route/v1/driving/${driverLatLng.longitude},${driverLatLng.latitude};$wasteLng,$wasteLat',
-          queryParameters: {
-            'geometries': 'geojson',
-            'overview': 'full',
-          },
+          queryParameters: {'geometries': 'geojson', 'overview': 'full'},
         );
 
         if (response.statusCode == 200) {
@@ -91,7 +86,7 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
           if (routes.isNotEmpty) {
             final double distance = (routes[0]['distance'] as num).toDouble();
             final double duration = (routes[0]['duration'] as num).toDouble();
-            
+
             final geometry = routes[0]['geometry'];
             final coordinates = geometry['coordinates'] as List;
             final points = coordinates.map((coord) {
@@ -106,7 +101,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
               _durationMin = duration / 60;
             });
 
-            // Fokuskan kamera ke tengah-tengah rute
             final centerLat = (driverLatLng!.latitude + wasteLat) / 2;
             final centerLng = (driverLatLng!.longitude + wasteLng) / 2;
             _mapController.move(LatLng(centerLat, centerLng), 13.0);
@@ -134,8 +128,7 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
   Widget build(BuildContext context) {
     final double wasteLat = widget.data.latitude ?? -8.1724;
     final double wasteLng = widget.data.longitude ?? 113.7005;
-    
-    // Tentukan titik tengah peta
+
     LatLng initialCenter = LatLng(wasteLat, wasteLng);
     if (_driverLocation != null) {
       initialCenter = LatLng(
@@ -167,7 +160,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
       ),
       body: Stack(
         children: [
-          // 1. Peta Interaktif
           FlutterMap(
             mapController: _mapController,
             options: MapOptions(
@@ -176,9 +168,11 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
             ),
             children: [
               TileLayer(
-                urlTemplate: 'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+                urlTemplate:
+                    'https://basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
                 additionalOptions: const {
-                  'User-Agent': 'SeladakuApp_ByTunggulAbdulMajid_ClassOf2024_UNEJ',
+                  'User-Agent':
+                      'SeladakuApp_ByTunggulAbdulMajid_ClassOf2024_UNEJ',
                 },
                 userAgentPackageName: 'com.tunggul.seladaku',
               ),
@@ -194,7 +188,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
                 ),
               MarkerLayer(
                 markers: [
-                  // Penanda lokasi sampah (Tujuan) - Merah
                   Marker(
                     point: LatLng(wasteLat, wasteLng),
                     width: 45,
@@ -205,7 +198,7 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
                       size: 38,
                     ),
                   ),
-                  // Penanda lokasi petugas (Asal) - Biru
+
                   if (_driverLocation != null)
                     Marker(
                       point: _driverLocation!,
@@ -236,7 +229,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
             ],
           ),
 
-          // 2. Loading indicator
           if (_isLoading)
             const Positioned(
               top: 20,
@@ -261,7 +253,10 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
                         SizedBox(width: 12),
                         Text(
                           'Mengalkulasi rute jalan...',
-                          style: TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                          style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ],
                     ),
@@ -270,7 +265,6 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
               ),
             ),
 
-          // 3. Error alert banner
           if (_errorMessage.isNotEmpty)
             Positioned(
               top: 20,
@@ -286,14 +280,16 @@ class _PetugasLihatMapPageState extends State<PetugasLihatMapPage> {
                   padding: const EdgeInsets.all(12),
                   child: Text(
                     _errorMessage,
-                    style: GoogleFonts.poppins(color: Colors.red.shade800, fontSize: 12),
+                    style: GoogleFonts.poppins(
+                      color: Colors.red.shade800,
+                      fontSize: 12,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                 ),
               ),
             ),
 
-          // 4. Panel Info Rute & Alamat di Bagian Bawah
           Positioned(
             bottom: 20,
             left: 20,

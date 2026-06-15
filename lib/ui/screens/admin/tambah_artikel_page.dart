@@ -67,9 +67,9 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
       );
 
       final success = await context.read<ArticleProvider>().addArticle(
-            newArticle,
-            imagePath: _selectedImage?.path,
-          );
+        newArticle,
+        imagePath: _selectedImage?.path,
+      );
 
       if (!mounted) return;
       if (success) {
@@ -93,8 +93,19 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
   String _getCurrentDate() {
     final now = DateTime.now();
     final months = [
-      '', 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember',
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
     ];
     return '${now.day} ${months[now.month]} ${now.year}';
   }
@@ -117,7 +128,6 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 Stack(
                   alignment: Alignment.centerLeft,
                   children: [
@@ -237,19 +247,13 @@ class _TambahArtikelPageState extends State<TambahArtikelPage> {
                     ),
                     focusedErrorBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Colors.red,
-                        width: 2,
-                      ),
+                      borderSide: const BorderSide(color: Colors.red, width: 2),
                     ),
                   ),
                 ),
                 const SizedBox(height: 32),
 
-                WButton(
-                  text: 'Simpan',
-                  onPressed: _handleSimpan,
-                ),
+                WButton(text: 'Simpan', onPressed: _handleSimpan),
                 const SizedBox(height: 24),
               ],
             ),

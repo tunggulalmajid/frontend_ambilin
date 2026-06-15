@@ -20,7 +20,12 @@ class UserAccountProvider extends ChangeNotifier {
     return _allUsers.where((u) => u.peran == filter).toList();
   }
 
-  Future<int> fetchUsers({int? role, int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<int> fetchUsers({
+    int? role,
+    int page = 1,
+    int limit = 10,
+    bool isLoadMore = false,
+  }) async {
     if (!isLoadMore) {
       _isLoading = true;
       _allUsers = [];
@@ -29,13 +34,19 @@ class UserAccountProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _userService.getAllUsers(role: role, page: page, limit: limit);
+      final response = await _userService.getAllUsers(
+        role: role,
+        page: page,
+        limit: limit,
+      );
       _isLoading = false;
 
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
-        final List<UserModel> userList = data.map((json) => UserModel.fromJson(json)).toList();
-        
+        final List<UserModel> userList = data
+            .map((json) => UserModel.fromJson(json))
+            .toList();
+
         List<AkunPengguna> loadedUsers = [];
         for (int i = 0; i < userList.length; i++) {
           final userJson = data[i];
@@ -43,16 +54,24 @@ class UserAccountProvider extends ChangeNotifier {
           if (userList[i].idRole == 3) {
             final profile = userJson['customer_profile'];
             if (profile != null) {
-              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true || profile['is_aktif'] == '1');
+              isActive =
+                  (profile['is_aktif'] == 1 ||
+                  profile['is_aktif'] == true ||
+                  profile['is_aktif'] == '1');
             }
           } else if (userList[i].idRole == 2) {
             final profile = userJson['petugas_profile'];
             if (profile != null) {
-              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true || profile['is_aktif'] == '1');
+              isActive =
+                  (profile['is_aktif'] == 1 ||
+                  profile['is_aktif'] == true ||
+                  profile['is_aktif'] == '1');
             }
           }
           if (isActive) {
-            loadedUsers.add(AkunPengguna.fromUserModel(userList[i], active: true));
+            loadedUsers.add(
+              AkunPengguna.fromUserModel(userList[i], active: true),
+            );
           }
         }
 

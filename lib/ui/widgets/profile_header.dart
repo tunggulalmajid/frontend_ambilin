@@ -32,7 +32,6 @@ class ProfileHeaderFull extends StatelessWidget {
       clipBehavior: Clip.none,
       alignment: Alignment.center,
       children: [
-        // Background gambar
         Container(
           width: double.infinity,
           height: 280,
@@ -48,7 +47,6 @@ class ProfileHeaderFull extends StatelessWidget {
           ),
         ),
 
-        // Tombol Back
         if (showBackButton && onBackPressed != null)
           Positioned(
             top: MediaQuery.of(context).padding.top + 8,
@@ -71,7 +69,6 @@ class ProfileHeaderFull extends StatelessWidget {
             ),
           ),
 
-        // Tombol Edit (pojok kanan atas)
         if (onEditPressed != null)
           Positioned(
             top: MediaQuery.of(context).padding.top + 14,
@@ -88,12 +85,10 @@ class ProfileHeaderFull extends StatelessWidget {
             ),
           ),
 
-        // Avatar + Nama + Email
         Positioned(
           top: 90,
           child: Column(
             children: [
-              // Avatar lingkaran
               GestureDetector(
                 onTap: onAvatarEditPressed,
                 child: Stack(
@@ -135,7 +130,7 @@ class ProfileHeaderFull extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
-              // Nama
+
               Text(
                 nama,
                 style: AppFont.bold().copyWith(
@@ -144,7 +139,7 @@ class ProfileHeaderFull extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 4),
-              // Email
+
               Text(
                 email,
                 style: AppFont.regular().copyWith(
@@ -159,11 +154,6 @@ class ProfileHeaderFull extends StatelessWidget {
     );
   }
 }
-
-// ============================================================================
-// 2. ProfileHeaderEdit — Header edit profil dengan avatar (tanpa nama/email).
-//    Digunakan di halaman edit profil (pelanggan & petugas).
-// ============================================================================
 
 class ProfileHeaderEdit extends StatelessWidget {
   final String backgroundUrl;
@@ -201,7 +191,7 @@ class ProfileHeaderEdit extends StatelessWidget {
             ),
           ),
         ),
-        // Tombol Back
+
         Positioned(
           top: MediaQuery.of(context).padding.top + 8,
           left: 16,
@@ -222,7 +212,7 @@ class ProfileHeaderEdit extends StatelessWidget {
             ),
           ),
         ),
-        // Avatar
+
         Positioned(
           bottom: -45,
           child: GestureDetector(
@@ -270,10 +260,6 @@ class ProfileHeaderEdit extends StatelessWidget {
     );
   }
 }
-
-// ============================================================================
-// 3. ProfileHeaderSimple — Header sederhana tanpa avatar (untuk ubah password).
-// ============================================================================
 
 class ProfileHeaderSimple extends StatelessWidget {
   final String backgroundUrl;
@@ -328,19 +314,11 @@ class ProfileHeaderSimple extends StatelessWidget {
   }
 }
 
-// ============================================================================
-// 4. ProfileInfoRow — Baris info label-value untuk halaman profil.
-// ============================================================================
-
 class ProfileInfoRow extends StatelessWidget {
   final String label;
   final String value;
 
-  const ProfileInfoRow({
-    super.key,
-    required this.label,
-    required this.value,
-  });
+  const ProfileInfoRow({super.key, required this.label, required this.value});
 
   @override
   Widget build(BuildContext context) {
