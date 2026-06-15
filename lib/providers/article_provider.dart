@@ -53,35 +53,40 @@ class ArticleProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchArticles() async {
-    _isLoading = true;
-    _errorMessage = '';
-    notifyListeners();
+  Future<void> fetchArticles({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _errorMessage = '';
+      _allArticles = [];
+      notifyListeners();
+    }
 
     try {
-      final results = await Future.wait([
-        _articleService.getCategories(),
-        _articleService.getAllArticles(),
-      ]);
-
-      final catRes = results[0];
-      final artRes = results[1];
-
-      if (catRes['status'] == 'success') {
-        _categories = catRes['data'] ?? [];
+      if (!isLoadMore && _categories.isEmpty) {
+        final catRes = await _articleService.getCategories();
+        if (catRes['status'] == 'success') {
+          _categories = catRes['data'] ?? [];
+        }
       }
+
+      final artRes = await _articleService.getAllArticles(page: page, limit: limit);
 
       if (artRes['status'] == "success") {
         final List<dynamic> data = artRes['data'] ?? [];
-        _allArticles = data.map((json) => Artikel.fromJson(json)).toList();
+        final List<Artikel> loaded = data.map((json) => Artikel.fromJson(json)).toList();
+        if (isLoadMore) {
+          _allArticles.addAll(loaded);
+        } else {
+          _allArticles = loaded;
+        }
       } else {
         _errorMessage = artRes['message'] ?? "Gagal memuat artikel";
-        _allArticles = [];
+        if (!isLoadMore) _allArticles = [];
       }
     } catch (e) {
       log("Fetch Articles Error: $e");
       _errorMessage = 'Gagal memuat data artikel';
-      _allArticles = [];
+      if (!isLoadMore) _allArticles = [];
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -197,5 +202,17 @@ class ArticleProvider extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  Future<Artikel?> fetchArticleById(int id) async {
+    try {
+      final response = await _articleService.getArticleById(id);
+      if (response['status'] == 'success') {
+        return Artikel.fromJson(response['data']);
+      }
+    } catch (e) {
+      log("Fetch Article By Id Error: $e");
+    }
+    return null;
   }
 }

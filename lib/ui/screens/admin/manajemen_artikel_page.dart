@@ -18,12 +18,61 @@ class ManajemenArtikelPage extends StatefulWidget {
 }
 
 class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isFetchingMore = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener);
     Future.microtask(() {
-      context.read<ArticleProvider>().fetchArticles();
+      _fetchData();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore && !_isFetchingMore && !context.read<ArticleProvider>().isLoading) {
+        _loadMoreData();
+      }
+    }
+  }
+
+  void _fetchData() {
+    _currentPage = 1;
+    _hasMore = true;
+    _isFetchingMore = false;
+    context.read<ArticleProvider>().fetchArticles(page: 1, limit: 10, isLoadMore: false);
+  }
+
+  Future<void> _loadMoreData() async {
+    if (_isFetchingMore) return;
+    setState(() {
+      _isFetchingMore = true;
+    });
+
+    _currentPage++;
+    final provider = context.read<ArticleProvider>();
+    final int beforeCount = provider.allArticles.length;
+    await provider.fetchArticles(page: _currentPage, limit: 10, isLoadMore: true);
+    final int afterCount = provider.allArticles.length;
+
+    if (mounted) {
+      setState(() {
+        _isFetchingMore = false;
+        if (afterCount == beforeCount) {
+          _hasMore = false;
+        }
+      });
+    }
   }
 
   @override
@@ -36,8 +85,9 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColor.base100,
-          onRefresh: () => context.read<ArticleProvider>().fetchArticles(),
+          onRefresh: () async => _fetchData(),
           child: SingleChildScrollView(
+            controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -61,7 +111,7 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
                 ),
                 const SizedBox(height: 16),
 
-                if (articleProvider.isLoading)
+                if (articleProvider.isLoading && _currentPage == 1)
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 32),
@@ -95,6 +145,14 @@ class _ManajemenArtikelPageState extends State<ManajemenArtikelPage> {
                         ),
                       );
                     },
+                  ),
+
+                if (_isFetchingMore)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColor.base100),
+                    ),
                   ),
 
                 const SizedBox(height: 80),

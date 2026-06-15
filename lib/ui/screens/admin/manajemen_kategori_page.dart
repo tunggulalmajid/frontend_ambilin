@@ -16,12 +16,61 @@ class ManajemenKategoriPage extends StatefulWidget {
 }
 
 class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isFetchingMore = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener);
     Future.microtask(() {
-      context.read<WasteCategoryProvider>().fetchCategories();
+      _fetchData();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore && !_isFetchingMore && !context.read<WasteCategoryProvider>().isLoading) {
+        _loadMoreData();
+      }
+    }
+  }
+
+  void _fetchData() {
+    _currentPage = 1;
+    _hasMore = true;
+    _isFetchingMore = false;
+    context.read<WasteCategoryProvider>().fetchCategories(page: 1, limit: 10, isLoadMore: false);
+  }
+
+  Future<void> _loadMoreData() async {
+    if (_isFetchingMore) return;
+    setState(() {
+      _isFetchingMore = true;
+    });
+
+    _currentPage++;
+    final provider = context.read<WasteCategoryProvider>();
+    final int beforeCount = provider.categories.length;
+    await provider.fetchCategories(page: _currentPage, limit: 10, isLoadMore: true);
+    final int afterCount = provider.categories.length;
+
+    if (mounted) {
+      setState(() {
+        _isFetchingMore = false;
+        if (afterCount == beforeCount) {
+          _hasMore = false;
+        }
+      });
+    }
   }
 
   @override
@@ -33,8 +82,9 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColor.base100,
-          onRefresh: () => context.read<WasteCategoryProvider>().fetchCategories(),
+          onRefresh: () async => _fetchData(),
           child: SingleChildScrollView(
+            controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -66,7 +116,7 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                     borderRadius: BorderRadius.circular(16),
                     border: Border.all(color: AppColor.font60),
                   ),
-                  child: categoryProvider.isLoading
+                  child: categoryProvider.isLoading && _currentPage == 1
                       ? const Center(
                           child: Padding(
                             padding: EdgeInsets.symmetric(vertical: 32),
@@ -94,6 +144,13 @@ class _ManajemenKategoriPageState extends State<ManajemenKategoriPage> {
                           },
                         ),
                 ),
+                if (_isFetchingMore)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColor.base100),
+                    ),
+                  ),
                 const SizedBox(height: 80),
               ],
             ),

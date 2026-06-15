@@ -11,9 +11,12 @@ class ArticleService extends ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getAllArticles() async {
+  Future<Map<String, dynamic>> getAllArticles({int page = 1, int limit = 10}) async {
     try {
-      final response = await dio.get('/articles');
+      final response = await dio.get('/articles', queryParameters: {
+        'page': page,
+        'limit': limit,
+      });
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil daftar artikel");

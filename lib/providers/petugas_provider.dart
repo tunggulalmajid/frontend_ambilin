@@ -46,8 +46,11 @@ class PetugasProvider extends ChangeNotifier {
   }
 
   /// Mengambil antrean pesanan aktif berstatus 'menunggu'.
-  Future<void> fetchActiveOrders({int page = 1, int limit = 10}) async {
-    _isLoading = true;
+  Future<void> fetchActiveOrders({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _activeOrders = [];
+    }
     _errorMessage = '';
     notifyListeners();
 
@@ -55,17 +58,20 @@ class PetugasProvider extends ChangeNotifier {
       final response = await _petugasService.getOrderAktif(page, limit);
       if (response['status'] == 'success') {
         final List<dynamic> data = response['data'] ?? [];
-        _activeOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        final List<SetorSampah> newOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        if (isLoadMore) {
+          _activeOrders.addAll(newOrders);
+        } else {
+          _activeOrders = newOrders;
+        }
       } else {
-        _activeOrders = [];
+        if (!isLoadMore) _activeOrders = [];
         _errorMessage = response['message'] ?? 'Gagal mengambil antrean pesanan';
-        throw Exception(_errorMessage);
       }
     } catch (e) {
       log("Fetch Active Orders Error: $e");
-      _activeOrders = [];
+      if (!isLoadMore) _activeOrders = [];
       _errorMessage = e.toString().replaceFirst("Exception: ", "");
-      throw Exception(_errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();
@@ -73,8 +79,11 @@ class PetugasProvider extends ChangeNotifier {
   }
 
   /// Mengambil riwayat pekerjaan penjemputan petugas.
-  Future<void> fetchHistoryOrders({int page = 1, int limit = 10}) async {
-    _isLoading = true;
+  Future<void> fetchHistoryOrders({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _historyOrders = [];
+    }
     _errorMessage = '';
     notifyListeners();
 
@@ -82,17 +91,20 @@ class PetugasProvider extends ChangeNotifier {
       final response = await _petugasService.getRiwayatPekerjaan(page, limit);
       if (response['status'] == 'success') {
         final List<dynamic> data = response['data'] ?? [];
-        _historyOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        final List<SetorSampah> newOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        if (isLoadMore) {
+          _historyOrders.addAll(newOrders);
+        } else {
+          _historyOrders = newOrders;
+        }
       } else {
-        _historyOrders = [];
+        if (!isLoadMore) _historyOrders = [];
         _errorMessage = response['message'] ?? 'Gagal mengambil riwayat pekerjaan';
-        throw Exception(_errorMessage);
       }
     } catch (e) {
       log("Fetch History Orders Error: $e");
-      _historyOrders = [];
+      if (!isLoadMore) _historyOrders = [];
       _errorMessage = e.toString().replaceFirst("Exception: ", "");
-      throw Exception(_errorMessage);
     } finally {
       _isLoading = false;
       notifyListeners();

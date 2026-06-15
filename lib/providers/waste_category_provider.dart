@@ -14,29 +14,37 @@ class WasteCategoryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
-  Future<void> fetchCategories() async {
-    _isLoading = true;
+  Future<void> fetchCategories({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _categories = [];
+    }
     _errorMessage = '';
     notifyListeners();
 
     try {
-      final response = await _categoryService.getAllJenisSampah();
+      final response = await _categoryService.getAllJenisSampah(page: page, limit: limit);
       _isLoading = false;
 
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
-        _categories = data.map((json) => JenisSampah.fromJson(json)).toList();
+        final List<JenisSampah> loaded = data.map((json) => JenisSampah.fromJson(json)).toList();
+        if (isLoadMore) {
+          _categories.addAll(loaded);
+        } else {
+          _categories = loaded;
+        }
         notifyListeners();
       } else {
         _errorMessage = response['message'] ?? 'Gagal memuat data kategori';
-        _categories = [];
+        if (!isLoadMore) _categories = [];
         notifyListeners();
       }
     } catch (e) {
       log("Fetch Categories Error: $e");
       _isLoading = false;
       _errorMessage = 'Gagal memuat data kategori';
-      _categories = [];
+      if (!isLoadMore) _categories = [];
       notifyListeners();
     }
   }

@@ -33,6 +33,7 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
   File? _selectedImage;
   String _existingImageUrl = '';
   final ImagePicker _picker = ImagePicker();
+  bool _isLoadingDetails = false;
 
   @override
   void initState() {
@@ -45,9 +46,36 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
 
     Future.microtask(() {
       if (mounted) {
-        context.read<ArticleProvider>().fetchCategories();
+        _fetchArticleDetails();
       }
     });
+  }
+
+  Future<void> _fetchArticleDetails() async {
+    setState(() {
+      _isLoadingDetails = true;
+    });
+    try {
+      final provider = context.read<ArticleProvider>();
+      await provider.fetchCategories();
+      final fullArticle = await provider.fetchArticleById(widget.article.idArtikel);
+      if (fullArticle != null && mounted) {
+        setState(() {
+          _judulController.text = fullArticle.judul;
+          _isiController.text = fullArticle.isi;
+          _selectedKategori = fullArticle.kategori;
+          _existingImageUrl = fullArticle.fotoThumbnail ?? '';
+        });
+      }
+    } catch (e) {
+      // ignore
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoadingDetails = false;
+        });
+      }
+    }
   }
 
   @override
@@ -118,9 +146,13 @@ class _EditArtikelPageState extends State<EditArtikelPage> {
     return Scaffold(
       backgroundColor: AppColor.putihBackground,
       body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
-          child: Form(
+        child: _isLoadingDetails
+            ? const Center(
+                child: CircularProgressIndicator(color: AppColor.base100),
+              )
+            : SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

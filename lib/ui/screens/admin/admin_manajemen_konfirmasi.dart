@@ -17,9 +17,15 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
   String _selectedFilter = 'Semua';
   final List<String> _filters = ['Semua', 'Menunggu', 'Berhasil', 'Gagal'];
 
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isFetchingMore = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener);
     Future.microtask(() {
       if (mounted) {
         _fetchData();
@@ -27,12 +33,56 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
     });
   }
 
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore && !_isFetchingMore && !context.read<AuthProvider>().isTransactionsLoading) {
+        _loadMoreData();
+      }
+    }
+  }
+
   void _fetchData() {
+    _currentPage = 1;
+    _hasMore = true;
+    _isFetchingMore = false;
     String? status;
     if (_selectedFilter == 'Menunggu') status = 'menunggu';
     else if (_selectedFilter == 'Berhasil') status = 'berhasil';
     else if (_selectedFilter == 'Gagal') status = 'gagal';
-    context.read<AuthProvider>().fetchTransactions(status: status);
+    context.read<AuthProvider>().fetchTransactions(status: status, page: 1, limit: 10, isLoadMore: false);
+  }
+
+  Future<void> _loadMoreData() async {
+    if (_isFetchingMore) return;
+    setState(() {
+      _isFetchingMore = true;
+    });
+
+    _currentPage++;
+    String? status;
+    if (_selectedFilter == 'Menunggu') status = 'menunggu';
+    else if (_selectedFilter == 'Berhasil') status = 'berhasil';
+    else if (_selectedFilter == 'Gagal') status = 'gagal';
+
+    final authProvider = context.read<AuthProvider>();
+    final int beforeCount = authProvider.allTransactions.length;
+    await authProvider.fetchTransactions(status: status, page: _currentPage, limit: 10, isLoadMore: true);
+    final int afterCount = authProvider.allTransactions.length;
+
+    if (mounted) {
+      setState(() {
+        _isFetchingMore = false;
+        if (afterCount == beforeCount) {
+          _hasMore = false;
+        }
+      });
+    }
   }
 
   Future<void> _onRefresh() async {
@@ -62,7 +112,7 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
           ),
         ),
       ),
-      body: authProvider.isTransactionsLoading
+      body: authProvider.isTransactionsLoading && _currentPage == 1
           ? const Center(
               child: CircularProgressIndicator(color: AppColor.base100),
             )
@@ -70,6 +120,7 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
               onRefresh: _onRefresh,
               color: AppColor.base100,
               child: SingleChildScrollView(
+                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
                 child: Column(
@@ -209,6 +260,13 @@ class _AdminManajemenKonfirmasiState extends State<AdminManajemenKonfirmasi> {
                               );
                             },
                           ),
+                    if (_isFetchingMore)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: CircularProgressIndicator(color: AppColor.base100),
+                        ),
+                      ),
                   ],
                 ),
               ),

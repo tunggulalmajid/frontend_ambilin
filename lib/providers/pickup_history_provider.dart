@@ -19,67 +19,89 @@ class PickupHistoryProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String get errorMessage => _errorMessage;
 
-  Future<void> fetchActiveOrders() async {
-    _isLoading = true;
+  Future<void> fetchActiveOrders({int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _activeOrders = [];
+    }
     _errorMessage = '';
     notifyListeners();
 
     try {
-      final response = await _setorService.dapatkanOrderAktif();
+      final response = await _setorService.dapatkanOrderAktif(page: page, limit: limit);
       _isLoading = false;
 
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
-        _activeOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        final List<SetorSampah> newOrders = data.map((json) => SetorSampah.fromJson(json)).toList();
+        if (isLoadMore) {
+          _activeOrders.addAll(newOrders);
+        } else {
+          _activeOrders = newOrders;
+        }
         notifyListeners();
       } else {
         _errorMessage = response['message'] ?? 'Gagal memuat antrean penjemputan';
-        _activeOrders = [];
+        if (!isLoadMore) _activeOrders = [];
         notifyListeners();
       }
     } catch (e) {
       log("Fetch Active Orders Error: $e");
       _isLoading = false;
       _errorMessage = 'Gagal memuat antrean penjemputan';
-      _activeOrders = [];
+      if (!isLoadMore) _activeOrders = [];
       notifyListeners();
     }
   }
 
-  Future<void> fetchPickupHistory({required int roleId}) async {
-    _isLoading = true;
+  Future<void> fetchPickupHistory({required int roleId, int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _pickupList = [];
+      _setorHistory = [];
+    }
     _errorMessage = '';
     notifyListeners();
 
     try {
       final Map<String, dynamic> response;
       if (roleId == 3) {
-        response = await _setorService.dapatkanRiwayatCustomer();
+        response = await _setorService.dapatkanRiwayatCustomer(page: page, limit: limit);
       } else if (roleId == 2) {
-        response = await _setorService.dapatkanRiwayatPetugas();
+        response = await _setorService.dapatkanRiwayatPetugas(page: page, limit: limit);
       } else {
-        response = await _setorService.dapatkanOrderAktif();
+        response = await _setorService.dapatkanOrderAktif(page: page, limit: limit);
       }
 
       _isLoading = false;
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
         final List<SetorSampah> setorList = data.map((json) => SetorSampah.fromJson(json)).toList();
-        _setorHistory = setorList;
-        _pickupList = setorList.map((setor) => RiwayatPenjemputan.fromSetorSampah(setor)).toList();
+        final List<RiwayatPenjemputan> mappedList = setorList.map((setor) => RiwayatPenjemputan.fromSetorSampah(setor)).toList();
+        if (isLoadMore) {
+          _setorHistory.addAll(setorList);
+          _pickupList.addAll(mappedList);
+        } else {
+          _setorHistory = setorList;
+          _pickupList = mappedList;
+        }
         notifyListeners();
       } else {
         _errorMessage = response['message'] ?? 'Gagal memuat riwayat penjemputan';
-        _pickupList = [];
-        _setorHistory = [];
+        if (!isLoadMore) {
+          _pickupList = [];
+          _setorHistory = [];
+        }
         notifyListeners();
       }
     } catch (e) {
       log("Fetch Pickup History Error: $e");
       _isLoading = false;
       _errorMessage = 'Gagal memuat riwayat penjemputan';
-      _pickupList = [];
-      _setorHistory = [];
+      if (!isLoadMore) {
+        _pickupList = [];
+        _setorHistory = [];
+      }
       notifyListeners();
     }
   }

@@ -1,9 +1,12 @@
 import 'api_service.dart';
 
 class WasteCategoryService extends ApiService {
-  Future<Map<String, dynamic>> getAllJenisSampah() async {
+  Future<Map<String, dynamic>> getAllJenisSampah({int page = 1, int limit = 10}) async {
     try {
-      final response = await dio.get('/jenis-sampah');
+      final response = await dio.get('/jenis-sampah', queryParameters: {
+        'page': page,
+        'limit': limit,
+      });
       return response.data;
     } catch (e) {
       throw Exception("Gagal mengambil kategori sampah");

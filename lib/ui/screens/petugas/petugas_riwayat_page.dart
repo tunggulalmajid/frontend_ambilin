@@ -26,14 +26,62 @@ class PetugasRiwayatPage extends StatefulWidget {
 class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
   bool _isNavigating = false;
 
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isFetchingMore = false;
+
   @override
   void initState() {
     super.initState();
-    // Fetch data riwayat tugas petugas dan kategori sampah saat halaman diinisialisasi
+    _scrollController.addListener(_scrollListener);
     Future.microtask(() {
-      context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 2);
-      context.read<WasteCategoryProvider>().fetchCategories();
+      _fetchData();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore && !_isFetchingMore && !context.read<PickupHistoryProvider>().isLoading) {
+        _loadMoreData();
+      }
+    }
+  }
+
+  void _fetchData() {
+    _currentPage = 1;
+    _hasMore = true;
+    _isFetchingMore = false;
+    context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 2, page: 1, limit: 10, isLoadMore: false);
+    context.read<WasteCategoryProvider>().fetchCategories();
+  }
+
+  Future<void> _loadMoreData() async {
+    if (_isFetchingMore) return;
+    setState(() {
+      _isFetchingMore = true;
+    });
+
+    _currentPage++;
+    final provider = context.read<PickupHistoryProvider>();
+    final int beforeCount = provider.setorHistory.length;
+    await provider.fetchPickupHistory(roleId: 2, page: _currentPage, limit: 10, isLoadMore: true);
+    final int afterCount = provider.setorHistory.length;
+
+    if (mounted) {
+      setState(() {
+        _isFetchingMore = false;
+        if (afterCount == beforeCount) {
+          _hasMore = false;
+        }
+      });
+    }
   }
 
   Future<void> _navigasiKeDetail(SetorSampah tugas) async {
@@ -58,9 +106,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
   }
 
   Future<void> _refreshData() async {
-    await context.read<PickupHistoryProvider>().fetchPickupHistory(roleId: 2);
-    if (!mounted) return;
-    await context.read<WasteCategoryProvider>().fetchCategories();
+    _fetchData();
   }
 
   @override
@@ -96,6 +142,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
               color: AppColor.base100,
               onRefresh: _refreshData,
               child: SingleChildScrollView(
+                controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Column(
@@ -123,7 +170,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                     const Divider(color: AppColor.font60),
                     const SizedBox(height: 8),
 
-                    if (pickupProvider.isLoading)
+                    if (pickupProvider.isLoading && _currentPage == 1)
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 20),
@@ -173,7 +220,7 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                     const Divider(color: AppColor.font60),
                     const SizedBox(height: 8),
 
-                    if (pickupProvider.isLoading)
+                    if (pickupProvider.isLoading && _currentPage == 1)
                       const Center(
                         child: Padding(
                           padding: EdgeInsets.symmetric(vertical: 20),
@@ -207,6 +254,13 @@ class _PetugasRiwayatPageState extends State<PetugasRiwayatPage> {
                             onTapLihat: () => _navigasiKeDetail(tugas),
                           );
                         },
+                      ),
+                    if (_isFetchingMore)
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 16),
+                        child: Center(
+                          child: CircularProgressIndicator(color: AppColor.base100),
+                        ),
                       ),
                     const SizedBox(height: 20),
                   ],

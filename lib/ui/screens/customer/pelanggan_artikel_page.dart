@@ -18,14 +18,63 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
   String _kategoriAktif = 'Semua';
   bool _isNavigating = false;
 
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isFetchingMore = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener);
     Future.microtask(() {
       if (mounted) {
-        context.read<ArticleProvider>().fetchArticles();
+        _fetchData();
       }
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore && !_isFetchingMore && !context.read<ArticleProvider>().isLoading) {
+        _loadMoreData();
+      }
+    }
+  }
+
+  void _fetchData() {
+    _currentPage = 1;
+    _hasMore = true;
+    _isFetchingMore = false;
+    context.read<ArticleProvider>().fetchArticles(page: 1, limit: 10, isLoadMore: false);
+  }
+
+  Future<void> _loadMoreData() async {
+    if (_isFetchingMore) return;
+    setState(() {
+      _isFetchingMore = true;
+    });
+
+    _currentPage++;
+    final provider = context.read<ArticleProvider>();
+    final int beforeCount = provider.allArticles.length;
+    await provider.fetchArticles(page: _currentPage, limit: 10, isLoadMore: true);
+    final int afterCount = provider.allArticles.length;
+
+    if (mounted) {
+      setState(() {
+        _isFetchingMore = false;
+        if (afterCount == beforeCount) {
+          _hasMore = false;
+        }
+      });
+    }
   }
 
   Future<void> _bukaDetailArtikel(Artikel artikel) async {
@@ -144,7 +193,7 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                 const SizedBox(height: 16),
 
                 Expanded(
-                  child: articleProvider.isLoading
+                  child: articleProvider.isLoading && _currentPage == 1
                       ? const Center(
                           child: CircularProgressIndicator(
                             color: AppColor.base100,
@@ -160,9 +209,18 @@ class _PelangganArtikelPageState extends State<PelangganArtikelPage> {
                           ),
                         )
                       : ListView.builder(
+                          controller: _scrollController,
                           padding: const EdgeInsets.symmetric(horizontal: 20),
-                          itemCount: artikelTampil.length,
+                          itemCount: artikelTampil.length + (_isFetchingMore ? 1 : 0),
                           itemBuilder: (context, index) {
+                            if (index == artikelTampil.length) {
+                              return const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 16),
+                                child: Center(
+                                  child: CircularProgressIndicator(color: AppColor.base100),
+                                ),
+                              );
+                            }
                             final artikel = artikelTampil[index];
                             return _buildCardArtikel(artikel);
                           },

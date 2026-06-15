@@ -20,19 +20,23 @@ class UserAccountProvider extends ChangeNotifier {
     return _allUsers.where((u) => u.peran == filter).toList();
   }
 
-  Future<void> fetchUsers({int? role}) async {
-    _isLoading = true;
+  Future<void> fetchUsers({int? role, int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isLoading = true;
+      _allUsers = [];
+    }
     _errorMessage = '';
     notifyListeners();
 
     try {
-      final response = await _userService.getAllUsers(role: role);
+      final response = await _userService.getAllUsers(role: role, page: page, limit: limit);
       _isLoading = false;
 
       if (response['status'] == "success") {
         final List<dynamic> data = response['data'] ?? [];
         final List<UserModel> userList = data.map((json) => UserModel.fromJson(json)).toList();
-        _allUsers = [];
+        
+        List<AkunPengguna> loadedUsers = [];
         for (int i = 0; i < userList.length; i++) {
           final userJson = data[i];
           bool isActive = true;
@@ -48,20 +52,26 @@ class UserAccountProvider extends ChangeNotifier {
             }
           }
           if (isActive) {
-            _allUsers.add(AkunPengguna.fromUserModel(userList[i], active: true));
+            loadedUsers.add(AkunPengguna.fromUserModel(userList[i], active: true));
           }
+        }
+
+        if (isLoadMore) {
+          _allUsers.addAll(loadedUsers);
+        } else {
+          _allUsers = loadedUsers;
         }
         notifyListeners();
       } else {
         _errorMessage = response['message'] ?? 'Gagal memuat data pengguna';
-        _allUsers = [];
+        if (!isLoadMore) _allUsers = [];
         notifyListeners();
       }
     } catch (e) {
       log("Fetch Users Error: $e");
       _isLoading = false;
       _errorMessage = 'Gagal memuat data pengguna';
-      _allUsers = [];
+      if (!isLoadMore) _allUsers = [];
       notifyListeners();
     }
   }

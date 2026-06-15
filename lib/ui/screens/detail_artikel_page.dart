@@ -1,12 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:frontend_ambilin/models/artikel.dart';
+import 'package:frontend_ambilin/providers/article_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
+import 'dart:developer' as dev;
 
-class DetailArtikelPage extends StatelessWidget {
+class DetailArtikelPage extends StatefulWidget {
   final Artikel article;
 
   const DetailArtikelPage({super.key, required this.article});
+
+  @override
+  State<DetailArtikelPage> createState() => _DetailArtikelPageState();
+}
+
+class _DetailArtikelPageState extends State<DetailArtikelPage> {
+  late Artikel _currentArticle;
+  bool _isLoading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentArticle = widget.article;
+    _fetchDetail();
+  }
+
+  Future<void> _fetchDetail() async {
+    setState(() {
+      _isLoading = true;
+    });
+    try {
+      final detail = await context
+          .read<ArticleProvider>()
+          .fetchArticleById(_currentArticle.idArtikel);
+      if (detail != null && mounted) {
+        setState(() {
+          _currentArticle = detail;
+        });
+      }
+    } catch (e) {
+      dev.log("Error fetching article detail: $e");
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,9 +94,10 @@ class DetailArtikelPage extends StatelessWidget {
                     width: double.infinity,
                     height: 200,
                     color: const Color(0xFF616161),
-                    child: (article.fotoThumbnail != null && article.fotoThumbnail!.isNotEmpty)
+                    child: (_currentArticle.fotoThumbnail != null &&
+                            _currentArticle.fotoThumbnail!.isNotEmpty)
                         ? Image.network(
-                            article.fotoThumbnail!,
+                            _currentArticle.fotoThumbnail!,
                             fit: BoxFit.cover,
                             errorBuilder: (context, error, stackTrace) {
                               return const Center(
@@ -81,7 +124,7 @@ class DetailArtikelPage extends StatelessWidget {
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
-                  article.judul,
+                  _currentArticle.judul,
                   style: AppFont.bold().copyWith(
                     fontSize: 20,
                     color: AppColor.putih100,
@@ -100,7 +143,7 @@ class DetailArtikelPage extends StatelessWidget {
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    article.kategori,
+                    _currentArticle.kategori,
                     style: AppFont.medium().copyWith(
                       fontSize: 12,
                       color: AppColor.putih100.withOpacity(0.8),
@@ -112,15 +155,21 @@ class DetailArtikelPage extends StatelessWidget {
 
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
-                child: Text(
-                  article.isi,
-                  textAlign: TextAlign.justify,
-                  style: AppFont.regular().copyWith(
-                    fontSize: 14,
-                    color: AppColor.putih100.withOpacity(0.9),
-                    height: 1.6,
-                  ),
-                ),
+                child: _isLoading && _currentArticle.isi.isEmpty
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: AppColor.base100,
+                        ),
+                      )
+                    : Text(
+                        _currentArticle.isi,
+                        textAlign: TextAlign.justify,
+                        style: AppFont.regular().copyWith(
+                          fontSize: 14,
+                          color: AppColor.putih100.withOpacity(0.9),
+                          height: 1.6,
+                        ),
+                      ),
               ),
               const SizedBox(height: 32),
             ],

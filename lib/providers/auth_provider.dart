@@ -386,15 +386,23 @@ class AuthProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> fetchTransactions({String? status, int page = 1, int limit = 10}) async {
-    _isTransactionsLoading = true;
+  Future<void> fetchTransactions({String? status, int page = 1, int limit = 10, bool isLoadMore = false}) async {
+    if (!isLoadMore) {
+      _isTransactionsLoading = true;
+      _allTransactions = [];
+    }
     _errorMessage = "";
     notifyListeners();
 
     try {
       final response = await _authService.getTransactions(status: status, page: page, limit: limit);
       if (response['status'] == "success") {
-        _allTransactions = response['data'] ?? [];
+        final List<dynamic> data = response['data'] ?? [];
+        if (isLoadMore) {
+          _allTransactions.addAll(data);
+        } else {
+          _allTransactions = data;
+        }
       } else {
         _errorMessage = response['message'] ?? "Gagal mengambil daftar transaksi";
       }

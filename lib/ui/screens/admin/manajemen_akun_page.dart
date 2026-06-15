@@ -22,12 +22,68 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
   String _selectedFilter = 'Semua';
   final List<String> _filters = ['Semua', 'Petugas', 'Pelanggan'];
 
+  final ScrollController _scrollController = ScrollController();
+  int _currentPage = 1;
+  bool _hasMore = true;
+  bool _isFetchingMore = false;
+
   @override
   void initState() {
     super.initState();
+    _scrollController.addListener(_scrollListener);
     Future.microtask(() {
-      context.read<UserAccountProvider>().fetchUsers();
+      _fetchData();
     });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _scrollListener() {
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      if (_hasMore && !_isFetchingMore && !context.read<UserAccountProvider>().isLoading) {
+        _loadMoreData();
+      }
+    }
+  }
+
+  void _fetchData() {
+    _currentPage = 1;
+    _hasMore = true;
+    _isFetchingMore = false;
+    int? role;
+    if (_selectedFilter == 'Petugas') role = 2;
+    else if (_selectedFilter == 'Pelanggan') role = 3;
+    context.read<UserAccountProvider>().fetchUsers(role: role, page: 1, limit: 10, isLoadMore: false);
+  }
+
+  Future<void> _loadMoreData() async {
+    if (_isFetchingMore) return;
+    setState(() {
+      _isFetchingMore = true;
+    });
+
+    _currentPage++;
+    int? role;
+    if (_selectedFilter == 'Petugas') role = 2;
+    else if (_selectedFilter == 'Pelanggan') role = 3;
+
+    final provider = context.read<UserAccountProvider>();
+    final int beforeCount = provider.allUsers.length;
+    await provider.fetchUsers(role: role, page: _currentPage, limit: 10, isLoadMore: true);
+    final int afterCount = provider.allUsers.length;
+
+    if (mounted) {
+      setState(() {
+        _isFetchingMore = false;
+        if (afterCount == beforeCount) {
+          _hasMore = false;
+        }
+      });
+    }
   }
 
   @override
@@ -40,8 +96,9 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
       body: SafeArea(
         child: RefreshIndicator(
           color: AppColor.base100,
-          onRefresh: () => context.read<UserAccountProvider>().fetchUsers(),
+          onRefresh: () async => _fetchData(),
           child: SingleChildScrollView(
+            controller: _scrollController,
             physics: const AlwaysScrollableScrollPhysics(),
             padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
@@ -71,11 +128,12 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
                     setState(() {
                       _selectedFilter = filter;
                     });
+                    _fetchData();
                   },
                 ),
                 const SizedBox(height: 16),
 
-                if (userProvider.isLoading)
+                if (userProvider.isLoading && _currentPage == 1)
                   const Center(
                     child: Padding(
                       padding: EdgeInsets.symmetric(vertical: 32),
@@ -105,6 +163,14 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
                         ),
                       );
                     },
+                  ),
+
+                if (_isFetchingMore)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColor.base100),
+                    ),
                   ),
 
                 const SizedBox(height: 80),
