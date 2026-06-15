@@ -141,6 +141,68 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
     }
   }
 
+  void _showFullImage(BuildContext context, String url) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        insetPadding: const EdgeInsets.all(10),
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            InteractiveViewer(
+              panEnabled: true,
+              minScale: 0.5,
+              maxScale: 4.0,
+              child: Container(
+                width: double.infinity,
+                height: double.infinity,
+                alignment: Alignment.center,
+                child: Image.network(
+                  url,
+                  fit: BoxFit.contain,
+                  loadingBuilder: (context, child, loadingProgress) {
+                    if (loadingProgress == null) return child;
+                    return const Center(
+                      child: CircularProgressIndicator(color: Colors.white),
+                    );
+                  },
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Center(
+                      child: Text(
+                        'Gagal memuat gambar',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            Positioned(
+              top: 10,
+              right: 10,
+              child: GestureDetector(
+                onTap: () => Navigator.pop(context),
+                child: Container(
+                  padding: const EdgeInsets.all(8),
+                  decoration: const BoxDecoration(
+                    color: Colors.black54,
+                    shape: BoxShape.circle,
+                  ),
+                  child: const Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 24,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final item = _item;
@@ -303,33 +365,66 @@ class _AdminKonfirmasiPembayaranState extends State<AdminKonfirmasiPembayaran> {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
-                    child: Container(
-                      width: double.infinity,
-                      height: 180,
-                      color: const Color(0xFFE0E0E0),
-                      child: buktiUrl.isNotEmpty
-                          ? Image.network(
-                              buktiUrl,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return const Center(
-                                  child: Icon(
-                                    Icons.receipt_long,
-                                    color: AppColor.font80,
-                                    size: 48,
+                  GestureDetector(
+                    onTap: buktiUrl.isNotEmpty
+                        ? () => _showFullImage(context, buktiUrl)
+                        : null,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: double.infinity,
+                        height: 320,
+                        color: const Color(0xFFF5F5F5),
+                        child: buktiUrl.isNotEmpty
+                            ? Stack(
+                                children: [
+                                  Positioned.fill(
+                                    child: Image.network(
+                                      buktiUrl,
+                                      fit: BoxFit.contain,
+                                      errorBuilder: (context, error, stackTrace) {
+                                        return const Center(
+                                          child: Icon(
+                                            Icons.receipt_long,
+                                            color: AppColor.font80,
+                                            size: 48,
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   ),
-                                );
-                              },
-                            )
-                          : const Center(
-                              child: Icon(
-                                Icons.receipt_long,
-                                color: AppColor.font80,
-                                size: 48,
+                                  Positioned(
+                                    bottom: 8,
+                                    right: 8,
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                      decoration: BoxDecoration(
+                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          const Icon(Icons.zoom_in, color: Colors.white, size: 14),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            'Ketuk untuk zoom',
+                                            style: GoogleFonts.poppins(color: Colors.white, fontSize: 10),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              )
+                            : const Center(
+                                child: Icon(
+                                  Icons.receipt_long,
+                                  color: AppColor.font80,
+                                  size: 48,
+                                ),
                               ),
-                            ),
+                      ),
                     ),
                   ),
                 ],
