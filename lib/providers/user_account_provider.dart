@@ -20,7 +20,7 @@ class UserAccountProvider extends ChangeNotifier {
     return _allUsers.where((u) => u.peran == filter).toList();
   }
 
-  Future<void> fetchUsers({int? role, int page = 1, int limit = 10, bool isLoadMore = false}) async {
+  Future<int> fetchUsers({int? role, int page = 1, int limit = 10, bool isLoadMore = false}) async {
     if (!isLoadMore) {
       _isLoading = true;
       _allUsers = [];
@@ -43,12 +43,12 @@ class UserAccountProvider extends ChangeNotifier {
           if (userList[i].idRole == 3) {
             final profile = userJson['customer_profile'];
             if (profile != null) {
-              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true);
+              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true || profile['is_aktif'] == '1');
             }
           } else if (userList[i].idRole == 2) {
             final profile = userJson['petugas_profile'];
             if (profile != null) {
-              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true);
+              isActive = (profile['is_aktif'] == 1 || profile['is_aktif'] == true || profile['is_aktif'] == '1');
             }
           }
           if (isActive) {
@@ -62,10 +62,12 @@ class UserAccountProvider extends ChangeNotifier {
           _allUsers = loadedUsers;
         }
         notifyListeners();
+        return data.length;
       } else {
         _errorMessage = response['message'] ?? 'Gagal memuat data pengguna';
         if (!isLoadMore) _allUsers = [];
         notifyListeners();
+        return 0;
       }
     } catch (e) {
       log("Fetch Users Error: $e");
@@ -73,6 +75,7 @@ class UserAccountProvider extends ChangeNotifier {
       _errorMessage = 'Gagal memuat data pengguna';
       if (!isLoadMore) _allUsers = [];
       notifyListeners();
+      return 0;
     }
   }
 

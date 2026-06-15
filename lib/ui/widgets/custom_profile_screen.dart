@@ -172,7 +172,7 @@ class _CustomProfileScreenState extends State<CustomProfileScreen> {
                         ? user.foto
                         : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
                     : null,
-                onBackPressed: () => Navigator.pop(context),
+                showBackButton: false,
                 onEditPressed: () {
                   if (widget.role == 'petugas') {
                     Navigator.pushNamed(context, AppRoutes.petugasEditProfil, arguments: user);

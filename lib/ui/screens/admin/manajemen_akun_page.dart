@@ -50,14 +50,22 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
     }
   }
 
-  void _fetchData() {
+  void _fetchData() async {
     _currentPage = 1;
     _hasMore = true;
     _isFetchingMore = false;
     int? role;
     if (_selectedFilter == 'Petugas') role = 2;
     else if (_selectedFilter == 'Pelanggan') role = 3;
-    context.read<UserAccountProvider>().fetchUsers(role: role, page: 1, limit: 10, isLoadMore: false);
+    final int rawCount = await context.read<UserAccountProvider>().fetchUsers(role: role, page: 1, limit: 10, isLoadMore: false);
+    if (mounted) {
+      setState(() {
+        if (rawCount < 10) {
+          _hasMore = false;
+        }
+      });
+      _checkAndLoadMoreIfNeeded();
+    }
   }
 
   Future<void> _loadMoreData() async {
@@ -72,18 +80,29 @@ class _ManajemenAkunPageState extends State<ManajemenAkunPage> {
     else if (_selectedFilter == 'Pelanggan') role = 3;
 
     final provider = context.read<UserAccountProvider>();
-    final int beforeCount = provider.allUsers.length;
-    await provider.fetchUsers(role: role, page: _currentPage, limit: 10, isLoadMore: true);
-    final int afterCount = provider.allUsers.length;
+    final int rawCount = await provider.fetchUsers(role: role, page: _currentPage, limit: 10, isLoadMore: true);
 
     if (mounted) {
       setState(() {
         _isFetchingMore = false;
-        if (afterCount == beforeCount) {
+        if (rawCount < 10) {
           _hasMore = false;
         }
       });
+      _checkAndLoadMoreIfNeeded();
     }
+  }
+
+  void _checkAndLoadMoreIfNeeded() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        final provider = context.read<UserAccountProvider>();
+        final filteredUsers = provider.getFilteredUsers(_selectedFilter);
+        if (filteredUsers.length < 8 && _hasMore && !_isFetchingMore && !provider.isLoading) {
+          _loadMoreData();
+        }
+      }
+    });
   }
 
   @override

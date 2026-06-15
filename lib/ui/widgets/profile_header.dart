@@ -8,9 +8,10 @@ class ProfileHeaderFull extends StatelessWidget {
   final String nama;
   final String email;
   final String? fotoUrl;
-  final VoidCallback onBackPressed;
+  final VoidCallback? onBackPressed;
   final VoidCallback? onEditPressed;
   final VoidCallback? onAvatarEditPressed;
+  final bool showBackButton;
 
   const ProfileHeaderFull({
     super.key,
@@ -18,10 +19,11 @@ class ProfileHeaderFull extends StatelessWidget {
     required this.inisial,
     required this.nama,
     required this.email,
-    required this.onBackPressed,
+    this.onBackPressed,
     this.onEditPressed,
     this.fotoUrl,
     this.onAvatarEditPressed,
+    this.showBackButton = true,
   });
 
   @override
@@ -47,26 +49,27 @@ class ProfileHeaderFull extends StatelessWidget {
         ),
 
         // Tombol Back
-        Positioned(
-          top: MediaQuery.of(context).padding.top + 8,
-          left: 16,
-          child: GestureDetector(
-            onTap: onBackPressed,
-            child: Container(
-              width: 38,
-              height: 38,
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.3),
-                shape: BoxShape.circle,
-              ),
-              child: const Icon(
-                Icons.chevron_left,
-                color: AppColor.putih100,
-                size: 24,
+        if (showBackButton && onBackPressed != null)
+          Positioned(
+            top: MediaQuery.of(context).padding.top + 8,
+            left: 16,
+            child: GestureDetector(
+              onTap: onBackPressed,
+              child: Container(
+                width: 38,
+                height: 38,
+                decoration: BoxDecoration(
+                  color: Colors.black.withOpacity(0.3),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.chevron_left,
+                  color: AppColor.putih100,
+                  size: 24,
+                ),
               ),
             ),
           ),
-        ),
 
         // Tombol Edit (pojok kanan atas)
         if (onEditPressed != null)

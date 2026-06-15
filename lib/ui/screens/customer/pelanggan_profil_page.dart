@@ -169,7 +169,7 @@ class _PelangganProfilPageState extends State<PelangganProfilPage> {
                       ? user.foto
                       : 'https://ambilin.kodetalma.my.id/${user.foto!.startsWith('/') ? user.foto!.substring(1) : user.foto}')
                   : null,
-              onBackPressed: () => Navigator.pop(context),
+              showBackButton: false,
               onEditPressed: () {
                 Navigator.push(context, MaterialPageRoute(
                   builder: (_) => PelangganEditProfilPage(user: user),
