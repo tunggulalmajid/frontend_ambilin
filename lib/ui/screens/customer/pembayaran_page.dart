@@ -8,6 +8,7 @@ import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
 import 'package:frontend_ambilin/ui/widgets/w_button.dart';
 import 'package:frontend_ambilin/ui/widgets/instruksi_pembayaran_card.dart';
+import 'package:frontend_ambilin/ui/widgets/zoomable_image_dialog.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
@@ -284,14 +285,17 @@ class _PembayaranPageState extends State<PembayaranPage> {
                                   child: isBuktiTerisi
                                       ? Stack(
                                           children: [
-                                            ClipRRect(
-                                              borderRadius:
-                                                  BorderRadius.circular(11),
-                                              child: Image.file(
-                                                _buktiTransfer!,
-                                                width: double.infinity,
-                                                height: 200,
-                                                fit: BoxFit.cover,
+                                            GestureDetector(
+                                              onTap: () => ZoomableImageDialog.show(context, imageFile: _buktiTransfer!),
+                                              child: ClipRRect(
+                                                borderRadius:
+                                                    BorderRadius.circular(11),
+                                                child: Image.file(
+                                                  _buktiTransfer!,
+                                                  width: double.infinity,
+                                                  height: 200,
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
                                             Positioned(

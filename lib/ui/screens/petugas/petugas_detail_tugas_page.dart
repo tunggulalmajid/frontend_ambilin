@@ -17,6 +17,7 @@ import '../../../utils/app_font.dart';
 import '../../../utils/app_routes.dart';
 import '../../widgets/detail_card_wrapper.dart';
 import '../../widgets/async_button.dart';
+import '../../widgets/zoomable_image_dialog.dart';
 
 class PetugasDetailTugasPage extends StatefulWidget {
   final SetorSampah data;
@@ -260,18 +261,23 @@ class _PetugasDetailTugasPageState extends State<PetugasDetailTugasPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      data.foto ?? '',
-                      width: double.infinity,
-                      height: 150,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
+                  GestureDetector(
+                    onTap: (data.foto != null && data.foto!.isNotEmpty)
+                        ? () => ZoomableImageDialog.show(context, imageUrl: data.foto)
+                        : null,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        data.foto ?? '',
                         width: double.infinity,
                         height: 150,
-                        color: AppColor.base20,
-                        child: const Icon(Icons.image, size: 50, color: AppColor.font60),
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => Container(
+                          width: double.infinity,
+                          height: 150,
+                          color: AppColor.base20,
+                          child: const Icon(Icons.image, size: 50, color: AppColor.font60),
+                        ),
                       ),
                     ),
                   ),

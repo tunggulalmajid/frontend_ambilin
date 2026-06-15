@@ -7,6 +7,7 @@ import '../../../models/setor_sampah.dart';
 import '../../../models/jenis_sampah.dart';
 import '../../../providers/waste_category_provider.dart';
 import '../../widgets/detail_card_wrapper.dart';
+import '../../widgets/zoomable_image_dialog.dart';
 
 class PelangganSelesaiPenjemputanPage extends StatelessWidget {
   final SetorSampah data;
@@ -114,18 +115,23 @@ class PelangganSelesaiPenjemputanPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      data.foto ?? '',
-                      width: double.infinity,
-                      height: 150,
-                      fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Container(
+                  GestureDetector(
+                    onTap: (data.foto != null && data.foto!.isNotEmpty)
+                        ? () => ZoomableImageDialog.show(context, imageUrl: data.foto)
+                        : null,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(10),
+                      child: Image.network(
+                        data.foto ?? '',
                         width: double.infinity,
                         height: 150,
-                        color: AppColor.base20,
-                        child: const Icon(Icons.image, size: 50, color: AppColor.font60),
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) => Container(
+                          width: double.infinity,
+                          height: 150,
+                          color: AppColor.base20,
+                          child: const Icon(Icons.image, size: 50, color: AppColor.font60),
+                        ),
                       ),
                     ),
                   ),
@@ -164,18 +170,23 @@ class PelangganSelesaiPenjemputanPage extends StatelessWidget {
 
             DetailCardWrapper(
               title: 'Bukti Penjemputan',
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(10),
-                child: Image.network(
-                  data.fotoBuktiPenjemputan ?? '',
-                  width: double.infinity,
-                  height: 150,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => Container(
+              child: GestureDetector(
+                onTap: (data.fotoBuktiPenjemputan != null && data.fotoBuktiPenjemputan!.isNotEmpty)
+                    ? () => ZoomableImageDialog.show(context, imageUrl: data.fotoBuktiPenjemputan)
+                    : null,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: Image.network(
+                    data.fotoBuktiPenjemputan ?? '',
                     width: double.infinity,
                     height: 150,
-                    color: AppColor.base20,
-                    child: const Icon(Icons.receipt, size: 50, color: AppColor.font60),
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      width: double.infinity,
+                      height: 150,
+                      color: AppColor.base20,
+                      child: const Icon(Icons.receipt, size: 50, color: AppColor.font60),
+                    ),
                   ),
                 ),
               ),

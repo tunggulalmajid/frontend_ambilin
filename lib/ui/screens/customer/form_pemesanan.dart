@@ -10,6 +10,7 @@ import 'package:frontend_ambilin/providers/waste_category_provider.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_routes.dart';
+import 'package:frontend_ambilin/ui/widgets/zoomable_image_dialog.dart';
 
 class FormPemesanan extends StatefulWidget {
   const FormPemesanan({super.key});
@@ -434,13 +435,16 @@ class _FormPemesananState extends State<FormPemesanan> {
                 child: Column(
                   children: [
                     _fotoSampah != null
-                        ? ClipRRect(
-                            borderRadius: BorderRadius.circular(8),
-                            child: Image.file(
-                              _fotoSampah!,
-                              width: 120,
-                              height: 120,
-                              fit: BoxFit.cover,
+                        ? GestureDetector(
+                            onTap: () => ZoomableImageDialog.show(context, imageFile: _fotoSampah!),
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.file(
+                                _fotoSampah!,
+                                width: 120,
+                                height: 120,
+                                fit: BoxFit.cover,
+                              ),
                             ),
                           )
                         : const Icon(

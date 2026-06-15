@@ -4,6 +4,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:frontend_ambilin/utils/app_font.dart';
 import 'package:frontend_ambilin/utils/app_color.dart';
 import 'package:frontend_ambilin/ui/widgets/w_text_fields.dart';
+import 'package:frontend_ambilin/ui/widgets/zoomable_image_dialog.dart';
 
 class FormPemesananPage extends StatefulWidget {
   const FormPemesananPage({super.key});
@@ -332,15 +333,18 @@ class _FormPemesananPageState extends State<FormPemesananPage> {
                   child: gambar != null
                       ? Stack(
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(8),
-                              child: Image.file(
-                                gambar!,
-                                height: 200,
-                                width: double.infinity,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
+                             GestureDetector(
+                               onTap: () => ZoomableImageDialog.show(context, imageFile: gambar!),
+                               child: ClipRRect(
+                                 borderRadius: BorderRadius.circular(8),
+                                 child: Image.file(
+                                   gambar!,
+                                   height: 200,
+                                   width: double.infinity,
+                                   fit: BoxFit.cover,
+                                 ),
+                               ),
+                             ),
                             Positioned(
                               top: 8,
                               right: 8,
